@@ -1,5 +1,5 @@
 
-version_file: lib/caboose_store/version.rb
+version_file: lib/caboose-store/version.rb
 repo_url: https://github.com/williambarry007/caboose-store.git
 gemfile: /Users/william/Sites/caboose.it/Gemfile
 

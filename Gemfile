@@ -6,3 +6,4 @@ source "http://rubygems.org"
 gemspec
 gem 'caboose-cms', '= 0.2.96'
 
+
