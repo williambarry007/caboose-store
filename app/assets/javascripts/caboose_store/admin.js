@@ -16,5 +16,4 @@
 //= require caboose/modal_integration
 /* require jquery.ui.all  */
 /* require tinymce-jquery */
-/* require modeljs.all    */
 
