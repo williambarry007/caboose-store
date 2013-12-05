@@ -1,0 +1,47 @@
+<h1>Products</h1>
+
+<style type='text/css'>
+#search_form_wrapper { margin-bottom: 10px; position: absolute; top:0; right: 0; }
+</style>
+
+<div id='new_button'><a href='/admin/products/new'><span>New Product</span></a></div>
+
+<div id='search_form_wrapper'>
+  <form action='/admin/products' method='get' id='search_form'>
+    <input type='text' name='id'            placeholder='Product ID'  value="<%= @gen.params['id']            %>" style='width: 100px;' />    
+    <input type='text' name='title_like'    placeholder='Title'       value="<%= @gen.params['title_like']    %>" style='width: 150px;' />    
+    <input type='submit' value='Search' />
+    <input type='button' value='Clear' onclick="window.location='/admin/products';" />    
+  </form>
+</div>
+
+<% if @products.count > 0 %>
+  <table class='data' id='properties_table'>
+    <tr>
+      <%= raw @gen.sortable_table_headings({
+  				'id'        => 'ID',
+  				'title'     => 'Title',
+  				'vendor'    => 'Vendor'				
+  			})
+  		%>
+    </tr>
+  <% @products.each do |p| %>
+    <tr onclick="window.location='/admin/products/<%= p.id %>/general';">
+      <td><%= raw p.id %></td>
+      <td><%= raw p.title %></td>
+      <td><%= raw p.vendor.nil? ? 'Unknown' : p.vendor.name %></td>    
+    </tr>
+  <% end %>
+  </table>
+  <p><%= raw @gen.generate %></p>
+<% else %>
+  <p>There are no products right now.</p>
+<% end %>
+
+<% content_for :caboose_js do %>
+<script type='text/javascript'>
+$(document).ready(function() { 
+  var modal = new CabooseModal(800);
+});
+</script>
+<% end %>

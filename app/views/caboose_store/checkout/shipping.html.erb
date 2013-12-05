@@ -1,0 +1,90 @@
+
+  <div class="page-content">
+    <div class="container">
+      <div class="row-fluid">
+        <div class="span12">
+          <ul class="breadcrumb">
+          <li><a href="/">Home</a><span class="divider">/</span></li>
+          <li><a href="/checkout">Checkout</a><span class="divider">/</span></li>
+          <li><a href="/checkout/shipping">Shipping Method</a></li>          
+        </ul>
+        </div>
+      </div>
+
+      <div class="row-fluid">
+        <div class="span12 single-item">
+
+<h3>Checkout</h3>
+<table class='cart'>
+<tr>
+  <th>Item</th>
+  <th>Quantity</th>
+  <th>Subtotal</th>
+</tr>
+<% @order.line_items.each do |li| %>
+  <tr>
+    <td><%= li.variant.product.title %><br /><%= li.variant.title %></td>
+    <td align='right'><%= li.quantity %></td>
+    <td align='right'><%= number_to_currency(li.subtotal) %></td>
+  </tr>
+<% end %>
+<tr>
+  <td colspan='2' align='right'>Subtotal</td>
+  <td align='right'><%= number_to_currency(@order.subtotal) %></td>
+</tr>
+<tr>
+  <td colspan='2' align='right'>Tax</td>
+  <td align='right'><%= number_to_currency(@order.tax) %></td>
+</tr>
+</table>
+
+        </div>
+      </div>      
+      <div class="row-fluid">
+        <div class="span12 single-item">
+          <div class="row-fluid">            
+            <div class="span5" style='width: 230px;'>
+
+<h2>Shipping Address</h2>
+<%
+a = @order.shipping_address
+str = "#{a.name}<br />#{a.address1}<br />"
+str << "#{a.address2}<br />" if a.address2 && a.address2.strip.length > 0
+str << "#{a.city}, #{a.state} #{a.zip}"
+%>
+<p><%= raw str %></p>
+<p><a href='/checkout'>Edit shipping address</a></p>
+
+            </div>
+            <div class="span7" style='width: 300px;'>
+
+<h2>Shipping Method</h2>
+<div id='shipping_rates'><p class='loading'>Calculating shipping rates...</p></div>
+<div id='message'></div>
+
+            </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%= content_for :caboose_css do %>
+<style type='text/css'>
+
+table.cart { border-collapse: collapse; }
+table.cart td { border: #666 1px dotted; padding: 4px 8px; }
+table.cart th { font-weight: bold; text-align: center; }
+
+</style>
+<% end %>
+<%= content_for :caboose_js do %>
+<%= javascript_include_tag 'checkout' %>
+<script type='text/javascript'>
+
+$(document).ready(function() {
+  Checkout.get_shipping_rates();
+});
+
+</script>
+<% end %>

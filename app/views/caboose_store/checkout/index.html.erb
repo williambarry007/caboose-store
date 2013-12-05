@@ -1,0 +1,113 @@
+
+  <div class="page-content">
+    <div class="container">
+      <div class="row-fluid">
+        <div class="span12">
+          <ul class="breadcrumb">
+          <li><a href="/">Home</a><span class="divider">/</span></li>
+          <li><a href="/checkout">Checkout</a></li>          
+        </ul>
+        </div>
+      </div>
+      
+      <div class="row-fluid">
+        <div class="span12 single-item">
+          <div class="row-fluid">            
+
+<h3>Checkout</h3>
+<table class='cart'>
+<tr>
+  <th>Item</th>
+  <th>Quantity</th>
+  <th>Subtotal</th>
+</tr>
+<% @order.line_items.each do |li| %>
+  <tr>
+    <td><%= li.variant.product.title %><br /><%= li.variant.title %></td>
+    <td align='right'><%= li.quantity %></td>
+    <td align='right'><%= number_to_currency(li.subtotal) %></td>
+  </tr>
+<% end %>
+<tr>
+  <td colspan='2' align='right'>Subtotal</td>
+  <td align='right'><%= number_to_currency(@order.subtotal) %></td>
+</tr>
+</table>
+
+          </div>
+<% if (@is_logged_in) %>
+          <div class="row-fluid">
+            <div class="span5">
+
+<h2>Shipping Address</h2>
+<form action='/checkout/shipping' method='post' id='shipping_address_form'>
+<table>
+  <tr><td>Name:       </td><td><input type='text' name='name'     value='' style='width: 200px;' /></td>
+  <tr><td>Company:    </td><td><input type='text' name='company'  value='' style='width: 200px;' /></td>
+  <tr><td>Address 1:  </td><td><input type='text' name='address1' value='' style='width: 200px;' /></td>
+  <tr><td>Address 2:  </td><td><input type='text' name='address2' value='' style='width: 200px;' /></td>
+  <tr><td>City:       </td><td><input type='text' name='city'     value='' style='width: 200px;' /></td>
+  <tr><td>State:      </td><td><select name='state'><% States.all.each do |abbr, name| %><option value='<%= abbr %>'><%= name %></option><% end %></select></td></tr>
+  <tr><td>Zip:        </td><td><input type='text' name='zip'      value='' style='width: 200px;' /></td>
+</table>
+<div id='message'></div>
+<p><input type='submit' value='Continue >' onclick="Checkout.post_shipping_address(); return false;" /></p>
+<form>
+            </div>
+          </div>
+<% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%= content_for :caboose_css do %>
+<style type='text/css'>
+
+table.cart { border-collapse: collapse; }
+table.cart td { border: #666 1px dotted; padding: 4px 8px; }
+table.cart th { font-weight: bold; text-align: center; }
+
+</style>
+<% end %>
+<%= content_for :caboose_js do %>
+<%= javascript_include_tag 'checkout' %>
+
+<% if !@is_logged_in %>
+<script type='text/javascript'>
+
+$(document).ready(function() {
+  open_colorbox();  
+});
+
+function open_colorbox() {
+  $.colorbox({
+    href: '/login?return_url=/checkout',
+    iframe: true,
+    innerWidth: 200,
+    innerHeight:  50,
+    scrolling: false,
+    transition: 'fade',
+    closeButton: false,
+    onComplete: fix_colorbox,
+    opacity: 0.50,
+    onClosed: function() { open_colorbox(); }   
+  });
+}
+
+function fix_colorbox() {
+  $("#cboxTopLeft"      ).css('background', '#111');
+  $("#cboxTopRight"     ).css('background', '#111');
+  $("#cboxBottomLeft"   ).css('background', '#111');
+  $("#cboxBottomRight"  ).css('background', '#111');
+  $("#cboxMiddleLeft"   ).css('background', '#111');
+  $("#cboxMiddleRight"  ).css('background', '#111');
+  $("#cboxTopCenter"    ).css('background', '#111');
+  $("#cboxBottomCenter" ).css('background', '#111');
+  $("#cboxClose"        ).hide(); 
+}
+
+</script>
+<% end %>
+
+<% end %>

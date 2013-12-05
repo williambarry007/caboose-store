@@ -1,0 +1,19 @@
+
+<div id='cart'></div>
+<%= content_for :caboose_js do %>
+<%= javascript_include_tag 'cart' %>
+<script type='text/javascript'>
+
+var modal = false;
+$(window).load(function() {
+  var line_items = <%= raw Caboose.json(line_items(@order)) %>;
+  var c = new Cart(line_items);
+  c.print();
+  if (c.line_items.length > 0)
+    modal = new CabooseModal(600);
+  else
+    modal = new CabooseModal(400, 50);
+});
+
+</script>
+<% end %>

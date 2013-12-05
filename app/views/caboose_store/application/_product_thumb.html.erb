@@ -1,0 +1,13 @@
+<%
+style = square_image(product.featured_image)
+arr = product.price_range
+price = arr[0] == arr[1] ? number_to_currency(arr[0]) : "#{number_to_currency(arr[0])}-#{number_to_currency(arr[1])}"
+price << " Out of stock" if !product.in_stock
+%>
+<li class="thumb">
+	<a href="/products/<%= product.id %>">
+		<figure class="thumb-image" style="<%= style %>"></figure>
+		<div class="thumb-title"><%= product.title %></div>
+		<div class="thumb-price"><%= price %></div>
+	</a>
+</li> <!-- .thumb -->
