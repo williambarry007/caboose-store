@@ -143,4 +143,13 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
     }
   end
   
+  def self.load_data
+    if !CabooseStore::Category.exists?(1)
+      CabooseStore::Category.create({ :id => 1, :name => 'All Products', :url => '/products', :slug => 'products' })
+    end
+    if !CabooseStore::Vendor.exists?(1)
+      CabooseStore::Vendor.create({ :id => 1, :name => 'Unknown' })
+    end      
+  end
+  
 end

@@ -1,9 +1,9 @@
 <% content_for :caboose_css do %>
-<%= stylesheet_link_tag "admin_products" %>
+<%= stylesheet_link_tag "caboose_store/admin_products" %>
 <% end %>
 <% content_for :caboose_js do %>
 <%= javascript_include_tag "caboose/model/all" %>
-<%= javascript_include_tag "admin_products" %>
+<%= javascript_include_tag "caboose_store/admin_products" %>
 <% end %>
 
 <h1>Edit Product - <%= @product.title %></h1>
