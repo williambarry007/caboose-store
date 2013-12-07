@@ -3,7 +3,9 @@ module CabooseStore
     self.table_name = "store_product_images"
     
     belongs_to :product
-    has_and_belongs_to_many :variants  
+    has_many :product_image_variants
+    has_many :variants, :through => :product_image_variants    
+      
     attr_accessible :id, :title  
     has_attached_file :image,
       #:path => "#{Rails.root}/public/products/:product_id_:id_:style.:extension",

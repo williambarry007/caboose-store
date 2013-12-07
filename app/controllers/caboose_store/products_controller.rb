@@ -7,37 +7,54 @@ module CabooseStore
       @review = Review.new
           
       if @category.nil?
-        @product = Product.find(params[:id])
-        if @product.status == 'Inactive'
-          render 'products/not_available'
-          return
-        end
-        @reviews = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
-        @is_logged_in = logged_in?
-        if @is_logged_in
-          #@order.customer_id = logged_in_user.id
-          #@order.save
-          @first_name = logged_in_user.first_name
-          @last_name = logged_in_user.last_name
-        end
-  
-        all_reviews = Review.where(:product_id => @product.id)
-        score = 0
-        count = 0
-        all_reviews.each do |r|
-          if r.rating && r.rating != 0
-            score += r.rating
-            count += 1
-          end
-        end
-        if count > 0
-          @average = score / count
+        if params[:id].nil? || !Product.exists?(params[:id])
+          
+          @gen = Caboose::PageBarGenerator.new(params, {
+            'title_like'    => '',
+            'id'            => ''
+          },{
+              'model'       => 'CabooseStore::Product',
+              'sort'        => 'title',
+              'desc'        => false,
+              'base_url'    => '/admin/products'
+          })
+          @products = @gen.items
+          render 'caboose_store/products/search'
+          
         else
-          @average = 0
+          
+          @product = Product.find(params[:id])
+          
+          if @product.status == 'Inactive'
+            render 'products/not_available'
+            return
+          end
+          @reviews = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
+          @is_logged_in = logged_in?
+          if @is_logged_in
+            #@order.customer_id = logged_in_user.id
+            #@order.save
+            @first_name = logged_in_user.first_name
+            @last_name = logged_in_user.last_name
+          end
+          
+          all_reviews = Review.where(:product_id => @product.id)
+          score = 0
+          count = 0
+          all_reviews.each do |r|
+            if r.rating && r.rating != 0
+              score += r.rating
+              count += 1
+            end
+          end
+          if count > 0
+            @average = score / count
+          else
+            @average = 0
+          end
+          
+          render 'caboose_store/products/details'
         end
-  
-        # @breadcrumb = p.category.ancestry.collect{|cat| "<li><a href='/products/#{cat.id}'>#{cat.name}</a></li>"}.join("<span class='divider'>/</span>")
-        render 'caboose_store/products/details'      
       end
     end
   
@@ -383,5 +400,38 @@ module CabooseStore
       end
       render :json => options
     end
+    
+    # GET /admin/products/combine
+    def admin_combine_select_products
+    end
+    
+    # GET /admin/products/combine-step2
+    def admin_combine_assign_title
+    
+    # POST /admin/products/combine
+    def admin_combine
+      product_ids = params[:product_ids]
+      
+      p = Product.new
+      p.title       = params[:title]
+      p.description = params[:description]
+      p.option1     = params[:option1]
+      p.option2     = params[:option2]
+      p.option3     = params[:option3]      
+      p.default1    = params[:default1]
+      p.default2    = params[:default2]
+      p.default3    = params[:default3]
+      p.status      = 'Active'
+      p.save
+      
+      
+      
+      product_ids.each do |pid|
+        p = Product.find(pid)
+        p.variants.each do |v|
+        
+      
+    end
+    
   end
 end
