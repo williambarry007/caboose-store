@@ -407,6 +407,7 @@ module CabooseStore
     
     # GET /admin/products/combine-step2
     def admin_combine_assign_title
+    end
     
     # POST /admin/products/combine
     def admin_combine
@@ -429,6 +430,8 @@ module CabooseStore
       product_ids.each do |pid|
         p = Product.find(pid)
         p.variants.each do |v|
+        end
+      end
         
       
     end
