@@ -1,6 +1,17 @@
 
 class CabooseStore::Schema < Caboose::Utilities::Schema
-        
+
+  def self.removed_columns
+    {
+      CabooseStore::SearchFilter => [
+        :option1_values,
+        :option2_values,
+        :option3_values,
+        :category
+      ] 
+    }
+  end
+  
   def self.schema
     {  
       CabooseStore::Category => [        
@@ -110,10 +121,20 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :date_available	       , :datetime  ]
       ],
       CabooseStore::Review => [
-        [ :product_id	           , :integer ],
-        [ :content	             , :string  ],
-        [ :name	                 , :string  ],
-        [ :rating	               , :decimal ] 
+        [ :product_id	           , :integer   ],
+        [ :content	             , :string    ],
+        [ :name	                 , :string    ],
+        [ :rating	               , :decimal   ] 
+      ],      
+      CabooseStore::SearchFilter => [
+        [ :url                   , :string   ],
+        [ :title_like            , :string   ],
+        [ :categories            , :text     ],
+        [ :vendors               , :text     ],
+        [ :option1               , :text     ],
+        [ :option2               , :text     ],
+        [ :option3               , :text     ],        
+        [ :prices                , :text     ] 
       ],
       CabooseStore::Variant => [
         [ :sku	                 , :string   ],

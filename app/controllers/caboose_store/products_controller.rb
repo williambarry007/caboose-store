@@ -3,59 +3,52 @@ module CabooseStore
     
     # GET /products/
     def index
-      @category = Category.where(:url => request.fullpath).first
-      @review = Review.new
-          
-      if @category.nil?
-        if params[:id].nil? || !Product.exists?(params[:id])
-          
-          @gen = Caboose::PageBarGenerator.new(params, {
-            'title_like'    => '',
-            'id'            => ''
-          },{
-              'model'       => 'CabooseStore::Product',
-              'sort'        => 'title',
-              'desc'        => false,
-              'base_url'    => '/admin/products'
-          })
-          @products = @gen.items
-          render 'caboose_store/products/search'
-          
-        else
-          
-          @product = Product.find(params[:id])
-          
-          if @product.status == 'Inactive'
-            render 'products/not_available'
-            return
-          end
-          @reviews = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
-          @is_logged_in = logged_in?
-          if @is_logged_in
-            #@order.customer_id = logged_in_user.id
-            #@order.save
-            @first_name = logged_in_user.first_name
-            @last_name = logged_in_user.last_name
-          end
-          
-          all_reviews = Review.where(:product_id => @product.id)
-          score = 0
-          count = 0
-          all_reviews.each do |r|
-            if r.rating && r.rating != 0
-              score += r.rating
-              count += 1
-            end
-          end
-          if count > 0
-            @average = score / count
-          else
-            @average = 0
-          end
-          
-          render 'caboose_store/products/details'
+      @category = Category.exists?(:url => request.fullpath) ? Category.where(:url => request.fullpath).first : nil
+      
+      # If looking at single item
+      if @category.nil? && params[:id] && Product.exists?(params[:id])        
+        @product = Product.find(params[:id])
+        
+        if @product.status == 'Inactive'
+          render 'products/not_available'
+          return
         end
+          
+        @review = Review.new                
+        @reviews = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
+        @logged_in_user = logged_in_user
+                    
+        render 'caboose_store/products/details'
+        return
       end
+          
+      # Otherwise looking at a category or search parameters
+      @pager = Caboose::Pager.new(params, {      
+          'category_id'       => @category ? @category.id : '',
+          'title_like'        => '',
+          'description_like'  => '',
+          'vendor_id'         => '',
+          'price_gte'         => '',
+          'price_lte'         => '',
+          'sku_like'          => ''
+        },{
+          'model'       => 'CabooseStore::Product',
+          'includes'    => {
+            'category_id' => ['categories' , 'id'    ],
+            'price_gte'   => ['variants'   , 'price' ],
+            'price_lte'   => ['variants'   , 'price' ],
+            'sku_like'    => ['variants'   , 'sku'   ]
+          },
+          'sort'        => 'title',
+          'desc'        => false,
+          'base_url'    => '/products'
+        })
+      @products = @pager.items
+      
+      @filter = SearchFilter.exists?(:url => request.fullpath) ? 
+        SearchFilter.where(:url => request.fullpath).first :
+        SearchFilter.create_from_url(request.fullpath, @pager)
+      
     end
   
     def show
