@@ -92,7 +92,8 @@ module CabooseStore
     # GET /admin/products/:id/variants
     # GET /admin/products/:id/variants/:variant_id
     def admin_edit_variants   
-      return if !user_is_allowed('products', 'edit')    
+      return if !user_is_allowed('products', 'edit')
+			prepend_view_path "../../views/products"		
       @product = Product.find(params[:id])
       if @product.variants.nil? || @product.variants.count == 0
         v = Variant.new
@@ -107,9 +108,9 @@ module CabooseStore
       @cols = session['variant_cols']
       
       if @product.options.nil? || @product.options.count == 0
-        render partial: 'products/admin_edit_variants_single', layout: 'caboose/admin'  
+        render template: 'caboose_store/products/admin_edit_variants_single', layout: 'caboose/admin'  
       else
-        render partial: 'products/admin_edit_variants', layout: 'caboose/admin'
+        render template: 'caboose_store/products/admin_edit_variants', layout: 'caboose/admin'
       end          
     end
     
@@ -430,4 +431,9 @@ module CabooseStore
     end
     
   end
+
+	private
+	def set_view_path
+		prepend_view_path "../../views/products"
+	end
 end
