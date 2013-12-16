@@ -107,9 +107,9 @@ module CabooseStore
       @cols = session['variant_cols']
       
       if @product.options.nil? || @product.options.count == 0
-        render 'products/admin_edit_variants_single', :layout => 'caboose/admin'  
+        render partial: 'products/admin_edit_variants_single', layout: 'caboose/admin'  
       else
-        render 'products/admin_edit_variants', :layout => 'caboose/admin'
+        render partial: 'products/admin_edit_variants', layout: 'caboose/admin'
       end          
     end
     
