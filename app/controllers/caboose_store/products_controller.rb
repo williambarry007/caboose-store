@@ -93,7 +93,6 @@ module CabooseStore
     # GET /admin/products/:id/variants/:variant_id
     def admin_edit_variants   
       return if !user_is_allowed('products', 'edit')
-			prepend_view_path "../../views/products"		
       @product = Product.find(params[:id])
       if @product.variants.nil? || @product.variants.count == 0
         v = Variant.new
@@ -431,9 +430,4 @@ module CabooseStore
     end
     
   end
-
-	private
-	def set_view_path
-		prepend_view_path "../../views/products"
-	end
 end
