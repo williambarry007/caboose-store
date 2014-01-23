@@ -1,16 +1,5 @@
 
 class CabooseStore::Schema < Caboose::Utilities::Schema
-
-  def self.removed_columns
-    {
-      CabooseStore::SearchFilter => [
-        :option1_values,
-        :option2_values,
-        :option3_values,
-        :category
-      ] 
-    }
-  end
   
   def self.schema
     {  
@@ -129,7 +118,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       CabooseStore::SearchFilter => [
         [ :url                   , :string   ],
         [ :title_like            , :string   ],
-        [ :categories            , :text     ],
+        [ :category_id           , :integer  ],
+        [ :category              , :text     ],
         [ :vendors               , :text     ],
         [ :option1               , :text     ],
         [ :option2               , :text     ],

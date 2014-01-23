@@ -260,5 +260,40 @@ module CabooseStore
       render :text => "Sent email to william@nine.is on #{DateTime.now.strftime("%F %T")}"
     end
     
+    # GET /admin/orders/google-feed
+    def admin_google_feed
+      d2 = DateTime.now
+      d1 = DateTime.now
+      if Caboose::Setting.exists?(:name => 'google_feed_date_last_submitted')                  
+        d1 = Caboose::Setting.where(:name => 'google_feed_date_last_submitted').first.value      
+        d1 = DateTime.parse(d1)
+      elsif Order.exists?("status = 'shipped' and date_authorized is not null")
+        d1 = Order.where("status = ? and date_authorized is not null", 'shipped').reorder("date_authorized DESC").limit(1).pluck('date_authorized')
+        d1 = DateTime.parse(d1)
+      end
+      
+      # Google Feed Docs
+      # https://support.google.com/trustedstoresmerchant/answer/3272612?hl=en&ref_topic=3272286?hl=en
+      tsv = ["merchant order id\ttracking number\tcarrier code\tother carrier name\tship date"]            
+      if Order.exists?("status = 'shipped' and date_authorized > '#{d1.strftime("%F %T")}'")
+        Order.where("status = ? and date_authorized > ?", 'shipped', d1).reorder(:id).all.each do |order|
+          tracking_numbers = order.line_items.collect{ |li| li.tracking_number }.compact.uniq
+          tn = tracking_numbers && tracking_numbers.count >= 1 ? tracking_numbers[0] : ""
+          tsv << "#{order.id}\t#{tn}\tUPS\t\t#{order.date_shipped.strftime("%F")}"                              
+        end
+      end
+      
+      # Save when we made the last call
+      setting = Caboose::Setting.exists?(:name => 'google_feed_date_last_submitted') ? 
+        Caboose::Setting.where(:name => 'google_feed_date_last_submitted').first
+        Caboose::Setting.new(:name => 'google_feed_date_last_submitted')
+      setting.value = d2.strftime("%F %T")
+      setting.save            
+                   
+      # Print out the lines
+      render :text => tsv.join("\n")
+      
+    end
+    
   end
 end

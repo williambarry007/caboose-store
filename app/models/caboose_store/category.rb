@@ -3,7 +3,7 @@ module CabooseStore
     self.table_name = "store_categories"
     
     belongs_to :parent, :class_name => 'Category', :foreign_key => 'parent_id'
-    has_many :children, :class_name => 'Category', :foreign_key => 'parent_id', :order => 'name'  
+    has_many :children, :class_name => 'Category', :foreign_key => 'parent_id', :order => 'name'    
     has_many :products, :through => :category_memberships, :order => 'title'
     has_many :category_memberships
     has_attached_file :image,

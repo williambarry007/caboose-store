@@ -23,13 +23,10 @@ CabooseStore::Engine.routes.draw do
   put     "/cart/:id"                                   => "cart#update"
   delete  "/cart/:id"                                   => "cart#delete"
   
-  post    "/reviews/add"                                => "reviews#add"
+  post    "/reviews/add"                                => "reviews#add"  
   
-  get     "/products"                                   => "products#index"
-  get     "/products/:id"                               => "products#index"
-  get     "/products/:id/:id2"                          => "products#index"
-  get     "/products/:id/:id2/:id3"                     => "products#index"
-  get     "/products/:id/:id2/:id3/:id4"                => "products#index"
+  get     "/products/:id"                               => "products#index", :constraints => {:id => /.*/}
+  get     "/products"                                   => "products#index"    
 
   get     "/admin/products"                             => "products#admin_index"
   get     "/admin/products/new"                         => "products#admin_new"

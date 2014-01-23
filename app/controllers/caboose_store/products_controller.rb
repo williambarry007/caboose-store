@@ -2,11 +2,19 @@ module CabooseStore
   class ProductsController < ApplicationController  
     
     # GET /products/
-    def index
-      @category = Category.exists?(:url => request.fullpath) ? Category.where(:url => request.fullpath).first : nil
+    def index      
+      #render :text => params
       
+      ## Try to get the category
+      #url2 = request.fullpath.split("?")[0]
+      #@category = nil
+      #if Category.exists?(:url => url2)
+      #  @category = Category.where(:url => url2).first        
+      #  @category = Category.find(@category.parent_id) if @category && (@category.children.nil? || @category.children.count == 0)
+      #end
+            
       # If looking at single item
-      if @category.nil? && params[:id] && Product.exists?(params[:id])        
+      if params[:id] && Product.exists?(params[:id])        
         @product = Product.find(params[:id])
         
         if @product.status == 'Inactive'
@@ -23,8 +31,9 @@ module CabooseStore
       end
           
       # Otherwise looking at a category or search parameters
-      @pager = Caboose::Pager.new(params, {      
-          'category_id'       => @category ? @category.id : '',
+      @pager = Caboose::PageBarGenerator.new(params, {      
+          'category_id'       => '',
+          'category_slug'     => '',
           'title_like'        => '',
           'description_like'  => '',
           'vendor_id'         => '',
@@ -32,26 +41,38 @@ module CabooseStore
           'price_lte'         => '',
           'sku_like'          => ''
         },{
-          'model'       => 'CabooseStore::Product',
+          'model'       => 'CabooseStore::Product',                    
           'includes'    => {
-            'category_id' => ['categories' , 'id'    ],
-            'price_gte'   => ['variants'   , 'price' ],
-            'price_lte'   => ['variants'   , 'price' ],
-            'sku_like'    => ['variants'   , 'sku'   ]
+            'category_id'   => ['categories' , 'id'    ],
+            'category_slug' => ['categories' , 'slug'  ],
+            'price_gte'     => ['variants'   , 'price' ],
+            'price_lte'     => ['variants'   , 'price' ],
+            'sku_like'      => ['variants'   , 'sku'   ]
           },
+          'abbreviations' => {
+            'category_slug'    => 'category',
+            'title_like'       => 'title',
+            'description_like' => 'desc',
+            'vendor_id'        => 'vid',
+            'sku_like'         => 'sku'            
+          },          
           'sort'        => 'title',
           'desc'        => false,
-          'base_url'    => '/products'
-        })
+          'base_url'    => '/products',
+          'items_per_page' => 15,
+          'skip' => ['category_id']
+        })      
+        
+      @filter = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])         
+      #@pager.params['category_id'] = @filter.category_id ? @filter.category_id : ''
+      
+      @pager.set_item_count
       @products = @pager.items
-      
-      @filter = SearchFilter.exists?(:url => request.fullpath) ? 
-        SearchFilter.where(:url => request.fullpath).first :
-        SearchFilter.create_from_url(request.fullpath, @pager)
-      
+      @category = @filter.category ? Category.find(@filter.category.id) : nil
+            
     end
   
-    def show
+    def show      
     end
     
     #=============================================================================
