@@ -7,8 +7,10 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     body['api-key'] = if test or Rails.env == 'development'
       '2F822Rw39fx762MaV7Yy86jXGTC7sCDy'
     else
-      CabooseStore::ApiKey
+      CabooseStore::ApiKey.to_s
     end
+    
+    ap body['api-key']
     
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
@@ -48,7 +50,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   end
   
   def self.authorize(order, params)
-    response = self.api 'complete-action', { 'token-id' => params[:token_id] }, order.test?
+    response = self.api 'complete-action', { 'token-id' => params['token-id'] }, order.test?
     return response['result-code'].to_i == 100
   end
   
