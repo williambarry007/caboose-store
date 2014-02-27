@@ -3,6 +3,24 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
   
   def self.schema
     {  
+      CabooseStore::Address => [
+        [ :id            , :string ],
+        [ :name          , :string ],
+        [ :first_name    , :string ],
+        [ :last_name     , :string ],
+        [ :street        , :string ],
+        [ :address1      , :string ],
+        [ :address2      , :string ],
+        [ :company       , :string ],
+        [ :city          , :string ],
+        [ :state         , :string ],
+        [ :province      , :string ],
+        [ :province_code , :string ],
+        [ :zip           , :string ],
+        [ :country       , :string ],
+        [ :country_code  , :string ],
+        [ :phone         , :string ]
+      ],
       CabooseStore::Category => [        
         [ :parent_id	           , :integer   ],
         [ :name	                 , :string    ],
