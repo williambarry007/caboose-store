@@ -74,7 +74,9 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :auth_code	           , :string   ],
         [ :alternate_id	         , :integer  ],
         [ :auth_amount	         , :numeric  ],
-        [ :date_shipped	         , :datetime ]
+        [ :date_shipped	         , :datetime ],
+        [ :transaction_id	       , :string   ],
+        [ :transaction_service   , :string   ]
       ],
       CabooseStore::ProductImage => [
         [ :product_id	           , :integer  ],

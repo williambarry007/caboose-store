@@ -1,0 +1,10 @@
+<% @shipping_address ||= @order.shipping_address %>
+
+<address>
+	<%= @shipping_address.name %><br />
+	<%= @shipping_address.address1 %><br />
+	<%= "#{@shipping_address.address2}<br />" if @shipping_address.address2 and not @shipping_address.address2.empty? %>
+	<%= "#{@shipping_address.city}, #{@shipping_address.state} #{@shipping_address.zip}" %>
+</address>
+
+<p><a href="/checkout">Edit shipping address</a></p>

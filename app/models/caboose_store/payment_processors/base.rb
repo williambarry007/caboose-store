@@ -1,4 +1,3 @@
-
 class CabooseStore::PaymentProcessors::Base
   
   # Gets a transaction object that obfuscates transaction info.  
@@ -38,4 +37,3 @@ class CabooseStore::PaymentProcessors::Base
     return false
   end
 end
-   

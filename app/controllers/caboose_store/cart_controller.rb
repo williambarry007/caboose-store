@@ -1,59 +1,65 @@
 module CabooseStore
-  class CartController < ApplicationController  
+  class CartController < ApplicationController
+    before_filter :get_order, except: [:update, :delete]
     
-    # GET /cart
-    def index    
-      @order = self.get_cart
-      render :layout => 'layouts/caboose/modal'    
+    def get_order
+      @order = Order.find(session[:cart_id])
+      ap @order
     end
     
-    # GET /cart/add/:id
+    # GET /cart/items
+    def list
+      render json: @order.line_items.collect { |line_item| line_item.cart_info }
+    end
+    
+    # POST /cart/item/:id || Post /cart/item
     def add
-      v = Variant.find(params[:id])    
-      @order = self.get_cart
-      
-      exists = false
-      @order.line_items.each do |li|
-        next if li.variant.id != v.id
-        li.quantity = li.quantity + 1
-        li.save
-        exists = true
-        break
-      end    
-      if !exists
-        li = OrderLineItem.new
-        li.variant = v
-        li.quantity = 1
-        li.unit_price = v.price
-        li.variant_sku = v.sku
-        @order.line_items << li      
+      variant = if params[:id]
+        Variant.find(params[:id])
+      else
+        return false unless params[:product_id]
+        
+        variants = Product.find(params[:product_id]).variants
+        variants = variants.where(option1: params[:option1]) if params[:option1]
+        variants = variants.where(option2: params[:option2]) if params[:option2]
+        variants = variants.where(option3: params[:option3]) if params[:option3]
+        
+        variants.first
       end
-      @order.save    
       
-      render 'caboose_store/cart/index', :layout => 'layouts/caboose/modal'
+      @order.line_items.each do |line_item|
+        if line_item.variant.id == variant.id
+          line_item.quantity += 1
+          line_item.save
+          render json: line_item.cart_info and return
+        end
+      end
+      
+      line_item             = OrderLineItem.new
+      line_item.variant     = variant
+      line_item.quantity    = 1
+      line_item.unit_price  = variant.price
+      line_item.variant_sku = variant.sku
+      
+      @order.line_items << line_item
+      @order.save
+      
+      render json: line_item.cart_info
     end
     
-    # PUT /cart/:id
-    def update    
-      resp = Caboose::StdClass.new
+    # PUT /cart/item/:id
+    def update
+      line_item = OrderLineItem.find(params[:id])
+      line_item.update_attributes(params[:attributes])
+      line_item.save
       
-      order_id = session['cart_id']
-      variant_id = params[:id].to_i
-      qty = params[:quantity_in_stock].to_i
-      
-      if (qty == 0)
-        OrderLineItem.where(:order_id => order_id, :variant_id => variant_id).delete_all
-      else    
-        li = OrderLineItem.where(:order_id => order_id, :variant_id => variant_id).first
-        li.quantity = qty
-        li.save
-      end
-      render :json => resp
+      render json: line_item
     end
     
-    def get_cart
-      # Assumes the init_cart method is running in the parent application controller
-      return Order.find(session['cart_id'])
+    # DELETE /cart/item/:id
+    def remove
+      line_item = OrderLineItem.find(params[:id])
+      render json: line_item.delete
     end
   end
 end

@@ -12,7 +12,7 @@ module CabooseStore
       #  @category = Category.where(:url => url2).first        
       #  @category = Category.find(@category.parent_id) if @category && (@category.children.nil? || @category.children.count == 0)
       #end
-            
+      
       # If looking at single item
       if params[:id] && Product.exists?(params[:id])        
         @product = Product.find(params[:id])

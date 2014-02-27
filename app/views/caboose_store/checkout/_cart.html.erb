@@ -1,0 +1,20 @@
+<table id="cart">
+	<tr>
+		<th>Item</th>
+		<th>Quantity</th>
+		<th>Subtotal</th>
+	</tr>
+	
+	<% @order.line_items.each do |line_item| %>
+		<tr>
+			<td><%= line_item.variant.product.title %><br /><%= line_item.variant.title %></td>
+			<td align="right"><%= line_item.quantity %></td>
+			<td align="right"><%= number_to_currency(line_item.subtotal) %></td>
+		</tr>
+	<% end %>
+	
+	<tr>
+		<td colspan="2" align="right">Subtotal</td>
+		<td align="right"><%= number_to_currency(@order.subtotal) %></td>
+	</tr>
+</table>

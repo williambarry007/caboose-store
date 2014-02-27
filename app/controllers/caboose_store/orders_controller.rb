@@ -284,9 +284,12 @@ module CabooseStore
       end
       
       # Save when we made the last call
-      setting = Caboose::Setting.exists?(:name => 'google_feed_date_last_submitted') ? 
+      setting = if Caboose::Setting.exists?(:name => 'google_feed_date_last_submitted')
         Caboose::Setting.where(:name => 'google_feed_date_last_submitted').first
+      else
         Caboose::Setting.new(:name => 'google_feed_date_last_submitted')
+      end
+      
       setting.value = d2.strftime("%F %T")
       setting.save            
                    

@@ -1,5 +1,7 @@
 module CabooseStore        
   class Order < ActiveRecord::Base
+    include CabooseStore::Concerns::PaymentProcessor
+    
     self.table_name = "store_orders"
     
     belongs_to :customer, :class_name => 'Caboose::User'
@@ -19,7 +21,7 @@ module CabooseStore
       :discount,
       :total,    
       :status,            # The current order status. One of: cart, pending, backordered, fulfilled
-      :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'paid', 'voided', 'refunded'        
+      :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'captured', 'voided', 'refunded'        
       :notes,             # The note which is attached to the order.
       :referring_site,    # Contains the url of the referrer that brought the customer to your store
       :landing_site,      # Contains the path of the landing site the customer used. The first page that the customer saw when he/she reached the store.
@@ -29,7 +31,15 @@ module CabooseStore
       :date_authorized,
       :date_captured,
       :date_cancelled    
-  
+    
+    def authorized?
+      self.financial_status == 'authorized' || self.financial_status == 'captured'
+    end
+      
+    def test?
+      return self.customer_id == 1
+    end
+    
     def line_items
       return self.order_line_items
     end
@@ -66,7 +76,7 @@ module CabooseStore
     
     def calculate_total
       self.calculate_discount
-      self.total = self.subtotal + self.tax + self.shipping + self.handling - self.discount
+      self.total = self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0)
       return self.total
     end
     

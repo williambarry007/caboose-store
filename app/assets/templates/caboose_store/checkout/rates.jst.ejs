@@ -1,0 +1,36 @@
+<form action="/checkout/shipping-method" method="put" id="shipping-method">
+	<table>
+		<tbody>
+			<tr>
+				<td valign="top">
+					<input type="radio" name="shipping_method" id="shipping_method_03" value="03" />
+				</td>
+				
+				<td valign="top">
+					<label for="shipping_method_03">UPS Ground</label>
+				</td>
+				
+				<td valign="top" style="text-align: right;">$13.65</td>
+			</tr>
+			
+			<tr>
+				<td valign="top">
+					<input type="radio" name="shipping_method" id="shipping_method_02" value="02" />
+				</td>
+				
+				<td valign="top">
+					<label for="shipping_method_02">UPS Second Day Air</label>
+				</td>
+				
+				<td valign="top" style="text-align: right;">$18.50</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<input type="hidden" id="shipping_method_name_03" value="UPS Ground" />
+	<input type="hidden" id="shipping_method_price_03" value="1365" />
+	<input type="hidden" id="shipping_method_name_02" value="UPS Second Day Air" />
+	<input type="hidden" id="shipping_method_price_02" value="1850" />
+	
+	<input type="submit" value="Continue >">
+</form>

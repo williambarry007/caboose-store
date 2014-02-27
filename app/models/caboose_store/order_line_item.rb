@@ -9,5 +9,14 @@ module CabooseStore
     def subtotal
       return self.unit_price * self.quantity
     end
+    
+    def cart_info
+      {
+        id:       self.id,
+        quantity: self.quantity,
+        variant:  self.variant,
+        title:    "#{self.variant.product.title}<br />#{self.variant.title}"
+      }
+    end
   end
 end

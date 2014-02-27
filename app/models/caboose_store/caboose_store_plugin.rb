@@ -18,5 +18,9 @@ module CabooseStore
       return nav
     end
     
+    def self.javascripts(scripts)
+      scripts << 'caboose_store/application'
+      return scripts
+    end
   end
 end
