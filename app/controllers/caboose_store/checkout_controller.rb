@@ -144,14 +144,17 @@ module CabooseStore
       # Make sure they didn't come to the page twice
       redirect_to '/' and return if @order.line_items.count == 0
       
-      # Notify the customer
-      OrdersMailer.customer_new_order(@order).deliver
+      if @order.authorized?
+        
+        # Notify the customer
+        OrdersMailer.customer_new_order(@order).deliver
       
-      # Notify the fulfillment center
-      OrdersMailer.fulfillment_new_order(@order).deliver
+        # Notify the fulfillment center
+        OrdersMailer.fulfillment_new_order(@order).deliver
       
-      # Clear everything
-      session[:cart_id] = nil
+        # Clear everything
+        session[:cart_id] = nil
+      end
     end
   end
 end
