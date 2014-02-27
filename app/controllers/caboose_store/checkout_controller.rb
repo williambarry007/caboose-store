@@ -2,6 +2,7 @@ module CabooseStore
   class CheckoutController < ApplicationController
     before_filter :inject_assets
     before_filter :get_order, except: [:relay]
+    before_filter :ensure_order, only: [:index, :shipping, :billing]
     
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
@@ -9,6 +10,14 @@ module CabooseStore
     
     def get_order
       @order = Order.find(session[:cart_id])
+    end
+    
+    def ensure_order
+      redirect_to '/checkout/empty' if @order.line_items.empty?
+    end
+    
+    # GET /checkout/empty
+    def empty
     end
     
     # GET /checkout
