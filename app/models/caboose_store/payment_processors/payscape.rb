@@ -9,7 +9,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     else
       CabooseStore::ApiKey
     end
-      
+    
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl         = true
