@@ -7,10 +7,8 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     body['api-key'] = if test or Rails.env == 'development'
       '2F822Rw39fx762MaV7Yy86jXGTC7sCDy'
     else
-      CabooseStore::ApiKey.to_s
+      CabooseStore::api_key
     end
-    
-    ap body['api-key']
     
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
@@ -23,13 +21,16 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     response             = Hash.new
     
     document.root.elements.each { |element| response[element.name] = element.text }
+    
     ap response
+    ap "API key used: #{body['api-key']}"
+    
     return response
   end
   
   def self.form_url(order)
     response = self.api 'auth', {
-      'redirect-url' => "#{CabooseStore::RootUrl}/checkout/relay/#{order.id}",
+      'redirect-url' => "#{CabooseStore::root_url}/checkout/relay/#{order.id}",
       'amount'       => order.total.to_s,
       'billing'      => {
         'first-name' => order.billing_address.first_name,

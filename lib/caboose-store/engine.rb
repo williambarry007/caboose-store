@@ -50,8 +50,16 @@ module CabooseStore
       ]      
     end
     
+    initializer 'caboose_store.smtp_config' do |app|
+      app.config.action_mailer.smtp_settings = CabooseStore::smtp_settings
+    end
+    
+    initializer 'caboose_store.shipping_login' do |app|
+      app.config.shipping = CabooseStore::shipping
+    end
+    
     initializer 'caboose_store.payment_processor', after: :finish_hook do |app|
-      case CabooseStore::PaymentProcessor
+      case CabooseStore::payment_processor
         when 'authorize.net' then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::AuthorizeNet
         when 'payscape'      then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::Payscape
       end
