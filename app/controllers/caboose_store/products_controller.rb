@@ -60,7 +60,8 @@ module CabooseStore
           'desc'        => false,
           'base_url'    => '/products',
           'items_per_page' => 15,
-          'skip' => ['category_id']
+          'skip' => ['category_id'],
+          'use_url_params' => false
         })      
         
       @filter = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])         
@@ -93,12 +94,17 @@ module CabooseStore
         
       @gen = Caboose::PageBarGenerator.new(params, {
           'title_like'    => '',
+          'name_like'     => '',
           'id'            => ''
       },{
           'model'       => 'CabooseStore::Product',
+          'includes'    => {
+            'name_like' => ['vendor', 'name']
+          },
           'sort'        => 'title',
           'desc'        => false,
-          'base_url'    => '/admin/products'
+          'base_url'    => '/admin/products',
+          'use_url_params' => false
       })
       @products = @gen.items    
       render :layout => 'caboose/admin'

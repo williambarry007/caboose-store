@@ -10,6 +10,7 @@
   <form action='/admin/products' method='get' id='search_form'>
     <input type='text' name='id'            placeholder='Product ID'  value="<%= @gen.params['id']            %>" style='width: 100px;' />    
     <input type='text' name='title_like'    placeholder='Title'       value="<%= @gen.params['title_like']    %>" style='width: 150px;' />    
+		<input type='text' name='name_like'     placeholder='Vendor Name' value="<%= @gen.params['name_like']     %>" style='width: 150px;' />    
     <input type='submit' value='Search' />
     <input type='button' value='Clear' onclick="window.location='/admin/products';" />    
   </form>
