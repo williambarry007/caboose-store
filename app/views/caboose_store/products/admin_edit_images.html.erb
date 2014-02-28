@@ -172,8 +172,10 @@ function variant_title(v)
   return arr.join(' / ');
 }
 
-function attach_image_to_variant(image_id, variant_id, attach = true)
+function attach_image_to_variant(image_id, variant_id, attach)
 {
+	attach = attach || true;
+	
   if (attach)
     image_variant_ids[image_variant_ids.length] = variant_id;
   else

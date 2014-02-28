@@ -2,6 +2,7 @@
 p = @product
 v = @variant    
 %>
+
 <%= render :partial => 'caboose_store/products/admin_header' %>
 <p style='font-size: 75%;'><a href='/admin/products/<%= p.id %>/variant-cols'>Edit visible columns</a></p>
 
@@ -30,6 +31,7 @@ v = @variant
   <th>&nbsp;</th>
   <th>&nbsp;</th>
 </tr>
+<% Caboose.log p.variants.where(:status => ['Active', 'Inactive']).first %>
 <% p.variants.where(:status => ['Active', 'Inactive']).each do |v| %>
 <tr>
   <% if @cols['option1'           ] && p.option1 %><td><div id='variant_<%= v.id %>_option1'           ></div></td><% end %>

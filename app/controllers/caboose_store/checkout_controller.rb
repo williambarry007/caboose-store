@@ -148,10 +148,10 @@ module CabooseStore
         
         # Notify the customer
         OrdersMailer.customer_new_order(@order).deliver
-      
+        
         # Notify the fulfillment center
         OrdersMailer.fulfillment_new_order(@order).deliver
-      
+        
         # Clear everything
         session[:cart_id] = nil
       end

@@ -3,6 +3,15 @@ p = @product
 %>
 <%= render :partial => 'caboose_store/products/admin_header' %>
 
+<p>
+	<strong>Vendor Status:</strong>
+	<select id="vendor-status" data-vendor-id="<%= p.vendor.id %>">
+		<% ['Acive', 'Inactive'].each do |status| %>
+			<option value="<%= status %>" <%= 'selected' if p.vendor.status == status %>><%= status %></option>
+		<% end %>
+	</select>
+</p>
+
 <p><div id='product_<%= p.id %>_title'></div></p>
 <p><div id='product_<%= p.id %>_handle'></div></p>
 <p><div id='product_<%= p.id %>_seo_title'></div></p>
@@ -21,6 +30,16 @@ p = @product
 date_available = p.date_available ? p.date_available.strftime('%F') : ''
 %>
 $(document).ready(function() {
+	$('#vendor-status').on('change', function(e) {
+		$select = $(e.target)
+		
+		$.ajax({
+			type: 'put',
+			url: '/admin/products/update-vendor-status/' + $select.data('vendor-id'),
+			data: { status: $select.val() }
+		});
+	});
+	
   m = new ModelBinder({
     name: 'Product',
     id: <%= p.id %>,

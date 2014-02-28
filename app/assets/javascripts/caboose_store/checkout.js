@@ -15,6 +15,9 @@ var CabooseCheckout = function() {
 	
 	self.initialize = function() {
 		
+		// Ensure that a user is logged in
+		if (!Caboose.loggedIn) Caboose.login();
+		
 		// Route to correct method
 		switch (window.location.pathname) {
 			case '/checkout':          self.index();    break;

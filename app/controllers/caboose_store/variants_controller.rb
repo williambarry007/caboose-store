@@ -73,20 +73,21 @@ module CabooseStore
     
     # POST /admin/products/:id/variants
     def admin_add
-      return if !user_is_allowed('variants', 'add')    
+      return if !user_is_allowed('variants', 'add')
       resp = Caboose::StdClass.new(
         :error => nil,
         :refresh => nil
       )
-          
+      
       p = Product.find(params[:id])
-      v = Variant.new(:product_id => p.id)    
+      v = Variant.new(:product_id => p.id)
       v.option1 = p.default1
       v.option2 = p.default2
-      v.option3 = p.default3     
+      v.option3 = p.default3
+      v.status  = 'Active'
       v.save
-      resp.refresh = true    
-      render :json => resp    
+      resp.refresh = true
+      render :json => resp
     end
     
     # PUT /admin/variants/:id/attach-to-image

@@ -18,7 +18,9 @@ module CabooseStore
         :large  => '800x800>',
         :huge   => '1200x1200>'
       }  
-  
+    
+    validates_attachment_content_type :image, :content_type => ["image/jpg", "image/jpeg", "image/png"]
+    
     def url(size) # 'tiny', 'thumb', 'medium', 'large', 'huge'
       self.image.url(size)
     	#"https://s3.amazonaws.com/tuskwear/products/#{self.product_id}_#{self.id}_#{size}.jpg"

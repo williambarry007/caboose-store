@@ -60,6 +60,7 @@ CabooseStore::Engine.routes.draw do
   get     "/products"                                   => "products#index"    
 
   get     "/admin/products"                             => "products#admin_index"
+  put     "/admin/products/update-vendor-status/:id"    => "products#admin_update_vendor_status"
   get     "/admin/products/new"                         => "products#admin_new"
   get     "/admin/products/status-options"              => "products#admin_status_options"  
   get     "/admin/products/:id/general"                 => "products#admin_edit_general"    

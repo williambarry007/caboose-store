@@ -169,7 +169,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :status	               , :string   ]
       ],
       CabooseStore::Vendor => [
-        [ :name	                 , :string ]
+        [ :name	  , :string ],
+        [ :status , :string, { :default => 'Active' } ]
       ]
     }
   end

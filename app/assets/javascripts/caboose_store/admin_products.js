@@ -35,14 +35,13 @@ function cancel_delete_product(product_id)
 function add_variant(product_id)
 {
   modal.autosize("<p class='loading'>Adding variant...</p>");
+	
   $.ajax({
     url: '/admin/products/' + product_id + '/variants',
     type: 'post',
     success: function(resp) {
-      if (resp.error)
-        modal.autosize("<p class='note error'>" + resp.error + "</p>");
-      if (resp.refresh)
-        window.location.reload(true);    
+      if (resp.error)   modal.autosize("<p class='note error'>" + resp.error + "</p>");
+      if (resp.refresh) window.location.reload(true);
     }
   })
 }

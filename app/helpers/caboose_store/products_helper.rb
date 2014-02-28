@@ -33,7 +33,7 @@ module CabooseStore
       if cat.children && cat.children.count > 0
         str << "<input type='checkbox' id='cat_#{cat.id}' value='#{cat.id}'"
         str << " checked='true'" if selected_ids && selected_ids.include?(cat.id)
-        str << "> <label for='#{cat.id}'><h2>#{cat.name}</h2></label>"
+        str << "> <label for='cat_#{cat.id}'><h3>#{cat.name}</h3></label>"
       else
         str << "<input type='checkbox' id='cat_#{cat.id}' value='#{cat.id}'"
         str << " checked='true'" if selected_ids && selected_ids.include?(cat.id)

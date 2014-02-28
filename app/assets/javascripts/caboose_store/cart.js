@@ -44,7 +44,7 @@ var CabooseCart = function() {
 					
 					var data = $(event.delegateTarget).serializeArray()
 						, json = _.object( _.pluck(data, 'name'), _.pluck(data, 'value') );
-						
+					
 					self.add(json);
 					self.open();
 				});
@@ -147,11 +147,15 @@ var CabooseCart = function() {
 			data: data,
 			success: function(response) {
 				
-				// If item exists increment quantity, otherwise add to cart
-				if ( _.contains(_.pluck(self.items, 'id'), response.id) ) {
-					_.find(self.items, function(item) { return item.id == response.id }).quantity++;
+				if (response.error) {
+					alert(response.error);
 				} else {
-					self.items.push(response);
+					// If item exists increment quantity, otherwise add to cart
+					if ( _.contains(_.pluck(self.items, 'id'), response.id) ) {
+						_.find(self.items, function(item) { return item.id == response.id }).quantity++;
+					} else {
+						self.items.push(response);
+					}
 				}
 				
 				if (callback) callback(response);

@@ -79,6 +79,14 @@ module CabooseStore
     # Admin actions
     #=============================================================================
     
+    # GET /admin/products/update-vendor-status/:id
+    def admin_update_vendor_status
+      vendor = CabooseStore::Vendor.find(params[:id])
+      vendor.status = params[:status]
+      ap vendor
+      render json: vendor.save
+    end
+    
     # GET /admin/products
     def admin_index
       return if !user_is_allowed('products', 'view')
@@ -115,11 +123,13 @@ module CabooseStore
     def admin_edit_variants   
       return if !user_is_allowed('products', 'edit')    
       @product = Product.find(params[:id])
+      
       if @product.variants.nil? || @product.variants.count == 0
         v = Variant.new
         v.option1 = @product.default1 if @product.option1
         v.option2 = @product.default2 if @product.option2
         v.option3 = @product.default3 if @product.option3
+        v.status  = 'Active'
         @product.variants = [v]
         @product.save
       end
@@ -128,9 +138,9 @@ module CabooseStore
       @cols = session['variant_cols']
       
       if @product.options.nil? || @product.options.count == 0
-        render 'products/admin_edit_variants_single', :layout => 'caboose/admin'  
+        render 'caboose_store/products/admin_edit_variants_single', :layout => 'caboose/admin'  
       else
-        render 'products/admin_edit_variants', :layout => 'caboose/admin'
+        render 'caboose_store/products/admin_edit_variants', :layout => 'caboose/admin'
       end          
     end
     
