@@ -6,7 +6,7 @@ p = @product
 <p>
 	<strong>Vendor Status:</strong>
 	<select id="vendor-status" data-vendor-id="<%= p.vendor.id %>">
-		<% ['Acive', 'Inactive'].each do |status| %>
+		<% ['Active', 'Inactive'].each do |status| %>
 			<option value="<%= status %>" <%= 'selected' if p.vendor.status == status %>><%= status %></option>
 		<% end %>
 	</select>
