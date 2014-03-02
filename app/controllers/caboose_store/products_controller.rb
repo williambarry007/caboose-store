@@ -1,76 +1,66 @@
 module CabooseStore
   class ProductsController < ApplicationController  
     
-    # GET /products/
+    # GET /products || GET /products/:id
     def index      
-      #render :text => params
       
-      ## Try to get the category
-      #url2 = request.fullpath.split("?")[0]
-      #@category = nil
-      #if Category.exists?(:url => url2)
-      #  @category = Category.where(:url => url2).first        
-      #  @category = Category.find(@category.parent_id) if @category && (@category.children.nil? || @category.children.count == 0)
-      #end
-      
-      # If looking at single item
-      if params[:id] && Product.exists?(params[:id])        
+      # If id exists then get the product
+      if params[:id] && Product.exists?(params[:id])
         @product = Product.find(params[:id])
-        
-        if @product.status == 'Inactive'
-          render 'products/not_available'
-          return
-        end
+        render 'product/not_available' and return if @product.status == 'Inactive'
           
         @review = Review.new                
-        @reviews = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
+        @reviews = Review.where(product_id: @product.id).limit(10).order("id DESC") || nil
         @logged_in_user = logged_in_user
-                    
-        render 'caboose_store/products/details'
-        return
+        
+        render 'caboose_store/products/details' and return
       end
           
       # Otherwise looking at a category or search parameters
       @pager = Caboose::PageBarGenerator.new(params, {      
-          'category_id'       => '',
-          'category_slug'     => '',
-          'title_like'        => '',
-          'description_like'  => '',
-          'vendor_id'         => '',
-          'price_gte'         => '',
-          'price_lte'         => '',
-          'sku_like'          => ''
-        },{
-          'model'       => 'CabooseStore::Product',                    
-          'includes'    => {
-            'category_id'   => ['categories' , 'id'    ],
-            'category_slug' => ['categories' , 'slug'  ],
-            'price_gte'     => ['variants'   , 'price' ],
-            'price_lte'     => ['variants'   , 'price' ],
-            'sku_like'      => ['variants'   , 'sku'   ]
-          },
-          'abbreviations' => {
-            'category_slug'    => 'category',
-            'title_like'       => 'title',
-            'description_like' => 'desc',
-            'vendor_id'        => 'vid',
-            'sku_like'         => 'sku'            
-          },          
-          'sort'        => 'title',
-          'desc'        => false,
-          'base_url'    => '/products',
-          'items_per_page' => 15,
-          'skip' => ['category_id'],
-          'use_url_params' => false
-        })      
         
-      @filter = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])         
-      #@pager.params['category_id'] = @filter.category_id ? @filter.category_id : ''
+        'category_id'      => '',
+        'category_slug'    => '',
+        'title_like'       => '',
+        'description_like' => '',
+        'vendor_id'        => '',
+        'price_gte'        => '',
+        'price_lte'        => '',
+        'sku_like'         => ''
+        
+      }, {
+        
+        'model' => 'CabooseStore::Product',                    
+        
+        'includes' => {
+          'category_id'   => [ 'categories' , 'id'    ],
+          'category_slug' => [ 'categories' , 'slug'  ],
+          'price_gte'     => [ 'variants'   , 'price' ],
+          'price_lte'     => [ 'variants'   , 'price' ],
+          'sku_like'      => [ 'variants'   , 'sku'   ]
+        },
+        
+        'abbreviations' => {
+          'category_slug' => 'category',
+          'title_like'    => 'title',
+          'vendor_id'     => 'vid',
+          'sku_like'      => 'sku'
+        },
+        
+        'sort'           => 'title',
+        'desc'           => false,
+        'base_url'       => '/products',
+        'items_per_page' => 15,
+        'skip'           => ['category_id'],
+        'use_url_params' => false
+        
+      })
       
-      @pager.set_item_count
+      @filter = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
-      @category = @filter.category ? Category.find(@filter.category.id) : nil
-            
+      @category = if @filter['category_id'] then Category.find(@filter['category_id']) else nil end
+      
+      @pager.set_item_count      
     end
   
     def show      
