@@ -26,7 +26,8 @@ module CabooseStore
         'vendor_id'        => '',
         'price_gte'        => '',
         'price_lte'        => '',
-        'sku_like'         => ''
+        'sku_like'         => '',
+        'status'           => 'Active'
         
       }, {
         
