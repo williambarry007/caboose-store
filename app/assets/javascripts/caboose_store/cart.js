@@ -35,7 +35,7 @@ var CabooseCart = function() {
 				$('[caboose-cart=add]').not('form').on('click', function(event) {
 					event.preventDefault();
 					self.add( $(event.target).data('id') );
-					self.open();
+					self.open( $(window).width() < 1024 );
 				});
 				
 				// Add to cart from form
@@ -46,7 +46,7 @@ var CabooseCart = function() {
 						, json = _.object( _.pluck(data, 'name'), _.pluck(data, 'value') );
 					
 					self.add(json);
-					self.open();
+					self.open( $(window).width() < 1024 );
 				});
 			}
 		});
