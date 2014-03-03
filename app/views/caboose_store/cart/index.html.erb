@@ -1,19 +1,26 @@
-
-<div id='cart'></div>
-<%= content_for :caboose_js do %>
-<%= javascript_include_tag 'cart' %>
-<script type='text/javascript'>
-
-var modal = false;
-$(window).load(function() {
-  var line_items = <%= raw Caboose.json(line_items(@order)) %>;
-  var c = new Cart(line_items);
-  c.print();
-  if (c.line_items.length > 0)
-    modal = new CabooseModal(600);
-  else
-    modal = new CabooseModal(400, 50);
-});
-
-</script>
+<% if @items.nil? or @items.empty? %>
+	<p>Your cart is empty <a caboose-cart="close">Continue shopping</a></p>
+<% else %>
+	<table class="data">
+		<thead>
+			<tr>
+				<th>Item</th>
+				<th>Quantity</th>
+				<th>Subtotal</th>
+			</tr>
+		</thead>
+	
+		<tbody>
+			<% @items.each do |item| %>
+				<tr>
+					<td><%= item.variant.product.title %></td>
+					<td><input class="short" type="text" caboose-cart="update" data-id="<%= item.id %>" name="quantity" value="<%= item.quantity %>" /></td>
+					<td><%= item.variant.price / 100 * 100 %></td>
+					<td><a caboose-cart="remove" data-id="<%= item.id %>">X</a></td>
+				</tr>
+			<% end %>
+		</tbody>
+	</table>
+	
+	<a class="button right" href="/checkout" caboose-cart="redirect" >Checkout</a>	
 <% end %>

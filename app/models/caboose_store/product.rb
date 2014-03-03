@@ -8,14 +8,14 @@ module CabooseStore
     has_many :variants             , :class_name => 'CabooseStore::Variant'
     has_many :product_images       , :class_name => 'CabooseStore::ProductImage'
     has_many :reviews              , :class_name => 'CabooseStore::Review'
-  
+    
     attr_accessible :id,
       :title,
       :description,
-      :vendor_id,    
+      :vendor_id,
       :handle,
       :seo_title,
-      :seo_description,    
+      :seo_description,
       :option1,
       :option2,
       :option3,
@@ -24,7 +24,7 @@ module CabooseStore
       :default3,
       :status,
       :alternate_id
-    
+      
     def options
       arr = []
       arr << self.option1 if !self.option1.nil? && self.option1.strip.length > 0

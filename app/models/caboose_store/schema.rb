@@ -116,6 +116,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :description	         , :text      ],
         [ :handle	               , :string    ],
         [ :vendor_id	           , :integer   ],
+        [ :vendor_status         , :string, { default: 'Active' } ],
         [ :option1	             , :string    ],
         [ :option2	             , :string    ],
         [ :option3	             , :string    ],
@@ -170,7 +171,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       ],
       CabooseStore::Vendor => [
         [ :name	  , :string ],
-        [ :status , :string, { :default => 'Active' } ]
+        [ :status , :string, { default: 'Active' } ]
       ]
     }
   end

@@ -2,11 +2,12 @@ CabooseStore::Engine.routes.draw do
   
   # Cart
   
-  get    '/cart/items'    => 'cart#list'
-  post   '/cart/item/:id' => 'cart#add'
-  post   '/cart/item'     => 'cart#add'
-  put    '/cart/item/:id' => 'cart#update'
-  delete '/cart/item/:id' => 'cart#remove'
+  get    '/mobile/cart/items' => 'cart#mobile_list'
+  get    '/cart/items'        => 'cart#list'
+  post   '/cart/item/:id'     => 'cart#add'
+  post   '/cart/item'         => 'cart#add'
+  put    '/cart/item/:id'     => 'cart#update'
+  delete '/cart/item/:id'     => 'cart#remove'
   
   # Checkout
   

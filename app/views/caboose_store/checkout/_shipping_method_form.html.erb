@@ -1,17 +1,21 @@
 <form id="shipping-rates" action="" method="put">
-	<% @shipping_rates.each do |rate| %>
-		<div>
-			<input id="shipping-method-<%= rate['service_code'] %>" name="shipping_method_code" type="radio" value="<%= rate['service_code'] %>" />
-			<input id="shipping-method-<%= rate['service_code'] %>-name" type="hidden" value="<%= rate['service_name'] %>" />
-			<input id="shipping-method-<%= rate['service_code'] %>-price" type="hidden" value="<%= rate['negotiated_rate'] %>" />
-			
-			<label for="shipping-method-<%= rate['service_code'] %>">
-				<%= number_to_currency rate['total_price'].to_s.insert(-3, '.') %>
-				<%= rate['service_name'] %>
-			</label>
-		</div>
-	<% end %>
+	<fieldset>
+		<% @shipping_rates.each do |rate| %>
+			<div>
+				<input id="shipping-method-<%= rate['service_code'] %>" name="shipping_method_code" type="radio" value="<%= rate['service_code'] %>" />
+				<input id="shipping-method-<%= rate['service_code'] %>-name" type="hidden" value="<%= rate['service_name'] %>" />
+				<input id="shipping-method-<%= rate['service_code'] %>-price" type="hidden" value="<%= rate['negotiated_rate'] %>" />
+		
+				<label for="shipping-method-<%= rate['service_code'] %>">
+					<%= number_to_currency rate['total_price'].to_s.insert(-3, '.') %>
+					<%= rate['service_name'] %>
+				</label>
+			</div>
+		<% end %>
+	</fieldset>
 	
 	<div id="message"></div>
+	
+	<input type="button" value="< Back" onclick="window.location='/checkout';" />
 	<input type="submit" value="Continue >" />
 </form>

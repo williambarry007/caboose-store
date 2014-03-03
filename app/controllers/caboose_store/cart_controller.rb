@@ -8,6 +8,12 @@ module CabooseStore
       ap @order
     end
     
+    # GET /mobile/cart/items
+    def mobile_list
+      @items = @order.line_items || []
+      render 'caboose_store/cart/index'
+    end
+    
     # GET /cart/items
     def list
       render json: @order.line_items.collect { |line_item| line_item.cart_info }

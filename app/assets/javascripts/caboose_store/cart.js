@@ -28,7 +28,7 @@ var CabooseCart = function() {
 				// Open cart
 				$('[caboose-cart=open]').on('click', function(event) {
 					event.preventDefault();
-					self.open();
+					self.open( $(window).width() < 1024 );
 				});
 				
 				// Add to cart from button
@@ -56,7 +56,9 @@ var CabooseCart = function() {
 	// Open
 	//
 	
-	self.open = function() {
+	self.open = function(mobile) {
+		if (mobile) window.location.href = '/mobile/cart/items';
+		
 		$.colorbox({
 			href: '/modal',
 			iframe: true,
@@ -120,7 +122,19 @@ var CabooseCart = function() {
 							}
 						});
 					});
+					
+					$container.find('table').css('width', '100%');
 				});
+				
+			  $("#cboxTopLeft"      ).css('background', '#111');
+			  $("#cboxTopRight"     ).css('background', '#111');
+			  $("#cboxBottomLeft"   ).css('background', '#111');
+			  $("#cboxBottomRight"  ).css('background', '#111');
+			  $("#cboxMiddleLeft"   ).css('background', '#111');
+			  $("#cboxMiddleRight"  ).css('background', '#111');
+			  $("#cboxTopCenter"    ).css('background', '#111');
+			  $("#cboxBottomCenter" ).css('background', '#111');
+			  $("#cboxClose"        ).hide();
 			}
 		});
 	};

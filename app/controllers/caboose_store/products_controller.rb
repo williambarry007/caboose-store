@@ -16,6 +16,17 @@ module CabooseStore
         render 'caboose_store/products/details' and return
       end
       
+      # This is a really specific fix for the vendor_id bug.
+      # For some reason after clicking a footer link with a
+      # vendor_id url param it doubles up on the pager.
+      if params['vendor_id'] and params['vendor_id'].kind_of?(Array)
+        params['vendor_id'].each_with_index do |vendor_id, index|
+          params['vendor_id'][index] = vendor_id.split('?')[0] if vendor_id.include?('?')
+        end
+      elsif params['vendor_id']
+        params['vendor_id'] = params['vendor_id'].split('?')[0] if params['vendor_id'] and params['vendor_id'].include?('?')
+      end
+      
       # Otherwise looking at a category or search parameters
       @pager = Caboose::PageBarGenerator.new(params, {      
         
@@ -27,24 +38,24 @@ module CabooseStore
         'price_gte'        => '',
         'price_lte'        => '',
         'sku_like'         => '',
-        'status'           => 'Active'
+        'status'           => 'Active',
+        'vendor_status'    => 'Active'
         
       }, {
         
         'model' => 'CabooseStore::Product',                    
         
         'includes' => {
-          'category_id'   => [ 'categories' , 'id'    ],
-          'category_slug' => [ 'categories' , 'slug'  ],
-          'price_gte'     => [ 'variants'   , 'price' ],
-          'price_lte'     => [ 'variants'   , 'price' ],
-          'sku_like'      => [ 'variants'   , 'sku'   ]
+          'category_id'   => [ 'categories' , 'id'     ],
+          'category_slug' => [ 'categories' , 'slug'   ],
+          'price_gte'     => [ 'variants'   , 'price'  ],
+          'price_lte'     => [ 'variants'   , 'price'  ],
+          'sku_like'      => [ 'variants'   , 'sku'    ]
         },
         
         'abbreviations' => {
           'category_slug' => 'category',
           'title_like'    => 'title',
-          'vendor_id'     => 'vid',
           'sku_like'      => 'sku'
         },
         
@@ -58,6 +69,7 @@ module CabooseStore
       })
       
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
+      ap @filter
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
       

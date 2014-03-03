@@ -101,7 +101,7 @@ module CabooseStore
     
     # PUT /checkout/shipping-method
     def update_shipping_method
-      render json: { error: 'You must select a shipping method.' } and return if params[:shipping_method][:code].empty?
+      render json: { error: 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
       
       @order.shipping             = params[:shipping_method][:price].to_f / 100
       @order.shipping_method      = params[:shipping_method][:name]
