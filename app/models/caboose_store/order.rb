@@ -76,7 +76,7 @@ module CabooseStore
     
     def calculate_total
       self.calculate_discount
-      self.total = self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0)
+      self.total = (self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0)) / 100 * 100
       return self.total
     end
     
