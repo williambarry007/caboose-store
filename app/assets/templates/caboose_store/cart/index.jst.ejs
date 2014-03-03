@@ -13,7 +13,7 @@
 				<tr>
 					<td><%= item.title %></td>
 					<td><input class="short" type="text" caboose-cart="update" data-id="<%= item.id %>" name="quantity" value="<%= item.quantity %>" /></td>
-					<td><%= item.variant.price %></td>
+					<td><%= parseInt(item.variant.price).toFixed(Math.max(2, (item.variant.price.toString().split('.')[1] || []).length)) %></td>
 					<td><a caboose-cart="remove" data-id="<%= item.id %>">X</a></td>
 				</tr>
 			<% }); %>

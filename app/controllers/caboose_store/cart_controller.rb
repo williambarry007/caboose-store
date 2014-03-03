@@ -30,16 +30,15 @@ module CabooseStore
       
       render json: { error: 'There was an error adding item to cart.' } and return if variant.price.nil?
       render json: { error: 'That item is out of stock.' } and return if variant.quantity_in_stock.nil? or variant.quantity_in_stock < 1
-      render json: { error: "There are only #{variant.quantity_in_stock} in stock." } and return if params[:quantity].to_i > variant.quantity_in_stock
+      render json: { error: "There are only #{variant.quantity_in_stock} left in stock." } and return if params[:quantity].to_i > variant.quantity_in_stock
       
       @order.line_items.each do |line_item|
         if line_item.variant.id == variant.id
-          if line_item.quantity + params[:quantity].to_i > variant.quantity_in_stock
-            render json: { error: "There are only #{variant.quantity_in_stock} in stock." } and return
-          end
+          render json: { error: "There are only #{variant.quantity_in_stock} in stock." } and return if line_item.quantity + params[:quantity].to_i > variant.quantity_in_stock
           
           line_item.quantity += params[:quantity].to_i
           line_item.save
+          
           render json: line_item.cart_info and return
         end
       end

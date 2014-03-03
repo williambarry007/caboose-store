@@ -150,9 +150,10 @@ var CabooseCart = function() {
 				if (response.error) {
 					alert(response.error);
 				} else {
+					
 					// If item exists increment quantity, otherwise add to cart
 					if ( _.contains(_.pluck(self.items, 'id'), response.id) ) {
-						_.find(self.items, function(item) { return item.id == response.id }).quantity++;
+						_.find(self.items, function(item) { return item.id == response.id }).quantity = response.quantity;
 					} else {
 						self.items.push(response);
 					}

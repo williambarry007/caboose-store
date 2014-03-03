@@ -11,7 +11,6 @@ module CabooseStore
     end
     
     def cart_info
-      ap self
       {
         id:       self.id,
         quantity: self.quantity,
