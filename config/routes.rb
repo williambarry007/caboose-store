@@ -20,44 +20,15 @@ CabooseStore::Engine.routes.draw do
   get '/checkout/relay/:order_id' => 'checkout#relay'
   get '/checkout/finalize'        => 'checkout#finalize'
   
-  # put     "/checkout/shipping-method"                   => "checkout#update_shipping_method"
-  # get     "/checkout/shipping-rates"                    => "checkout#shipping_rates"
-  # get     "/checkout/billing"                           => "checkout#billing"
-  # get     "/checkout/quantities"                        => "checkout#check_quantities"
-  # get     "/checkout/update_quantities"                 => "checkout#update_quantities"
-  # get     "/quantity_box"                               => "checkout#quantity_box"
-  # get     "/checkout/get_order"                         => "checkout#get_order"
-  # get     "/checkout/authnet-relay-response"            => "checkout#authnet_relay_response"
-  # post    "/checkout/authnet-relay-response"            => "checkout#authnet_relay_response"
-  # get     "/checkout/authnet-receipt"                   => "checkout#authnet_receipt"
-  # get     "/checkout/finalize"                          => "checkout#finalize"
-  # get     "/checkout/thank-you"                         => "checkout#thank_you"
-  # get     "/checkout"                                   => "checkout#index"
-  # put     "/checkout/shipping-address"                  => "checkout#update_shipping_address"
-  # get     "/checkout/shipping"                          => "checkout#shipping"
-  # get     "/checkout/shipping-rates"                    => "checkout#shipping_rates"
-  # put     "/checkout/shipping-method"                   => "checkout#update_shipping_method"
-  # get     "/checkout/billing"                           => "checkout#billing"
-  # get     "/checkout/quantities"                        => "checkout#check_quantities"
-  # get     "/checkout/update_quantities"                 => "checkout#update_quantities"
-  # get     "/quantity_box"                               => "checkout#quantity_box"
-  # get     "/checkout/get_order"                         => "checkout#get_order"
-  # get     "/checkout/authnet-relay-response"            => "checkout#authnet_relay_response"
-  # post    "/checkout/authnet-relay-response"            => "checkout#authnet_relay_response"
-  # get     "/checkout/authnet-receipt"                   => "checkout#authnet_receipt"
-  # get     "/checkout/finalize"                          => "checkout#finalize"
-  # get     "/checkout/thank-you"                         => "checkout#thank_you"
-  # get     "/cart"                                       => "cart#index"
-  # get     "/cart/add/:id"                               => "cart#add"
-  # get     "/cart/checkout"                              => "cart#checkout"  
-  # post    "/cart/complete"                              => "cart#complete"  
-  # put     "/cart/:id"                                   => "cart#update"
-  # delete  "/cart/:id"                                   => "cart#delete"
+  # Products
+  
+  get  '/products/:id'    => 'products#index', constraints: {id: /.*/}
+  get  '/products'        => 'products#index'
+  post '/products/search' => 'products#search'
+  
+  ###########################
   
   post    "/reviews/add"                                => "reviews#add"  
-  
-  get     "/products/:id"                               => "products#index", :constraints => {:id => /.*/}
-  get     "/products"                                   => "products#index"    
 
   get     "/admin/products"                             => "products#admin_index"
   put     "/admin/products/update-vendor-status/:id"    => "products#admin_update_vendor_status"

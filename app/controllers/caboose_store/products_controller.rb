@@ -1,6 +1,11 @@
 module CabooseStore
   class ProductsController < ApplicationController  
     
+    # POST /products/search
+    def search
+      
+    end
+    
     # GET /products || GET /products/:id
     def index      
       
