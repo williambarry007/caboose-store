@@ -33,7 +33,7 @@ module CabooseStore
       :date_cancelled    
     
     def authorized?
-      self.financial_status == 'authorized' || self.financial_status == 'captured'
+      self.financial_status == 'authorized'
     end
       
     def test?
@@ -76,8 +76,8 @@ module CabooseStore
     
     def calculate_total
       self.calculate_discount
-      self.total = (self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0)) / 100 * 100
-      return self.total
+      self.total = (self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0))
+      return self.total / 100 * 100
     end
     
     def calculate_discount        
@@ -101,7 +101,7 @@ module CabooseStore
       x = x + self.tax if no_tax
   
       self.discount = x
-      return self.discount      
+      return self.discount / 100 * 100
     end
   end
 end

@@ -1,11 +1,6 @@
 module CabooseStore
   class ProductsController < ApplicationController  
     
-    # POST /products/search
-    def search
-      
-    end
-    
     # GET /products || GET /products/:id
     def index      
       
@@ -20,7 +15,7 @@ module CabooseStore
         
         render 'caboose_store/products/details' and return
       end
-          
+      
       # Otherwise looking at a category or search parameters
       @pager = Caboose::PageBarGenerator.new(params, {      
         
@@ -62,9 +57,9 @@ module CabooseStore
         
       })
       
-      @filter = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
+      @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
-      @category = if @filter['category_id'] then Category.find(@filter['category_id']) else nil end
+      @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
       
       @pager.set_item_count      
     end

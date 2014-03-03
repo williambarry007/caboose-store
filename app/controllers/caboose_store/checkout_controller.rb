@@ -106,7 +106,7 @@ module CabooseStore
       @order.shipping             = params[:shipping_method][:price].to_f / 100
       @order.shipping_method      = params[:shipping_method][:name]
       @order.shipping_method_code = params[:shipping_method][:code]
-      @order.handling             = '%.2f' % (@order.shipping * 0.05)
+      @order.handling             = (@order.shipping * 0.05) / 100 * 100
       
       @order.calculate_total
       @order.save

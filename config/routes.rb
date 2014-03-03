@@ -24,7 +24,6 @@ CabooseStore::Engine.routes.draw do
   
   get  '/products/:id'    => 'products#index', constraints: {id: /.*/}
   get  '/products'        => 'products#index'
-  post '/products/search' => 'products#search'
   
   ###########################
   

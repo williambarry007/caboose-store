@@ -45,7 +45,7 @@ module CabooseStore
       
       line_item             = OrderLineItem.new
       line_item.variant     = variant
-      line_item.quantity    = 1
+      line_item.quantity    = params[:quantity].to_i || 1
       line_item.unit_price  = variant.price
       line_item.variant_sku = variant.sku
       
