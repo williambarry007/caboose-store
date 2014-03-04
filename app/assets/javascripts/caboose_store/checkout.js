@@ -16,7 +16,7 @@ var CabooseCheckout = function() {
 	self.initialize = function() {
 		
 		// Ensure that a user is logged in
-		if (!Caboose.loggedIn) Caboose.login();
+		if (!Caboose.loggedIn && window.location.pathname.substring(0, 9) == '/checkout') Caboose.login();
 		
 		// Route to correct method
 		switch (window.location.pathname) {
@@ -109,13 +109,15 @@ var CabooseCheckout = function() {
 				, cc_num   = $form.find('input[name=billing-cc-number]').val()
 				, cc_exp   = $form.find('input[name=billing-cc-exp]').val()
 				, total    = $('input#billing-amount').val()
-				, $confirm = $('</p>');
+				, $confirm = $(document.createElement('div'));
 			
 			$confirm.append( $('</p>').attr('style', 'margin-bottom: 0').html('<strong>Credit Card Number</strong>: xxxx-xxxx-xxxx-' + cc_num.replace(/\-\ /g, '').substr(-4)) );
 			$confirm.append( $('</p>').attr('style', 'margin-bottom: 0').html('<strong>Expiration Date</strong>: ' + cc_exp.substr(0, 2) + '/' + cc_exp.substr(2, 2)) );
 			$confirm.append( $('</p>').html('<strong>Total</strong>: $' + total) );
-			$confirm.append( $('</p>').html('<a href="/checkout/billing">Edit billing info</a>') );
+			$confirm.append( $('</p>').attr('style', 'margin: 24px 0').html('<a href="/checkout/billing">Edit billing info</a>') );
 			$confirm.append( $('</p>').html('<input id="submit-billing" type="button" value="Continue >" />') );
+			
+			console.log($confirm);
 			
 			$form.after($confirm);
 			$form.hide();
