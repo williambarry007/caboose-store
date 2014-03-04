@@ -7,7 +7,7 @@ module CabooseStore
     attr_accessible :id, :variant_id, :quantity, :quantity_shipped
     
     def subtotal
-      return self.unit_price * self.quantity
+      self.variant.price * self.quantity / 100 * 100
     end
     
     def cart_info

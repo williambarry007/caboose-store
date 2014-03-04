@@ -19,7 +19,7 @@ module CabooseStore
       rate = rate + 0.05 if city == 'vance'      
       rate = rate + 0.05 if city == 'woodstock'  
       rate = rate + 0.04 if address.state.downcase == 'al' || address.state.downcase == 'alabama'        
-      return rate
+      return rate.round(2)
     end
   
   end

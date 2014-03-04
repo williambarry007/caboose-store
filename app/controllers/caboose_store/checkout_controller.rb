@@ -84,7 +84,7 @@ module CabooseStore
       @order.billing_address_id  = billing_address.id
       
       # Calculate tax and shipping
-      @order.tax = @order.subtotal * TaxCalculator.tax_rate(shipping_address)
+      @order.tax = ( @order.subtotal * TaxCalculator.tax_rate(shipping_address) ).round(2)
       
       # Calculate total and save
       @order.calculate_total
@@ -106,7 +106,7 @@ module CabooseStore
       @order.shipping             = params[:shipping_method][:price].to_f / 100
       @order.shipping_method      = params[:shipping_method][:name]
       @order.shipping_method_code = params[:shipping_method][:code]
-      @order.handling             = (@order.shipping * 0.05) / 100 * 100
+      @order.handling             = (@order.shipping * 0.05).round(2)
       
       @order.calculate_total
       @order.save

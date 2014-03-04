@@ -8,7 +8,6 @@ module CabooseStore
     
     # GET /cart/mobile
     def mobile
-      ap @order.line_items.empty?
       render '/caboose_store/cart/empty' and return if @order.line_items.empty?
       render '/caboose_store/cart/index'
     end

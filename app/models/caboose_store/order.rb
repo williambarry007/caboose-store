@@ -12,7 +12,7 @@ module CabooseStore
     has_many :order_line_items
     
     attr_accessible :id,
-      :order_number,      # Customer-set unique number of the order    
+      :order_number,      # Customer-set unique number of the order
       :subtotal,              
       :tax,
       :shipping_method,
@@ -76,8 +76,16 @@ module CabooseStore
     
     def calculate_total
       self.calculate_discount
-      self.total = (self.subtotal + self.tax + (self.shipping || 0) + (self.handling || 0) - (self.discount || 0))
-      return self.total / 100 * 100
+      
+      # self.total = self.subtotal + self.tax + self.shipping + self.handling - self.discount
+      
+      self.total = self.subtotal
+      self.total += self.tax if self.tax
+      self.total += self.shipping if self.shipping
+      self.total += self.handling if self.handling
+      self.total -= self.discount if self.discount
+      
+      return self.total.round(2)
     end
     
     def calculate_discount        
