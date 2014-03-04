@@ -77,8 +77,6 @@ module CabooseStore
     def calculate_total
       self.calculate_discount
       
-      # self.total = self.subtotal + self.tax + self.shipping + self.handling - self.discount
-      
       self.total = self.subtotal
       self.total += self.tax if self.tax
       self.total += self.shipping if self.shipping
