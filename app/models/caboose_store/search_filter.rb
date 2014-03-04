@@ -159,7 +159,7 @@ module CabooseStore
         ]
       
         price_range_matches = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      
+        
         # Iterate over pager results for product and variant info
         pager.all_items.each do |product|
           option1['name'] << product.option1

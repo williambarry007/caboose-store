@@ -68,6 +68,7 @@ module CabooseStore
         
       })
       
+      SearchFilter.delete_all
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       ap @filter
       @products = @pager.items
