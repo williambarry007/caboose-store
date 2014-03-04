@@ -3,6 +3,7 @@
 //
 // :: Initialize
 // :: Open
+// :: Bind Events
 // :: Close
 // :: Add
 // :: Update
@@ -22,20 +23,28 @@ var CabooseCart = function() {
 			success: function(response) {
 				self.items = response;
 				
+				// If this is the mobile cart page
+				if (window.location.pathname == '/cart/mobile') self.bindEvents();
+				
 				// Emit ready event
 				Caboose.events.trigger('cart.ready');
 				
 				// Open cart
 				$('[caboose-cart=open]').on('click', function(event) {
 					event.preventDefault();
-					self.open( $(window).width() < 1024 );
+					
+					if ($.browser.mobile) {
+						Caboose.redirect('/cart/mobile')
+					} else {
+						self.open();
+					}
 				});
 				
 				// Add to cart from button
 				$('[caboose-cart=add]').not('form').on('click', function(event) {
 					event.preventDefault();
 					self.add( $(event.target).data('id') );
-					self.open( $(window).width() < 1024 );
+					if (!$.browser.mobile) self.open();
 				});
 				
 				// Add to cart from form
@@ -46,7 +55,7 @@ var CabooseCart = function() {
 						, json = _.object( _.pluck(data, 'name'), _.pluck(data, 'value') );
 					
 					self.add(json);
-					self.open( $(window).width() < 1024 );
+					if (!$.browser.mobile) self.open();
 				});
 			}
 		});
@@ -57,8 +66,6 @@ var CabooseCart = function() {
 	//
 	
 	self.open = function(mobile) {
-		if (mobile) window.location.href = '/mobile/cart/items';
-		
 		$.colorbox({
 			href: '/modal',
 			iframe: true,
@@ -66,76 +73,75 @@ var CabooseCart = function() {
 			innerHeight: 400,
 			
 			onComplete: function() {
-				$("#cboxLoadedContent iframe").load(function() {
-					var $container = $(this).contents().find('#modal_content')
-						, content    = JST['caboose_store/cart/index']({items: self.items});
-						
-					// Inject content into modal
-					$container.html(content);
-					
-					// Close cart
-					$container.find('[caboose-cart=close]').on('click', function(event) {
-						event.preventDefault();
-						self.close();
-					});
-					
-					// Redirect user
-					$container.find('[caboose-cart=redirect]').on('click', function(event) {
-						event.preventDefault();
-						window.location = event.target.href;
-					});
-					
-					// Update item from button
-					$container.find('[caboose-cart=update]').not('form').on('change', function(event) {
-						var $target    = $(event.target)
-							, id         = $target.data('id')
-							, attribute  = $target.attr('name')
-							, value      = $target.val()
-							, attributes = {};
-							
-						attributes[attribute] = value;
-						self.update(id, attributes);
-					});
-					
-					// Update item from form
-					$container.find('form[caboose-cart=update]').on('submit', function(event) {
-						event.preventDefault();
-						
-						var $target    = $(event.delegateTarget)
-							, id         = $target.data('id')
-							, form       = $target.serializeArray()
-							, attributes = _.object( _.pluck(form, 'name'), _.pluck(form, 'value') );
-						
-						self.update(id, attributes);
-					});
-					
-					// Remove from cart
-					$container.find('[caboose-cart=remove]').on('click', function(event) {
-						event.preventDefault();
-						var id = $(event.target).data('id');
-						
-						self.remove(id, function() {
-							if (self.items.length == 0) {
-								self.close();
-							} else {
-								$container.find('[caboose-cart=remove][data-id=' + id + ']').parents('tr').remove();
-							}
-						});
-					});
-					
-					$container.find('table').css('width', '100%');
-				});
-				
-			  $("#cboxTopLeft"      ).css('background', '#111');
-			  $("#cboxTopRight"     ).css('background', '#111');
-			  $("#cboxBottomLeft"   ).css('background', '#111');
-			  $("#cboxBottomRight"  ).css('background', '#111');
-			  $("#cboxMiddleLeft"   ).css('background', '#111');
-			  $("#cboxMiddleRight"  ).css('background', '#111');
-			  $("#cboxTopCenter"    ).css('background', '#111');
-			  $("#cboxBottomCenter" ).css('background', '#111');
-			  $("#cboxClose"        ).hide();
+				$('#cboxLoadedContent iframe').load(self.bindEvents);
 			}
+		});
+	};
+	
+	//
+	// Bind Events
+	//
+	
+	self.bindEvents = function() {
+		var $container = $('iframe').contents().find('#modal_content')
+			, content    = JST['caboose_store/cart/index']({items: self.items});
+		
+		// If container exists inject content into modal
+		// otherwise define it as the body for event binding
+		if ($container.length) {
+			$container.html(content);
+		} else {
+			$container = $('body')
+		}
+		
+		// Close cart
+		$container.find('[caboose-cart=close]').on('click', function(event) {
+			event.preventDefault();
+			self.close();
+		});
+		
+		// Redirect user
+		$container.find('[caboose-cart=redirect]').on('click', function(event) {
+			event.preventDefault();
+			window.location.href = event.target.href;
+		});
+		
+		// Update item from single input
+		$container.find('[caboose-cart=update]').not('form').on('change', function(event) {
+			var $target    = $(event.target)
+				, id         = $target.data('id')
+				, attribute  = $target.attr('name')
+				, value      = $target.val()
+				, attributes = {};
+				
+			attributes[attribute] = value;
+			self.update(id, attributes);
+		});
+		
+		// Update item from form
+		$container.find('form[caboose-cart=update]').on('submit', function(event) {
+			event.preventDefault();
+			
+			var $target    = $(event.delegateTarget)
+				, id         = $target.data('id')
+				, form       = $target.serializeArray()
+				, attributes = _.object( _.pluck(form, 'name'), _.pluck(form, 'value') );
+			
+			self.update(id, attributes);
+		});
+		
+		// Remove from cart
+		$container.find('[caboose-cart=remove]').on('click', function(event) {
+			event.preventDefault();
+			var id = $(event.target).data('id');
+			
+			self.remove(id, function() {
+				if (self.items.length == 0) {
+					self.close();
+				} else {
+					$container.find('[caboose-cart=remove][data-id=' + id + ']').parents('tr').remove();
+				}
+			});
 		});
 	};
 	
@@ -154,7 +160,7 @@ var CabooseCart = function() {
 	self.add = function(something, callback) {
 		var id   = _.isNumber(something) ? something : ''
 			, data = _.isObject(something) ? something : {};
-			
+		
 		$.ajax({
 			url: '/cart/item/' + id,
 			type: 'post',
@@ -164,6 +170,9 @@ var CabooseCart = function() {
 				if (response.error) {
 					alert(response.error);
 				} else {
+					
+					// If this is mobile then redirect to mobile cart page
+					if ($.browser.mobile) Caboose.redirect('/cart/mobile');
 					
 					// If item exists increment quantity, otherwise add to cart
 					if ( _.contains(_.pluck(self.items, 'id'), response.id) ) {
@@ -207,6 +216,7 @@ var CabooseCart = function() {
 			type: 'delete',
 			success: function(response) {
 				self.items = _.reject(self.items, function(item) { return item.id == response.id });
+				if ($.browser.mobile) Caboose.reload();
 				if (callback) callback(response);
 			}
 		});

@@ -153,6 +153,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :price	               , :numeric  ],
         [ :available	           , :boolean  ],
         [ :quantity_in_stock	   , :integer  ],
+        [ :ignore_quantity       , :boolean  ],
         [ :allow_backorder	     , :boolean  ],
         [ :weight	               , :decimal  ],
         [ :length	               , :decimal  ],
