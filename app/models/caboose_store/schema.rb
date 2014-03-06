@@ -116,7 +116,6 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :description	         , :text      ],
         [ :handle	               , :string    ],
         [ :vendor_id	           , :integer   ],
-        [ :vendor_status         , :string, { default: 'Active' } ],
         [ :option1	             , :string    ],
         [ :option2	             , :string    ],
         [ :option3	             , :string    ],
@@ -139,6 +138,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       CabooseStore::SearchFilter => [
         [ :url                   , :string   ],
         [ :title_like            , :string   ],
+        [ :search_like           , :string   ],
         [ :category_id           , :integer  ],
         [ :category              , :text     ],
         [ :vendors               , :text     ],

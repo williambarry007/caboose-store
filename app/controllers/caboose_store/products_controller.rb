@@ -2,78 +2,129 @@ module CabooseStore
   class ProductsController < ApplicationController  
     
     # GET /products || GET /products/:id
-    def index      
+    def index
       
-      # If id exists then get the product
-      if params[:id] && Product.exists?(params[:id])
+      # If id exists, is an integer and a product exists with the specified id then get the product
+      if params[:id] && params[:id].to_i > 0 && Product.exists?(params[:id])
         @product = Product.find(params[:id])
         render 'product/not_available' and return if @product.status == 'Inactive'
-          
-        @review = Review.new                
+        
+        @review = Review.new
         @reviews = Review.where(product_id: @product.id).limit(10).order("id DESC") || nil
         @logged_in_user = logged_in_user
         
         render 'caboose_store/products/details' and return
       end
       
+      # Filter params from url
+      url_without_params = request.fullpath.split('?').first
+      
+      category = Category.where(url: url_without_params).first
+      
+      params['category_id'] = category.id
+      params['category_id'] = category.children.collect { |child| child.id } if category.id == 1
+      params['category_id'].unshift(category.id)
+      
+      # ap params
+      
+      # Attempt to find the category based on the slug
+      # if Category.exists? url: eq
+      
+      # params['category_id'] = Category.where(slug: params[:id]).first
+      
       # This is a really specific fix for the vendor_id bug.
       # For some reason after clicking a footer link with a
       # vendor_id url param it doubles up on the pager.
-      if params['vendor_id'] and params['vendor_id'].kind_of?(Array)
-        params['vendor_id'].each_with_index do |vendor_id, index|
-          params['vendor_id'][index] = vendor_id.split('?')[0] if vendor_id.include?('?')
-        end
-      elsif params['vendor_id']
-        params['vendor_id'] = params['vendor_id'].split('?')[0] if params['vendor_id'] and params['vendor_id'].include?('?')
-      end
+      # if params['vendor_id'] and params['vendor_id'].kind_of?(Array)
+      #   params['vendor_id'].each_with_index do |vendor_id, index|
+      #     params['vendor_id'][index] = vendor_id.split('?')[0] if vendor_id.include?('?')
+      #   end
+      # elsif params['vendor_id']
+      #   params['vendor_id'] = params['vendor_id'].split('?')[0] if params['vendor_id'] and params['vendor_id'].include?('?')
+      # end
       
       # Otherwise looking at a category or search parameters
-      @pager = Caboose::PageBarGenerator.new(params, {      
+      
+      @pager = Caboose::Pager.new(params, {
+        'status'        => 'Active',
+        'vendor_status' => 'Active',
+        'category_id'   => '',
+        'vendor_id'     => '',
+        'price_gte'     => '',
+        'price_lte'     => '',
         
-        'category_id'      => '',
-        'category_slug'    => '',
-        'title_like'       => '',
-        'description_like' => '',
-        'vendor_id'        => '',
-        'price_gte'        => '',
-        'price_lte'        => '',
-        'sku_like'         => '',
-        'status'           => 'Active',
-        'vendor_status'    => 'Active'
-        
+        'title_concat_store_variants.sku_concat_vendor.name_like' => ''
       }, {
-        
-        'model' => 'CabooseStore::Product',                    
+        'model' => 'CabooseStore::Product',
         
         'includes' => {
           'category_id'   => [ 'categories' , 'id'     ],
-          'category_slug' => [ 'categories' , 'slug'   ],
+          'vendor_id'     => [ 'vendor'     , 'id'     ],
+          'vendor_status' => [ 'vendor'     , 'status' ],
           'price_gte'     => [ 'variants'   , 'price'  ],
           'price_lte'     => [ 'variants'   , 'price'  ],
-          'sku_like'      => [ 'variants'   , 'sku'    ]
+          'sku'           => [ 'variants'   , 'sku'    ]
         },
         
         'abbreviations' => {
-          'category_slug' => 'category',
-          'title_like'    => 'title',
-          'sku_like'      => 'sku'
+          'title_concat_variants.sku_concat_vendor.name_like' => 'search_like'
         },
         
         'sort'           => 'title',
-        'desc'           => false,
-        'base_url'       => '/products',
+        'base_url'       => url_without_params,
         'items_per_page' => 15,
-        'skip'           => ['category_id'],
         'use_url_params' => false
-        
       })
+      
+      # @pager = Caboose::Pager.new(params, {
+      #   
+      #   'category_id'      => '',
+      #   'category_slug'    => '',
+      #   'description_like' => '',
+      #   'vendor_id'        => '',
+      #   'price_gte'        => '',
+      #   'price_lte'        => '',
+      #   'sku_like'         => '',
+      #   'status'           => 'Active',
+      #   'vendor_status'    => 'Active',
+      #   'title_concat_variants.sku_concat_brand_like' => '',
+      #   'variants.sku'     => ''
+      #   
+      # }, {
+      #   
+      #   'model' => 'CabooseStore::Product',
+      #   
+      #   'includes' => {
+      #     'category_id'   => [ :categories , 'id'     ],
+      #     'category_slug' => [ :categories , 'slug'   ],
+      #     'price_gte'     => [ :variants   , 'price'  ],
+      #     'price_lte'     => [ :variants   , 'price'  ],
+      #     'sku'           => [ :variants   , 'sku'    ],
+      #     'brand'         => [ :vendors    , 'name'   ]
+      #   },
+      #   
+      #   'abbreviations' => {
+      #     'category_slug' => 'category',
+      #     'title_like'    => 'title',
+      #     'sku_like'      => 'sku',
+      #     'title_concat_variants.sku_concat_brand_like' => 'search_like'
+      #   },
+      #   
+      #   'sort'           => 'variants.id',
+      #   'desc'           => false,
+      #   'base_url'       => '/products',
+      #   'items_per_page' => 15,
+      #   'skip'           => ['category_id'],
+      #   'use_url_params' => false
+      #   
+      # })
       
       SearchFilter.delete_all
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
-      ap @filter
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
       
+      ap @filter
       @pager.set_item_count      
     end
   

@@ -2,8 +2,8 @@ module CabooseStore
   class Product < ActiveRecord::Base
     self.table_name = "store_products"
     
-    belongs_to :vendor, :class_name => 'CabooseStore::Vendor'
-    has_many :categories, :through => :category_memberships, :class_name => 'CabooseStore::Category'
+    belongs_to :vendor             , class_name: 'CabooseStore::Vendor'
+    has_many :categories           , through: :category_memberships, :class_name => 'CabooseStore::Category'
     has_many :category_memberships , :class_name => 'CabooseStore::CategoryMembership'
     has_many :variants             , :class_name => 'CabooseStore::Variant'
     has_many :product_images       , :class_name => 'CabooseStore::ProductImage'
