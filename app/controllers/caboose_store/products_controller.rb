@@ -23,7 +23,7 @@ module CabooseStore
       
       params['category_id'] = category.id
       params['category_id'] = category.children.collect { |child| child.id } if category.id == 1
-      params['category_id'].unshift(category.id)
+      params['category_id'].unshift(category.id) if params['category_id'].is_a?(Array)
       
       # ap params
       
