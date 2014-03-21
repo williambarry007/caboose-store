@@ -72,8 +72,8 @@ module CabooseStore
       return SearchFilter.where(url: pager.options['base_url']) if SearchFilter.exists?(url: pager.options['base_url'])
       
       # Create a new search filter
-      search_filter             = SearchFilter.new
-      search_filter.url         = filtered_url
+      search_filter     = SearchFilter.new
+      search_filter.url = filtered_url
       
       search_filter.category_id = if pager.params['category_id'].kind_of?(Array)
         pager.params['category_id'].first
@@ -131,7 +131,10 @@ module CabooseStore
       ]
       
       # Create an array of the same length as the price ranges to hold a match count
-      price_range_matches = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      price_range_matches = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+      
+      # Array to hold all relevant vendor IDs
+      vendor_ids = []
       
       # Iterate over pager results for product and variant info
       pager.all_items.each do |product|
@@ -153,14 +156,16 @@ module CabooseStore
             next if variant.price.nil?
             
             # Increment price count at index if the varaint is within the price range
-            # price_range_matches[index] = price_range_matches[index].to_i + 1 if variant.price > min and variant.price < max
-            price_range_matches[index] += 1 if variant.price > min and variant.price < max
+            if variant.price > min and variant.price < max
+              price_range_matches[index] += 1
+              vendor_ids << product.vendor_id
+            end
           end
         end
       end
       
       # Grab all active vendors
-      search_filter.vendors = Vendor.where(status: 'Active')
+      search_filter.vendors = Vendor.where('id IN (?) AND status = ?', vendor_ids.uniq, 'Active')
       
       # Remove nil and duplicate values from option name arrays
       option1['name'] = option1['name'].compact.uniq

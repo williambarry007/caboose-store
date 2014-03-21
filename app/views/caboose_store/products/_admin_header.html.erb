@@ -14,13 +14,14 @@ tabs = {
   "/admin/products/#{@product.id}/description"  => 'Long Description',
   "/admin/products/#{@product.id}/categories"   => 'Categories'
 }
-if @product.options && @product.options.count > 0
-  tabs["/admin/products/#{@product.id}/options"      ] = 'Options <span style="font-size: 65%">(size, color, style, etc.)</span>'
-end
-tabs["/admin/products/#{@product.id}/variants"     ] = 'Inventory & variants'
-tabs["/admin/products/#{@product.id}/images"       ] = 'Images'
+
+tabs["/admin/products/#{@product.id}/options"        ] = 'Options <span style="font-size: 65%">(size, color, style, etc.)</span>' if @product.options && @product.options.count > 0
+tabs["/admin/products/#{@product.id}/variants"       ] = 'Inventory & variants'
+# tabs["/admin/products/#{@product.id}/variants/group" ] = 'Group Variants'
+tabs["/admin/products/#{@product.id}/images"         ] = 'Images'
+tabs["/admin/products/#{@product.id}/delete"         ] = 'Delete Product'
+
 #tabs["/admin/products/#{@product.id}/seo"          ] = 'SEO'
-tabs["/admin/products/#{@product.id}/delete"       ] = 'Delete Product'
 
 %>
 <% tabs.each do |href,text| %>

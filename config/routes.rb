@@ -19,12 +19,19 @@ CabooseStore::Engine.routes.draw do
   put '/checkout/shipping-method' => 'checkout#update_shipping_method'
   get '/checkout/billing'         => 'checkout#billing'
   get '/checkout/relay/:order_id' => 'checkout#relay'
+  get '/checkout/error'           => 'checkout#error'
   get '/checkout/finalize'        => 'checkout#finalize'
   
   # Products
   
   get  '/products/:id'    => 'products#index', constraints: {id: /.*/}
   get  '/products'        => 'products#index'
+  
+  get '/admin/variants/group' => 'variants#admin_group'
+  
+  get  '/admin/products/:id/variants/group'  => 'products#admin_group_variants'
+  post '/admin/products/:id/variants/add'    => 'products#admin_add_variants'
+  post '/admin/products/:id/variants/remove' => 'products#admin_remove_variants'
   
   ###########################
   
@@ -49,8 +56,8 @@ CabooseStore::Engine.routes.draw do
   get     "/admin/products/:id/seo"                     => "products#admin_edit_seo"
   get     "/admin/products/:id/options"                 => "products#admin_edit_options"
   get     "/admin/products/:id/delete"                  => "products#admin_delete_form"
-  put     "/admin/products/:id"                         => "products#admin_update"  
-  post    "/admin/products"                             => "products#admin_add"  
+  put     "/admin/products/:id"                         => "products#admin_update"
+  post    "/admin/products"                             => "products#admin_add"
   delete  "/admin/products/:id"                         => "products#admin_delete"
   
   get     "/admin/products/:product_id/variants/:variant_id/edit"   => "variants#admin_edit"

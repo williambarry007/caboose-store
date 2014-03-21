@@ -126,7 +126,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :default3	             , :string    ],
         [ :seo_title	           , :string    ],
         [ :seo_description	     , :string    ],
-        [ :alternate_id	         , :integer   ],
+        [ :alternate_id	         , :string    ],
         [ :date_available	       , :datetime  ]
       ],
       CabooseStore::Review => [
@@ -167,7 +167,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :taxable	             , :boolean  ],
         [ :product_id	           , :integer  ],
         [ :shipping_unit_value	 , :numeric  ],
-        [ :alternate_id	         , :integer  ],
+        [ :alternate_id	         , :string   ],
         [ :status	               , :string   ]
       ],
       CabooseStore::Vendor => [

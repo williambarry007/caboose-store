@@ -13,7 +13,47 @@ module CabooseStore
       @product = @variant.product
       render :layout => 'caboose/admin'
     end
+    
+    # GET /admin/variants
+    def admin_group
+      return if !user_is_allowed('variants', 'edit')
       
+      joins  = []
+      where  = ''
+      values = []
+      
+      if params[:category_ids]
+        joins  << [:category_memberships]
+        where  << 'store_category_memberships.category_id IN (?)'
+        values << params[:category_ids]
+      end
+      
+      if params[:vendor_ids]
+        joins  << [:vendor]
+        where  << 'store_vendors.id IN (?)'
+        values << params[:vendor_ids]
+      end
+      
+      if params[:title]
+        where  << 'LOWER(store_products.title) LIKE ?'
+        values << "%#{params[:title].downcase}%"
+      end
+      
+      # Query for all relevant products
+      products = values.any? ? CabooseStore::Product.joins(joins).where([where].concat(values)) : []
+      
+      # Grab variants for each product
+      @variants = products.collect { |product| product.variants }.flatten
+      
+      # Grab all categories; except for all and uncategorized
+      @categories = CabooseStore::Category.where('parent_id IS NOT NULL')
+      
+      # Grab all vendors
+      @vendors = CabooseStore::Vendor.all
+      
+      render layout: 'caboose/admin'
+    end
+    
     # PUT /admin/variants/:id
     def admin_update
       return if !user_is_allowed('variants', 'edit')

@@ -19,47 +19,39 @@ module CabooseStore
       # Filter params from url
       url_without_params = request.fullpath.split('?').first
       
+      # Find the category
       category = Category.where(url: url_without_params).first
       
+      # Set category ID
       params['category_id'] = category.id
+      
+      # If this is the top-most category, collect all it's immediate children IDs
       params['category_id'] = category.children.collect { |child| child.id } if category.id == 1
+      
+      # Shove the original category ID into the first position if the param is an array
       params['category_id'].unshift(category.id) if params['category_id'].is_a?(Array)
       
-      # ap params
-      
-      # Attempt to find the category based on the slug
-      # if Category.exists? url: eq
-      
-      # params['category_id'] = Category.where(slug: params[:id]).first
-      
-      # This is a really specific fix for the vendor_id bug.
-      # For some reason after clicking a footer link with a
-      # vendor_id url param it doubles up on the pager.
-      # if params['vendor_id'] and params['vendor_id'].kind_of?(Array)
-      #   params['vendor_id'].each_with_index do |vendor_id, index|
-      #     params['vendor_id'][index] = vendor_id.split('?')[0] if vendor_id.include?('?')
-      #   end
-      # elsif params['vendor_id']
-      #   params['vendor_id'] = params['vendor_id'].split('?')[0] if params['vendor_id'] and params['vendor_id'].include?('?')
-      # end
-      
       # Otherwise looking at a category or search parameters
-      
       @pager = Caboose::Pager.new(params, {
-        'status'        => 'Active',
-        'vendor_status' => 'Active',
+        
         'category_id'   => '',
         'vendor_id'     => '',
+        'vendor_name'   => '',
+        'vendor_status' => 'Active',
+        'status'        => 'Active',
         'price_gte'     => '',
         'price_lte'     => '',
+        'sku'           => '',
+        'search_like'   => ''
         
-        'title_concat_store_variants.sku_concat_vendor.name_like' => ''
       }, {
+        
         'model' => 'CabooseStore::Product',
         
         'includes' => {
           'category_id'   => [ 'categories' , 'id'     ],
           'vendor_id'     => [ 'vendor'     , 'id'     ],
+          'vendor_name'   => [ 'vendor'     , 'name'   ],
           'vendor_status' => [ 'vendor'     , 'status' ],
           'price_gte'     => [ 'variants'   , 'price'  ],
           'price_lte'     => [ 'variants'   , 'price'  ],
@@ -67,79 +59,115 @@ module CabooseStore
         },
         
         'abbreviations' => {
-          'title_concat_variants.sku_concat_vendor.name_like' => 'search_like'
+          'search_like' => 'title_concat_sku_concat_vendor_name_like'
         },
         
         'sort'           => 'title',
         'base_url'       => url_without_params,
         'items_per_page' => 15,
         'use_url_params' => false
+        
       })
       
-      # @pager = Caboose::Pager.new(params, {
-      #   
-      #   'category_id'      => '',
-      #   'category_slug'    => '',
-      #   'description_like' => '',
-      #   'vendor_id'        => '',
-      #   'price_gte'        => '',
-      #   'price_lte'        => '',
-      #   'sku_like'         => '',
-      #   'status'           => 'Active',
-      #   'vendor_status'    => 'Active',
-      #   'title_concat_variants.sku_concat_brand_like' => '',
-      #   'variants.sku'     => ''
-      #   
-      # }, {
-      #   
-      #   'model' => 'CabooseStore::Product',
-      #   
-      #   'includes' => {
-      #     'category_id'   => [ :categories , 'id'     ],
-      #     'category_slug' => [ :categories , 'slug'   ],
-      #     'price_gte'     => [ :variants   , 'price'  ],
-      #     'price_lte'     => [ :variants   , 'price'  ],
-      #     'sku'           => [ :variants   , 'sku'    ],
-      #     'brand'         => [ :vendors    , 'name'   ]
-      #   },
-      #   
-      #   'abbreviations' => {
-      #     'category_slug' => 'category',
-      #     'title_like'    => 'title',
-      #     'sku_like'      => 'sku',
-      #     'title_concat_variants.sku_concat_brand_like' => 'search_like'
-      #   },
-      #   
-      #   'sort'           => 'variants.id',
-      #   'desc'           => false,
-      #   'base_url'       => '/products',
-      #   'items_per_page' => 15,
-      #   'skip'           => ['category_id'],
-      #   'use_url_params' => false
-      #   
-      # })
-      
       SearchFilter.delete_all
+      
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
-      
-      ap @filter
-      @pager.set_item_count      
+        
+      @pager.set_item_count
     end
-  
-    def show      
+    
+    def show
     end
     
     #=============================================================================
     # Admin actions
     #=============================================================================
     
+    # GET /admin/products/:id/variants/group
+    def admin_group_variants
+      @product = Product.find(params[:id])
+      
+      return if !user_is_allowed('variants', 'edit')
+      
+      joins  = []
+      where  = []
+      values = []
+      
+      if params[:category_ids]
+        joins  << [:category_memberships]
+        where  << 'store_category_memberships.category_id IN (?)'
+        values << params[:category_ids]
+      end
+      
+      if params[:vendor_ids]
+        joins  << [:vendor]
+        where  << 'store_vendors.id IN (?)'
+        values << params[:vendor_ids]
+      end
+      
+      if params[:title]
+        where  << 'LOWER(store_products.title) LIKE ?'
+        values << "%#{params[:title].downcase}%"
+      end
+      
+      # Query for all relevant products
+      products = values.any? ? CabooseStore::Product.joins(joins).where([where.join(' AND ')].concat(values)) : []
+      
+      # Grab variants for each product
+      @variants = products.collect { |product| product.variants }.flatten
+      
+      # Grab all categories; except for "all" and "uncategorized"
+      @categories = CabooseStore::Category.where('parent_id IS NOT NULL AND name IS NOT NULL').order(:url)
+      
+      # Grab all vendors
+      @vendors = CabooseStore::Vendor.where('name IS NOT NULL').order(:name)
+      
+      render layout: 'caboose/admin'
+    end
+    
+    # POST /admin/products/:id/variants/add
+    def admin_add_variants
+      ap params
+      
+      params[:variant_ids].each do |variant_id|
+        variant = Variant.find(variant_id)
+        
+        # Delete current variant product if this is the last variant
+        # variant.product.update_attribute(:status, 'deleted') if variant.product.variants.where('status != ?', 'deleted').count == 0
+        
+        # Add reference to new product
+        # varant.product_id = params[:id]
+      end
+      
+      # Iterate over variants and add them to the product
+        # Remove product that the variants are associated with; UNLESS it's the current product
+      
+      redirect_to "/admin/products/#{params[:id]}/variants"
+    end
+    
+    # POST /admin//products/:id/variants/remove
+    def admin_remove_variants
+      ap params
+      
+      params[:variant_ids].each do |variant_id|
+        variant = Variant.find(variant_id)
+        ap variant
+        # variant.update_attribute(:status, 'deleted')
+        # variant.product.update_attribute(:status, 'deleted') if variant.product.variants.where('status != ?', 'deleted').count == 0
+      end
+      
+      # Remove passed variants
+      # redirect_to "/admin/products/#{params[:id]}/variants/group"
+      
+      render json: true
+    end
+    
     # GET /admin/products/update-vendor-status/:id
     def admin_update_vendor_status
       vendor = CabooseStore::Vendor.find(params[:id])
       vendor.status = params[:status]
-      ap vendor
       render json: vendor.save
     end
     
@@ -383,7 +411,7 @@ module CabooseStore
               product.date_available = nil
             else
               begin
-                product.date_available = DateTime.parse(value)            
+                product.date_available = DateTime.parse(value)
               rescue
                 resp.error = "Invalid date"
                 save = false
@@ -437,7 +465,7 @@ module CabooseStore
     
     # GET /admin/products/new
     def admin_new
-      return if !user_is_allowed('products', 'add')    
+      return if !user_is_allowed('products', 'add')
       render :layout => 'caboose/admin'
     end
     

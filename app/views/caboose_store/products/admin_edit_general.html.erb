@@ -3,14 +3,16 @@ p = @product
 %>
 <%= render :partial => 'caboose_store/products/admin_header' %>
 
-<p>
-	<strong>Vendor Status (<%= p.vendor.name %>):</strong>
-	<select id="vendor-status" data-vendor-id="<%= p.vendor.id %>">
-		<% ['Active', 'Inactive'].each do |status| %>
-			<option value="<%= status %>" <%= 'selected' if p.vendor.status == status %>><%= status %></option>
-		<% end %>
-	</select>
-</p>
+<% if p.vendor %>
+	<p>
+		<strong>Vendor Status (<%= p.vendor.name %>):</strong>
+		<select id="vendor-status" data-vendor-id="<%= p.vendor.id %>">
+			<% ['Active', 'Inactive'].each do |status| %>
+				<option value="<%= status %>" <%= 'selected' if p.vendor.status == status %>><%= status %></option>
+			<% end %>
+		</select>
+	</p>
+<% end %>
 
 <p><div id='product_<%= p.id %>_title'></div></p>
 <p><div id='product_<%= p.id %>_handle'></div></p>

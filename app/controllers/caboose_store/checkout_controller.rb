@@ -1,8 +1,8 @@
 module CabooseStore
   class CheckoutController < ApplicationController
     before_filter :inject_assets
-    before_filter :get_order, except: [:relay]
-    before_filter :ensure_order, only: [:index, :shipping, :billing]
+    before_filter :get_order
+    before_filter :ensure_order, except: [:empty, :error, :thanks]
     
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
@@ -68,11 +68,11 @@ module CabooseStore
       elsif (shipping_address.address1.strip.length == 0 or billing_address.address1.strip.length == 0)
         render json: { error: 'An address is required.' } and return
       elsif (shipping_address.city.strip.length == 0 or billing_address.city.strip.length == 0 )
-        render json: { error: 'An city is required.' } and return
+        render json: { error: 'A city is required.' } and return
       elsif (shipping_address.state.strip.length == 0 or billing_address.state.strip.length == 0)
-        render json: { error: 'An state is required.' } and return
+        render json: { error: 'A state is required.' } and return
       elsif (shipping_address.zip.strip.length < 5 or billing_address.zip.strip.length < 5)
-        render json: { error: 'An valid zip code is required.' } and return
+        render json: { error: 'A valid zip code is required.' } and return
       end
       
       # Save address info; generate ids
@@ -122,8 +122,8 @@ module CabooseStore
     
     # GET /checkout/relay/:order_id
     def relay
-      @order = Order.find(params[:order_id].to_i)
-    
+      
+      # Check to see that the order has a valid total and was authorized
       if @order.total > 0 and CabooseStore::PaymentProcessor.authorize(@order, params)
         @order.date_authorized  = DateTime.now
         @order.auth_amount      = @order.total
@@ -142,9 +142,7 @@ module CabooseStore
     def finalize
       
       # Make sure they didn't come to the page twice
-      redirect_to '/' and return if @order.line_items.count == 0
-      
-      if @order.authorized?
+      if @order.line_items.count > 0 and @order.authorized?
         
         # Notify the customer
         OrdersMailer.customer_new_order(@order).deliver
@@ -154,7 +152,19 @@ module CabooseStore
         
         # Clear everything
         session[:cart_id] = nil
+        
+        redirect_to '/checkout/thanks'
+      else
+        redirect_to '/checkout/error'
       end
+    end
+    
+    # GET /checkout/thanks
+    def thanks
+    end
+    
+    # GET /checkout/error
+    def error
     end
   end
 end
