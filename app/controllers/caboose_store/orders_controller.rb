@@ -216,38 +216,6 @@ module CabooseStore
       render :json => options    
     end
     
-    # GET  /admin/orders/authnet-relay-response
-    # POST /admin/orders/authnet-relay-response  
-    #def authnet_relay_response
-    #  sim_response = AuthorizeNet::SIM::Response.new(params)
-    #  if sim_response.success?(AUTHORIZE_NET_CONFIG['api_login_id'], AUTHORIZE_NET_CONFIG['merchant_hash_value'])      
-    #    if (params[:x_response_code].to_i == 1) # Approved
-    #      order = Order.find(params[:x_invoice_num])
-    #      order.date_captured = DateTime.now        
-    #      order.financial_status = 'captured'        
-    #      order.save        
-    #    end      
-    #  end
-    #  render :text => sim_response.direct_post_reply('https://tuskwearadmin.herokuapp.com/admin/orders/authnet-receipt', :include => true)
-    #end
-    
-    # GET /admin/orders/authnet-receipt
-    #def authnet_receipt
-    #  return if !user_is_allowed('orders', 'edit')
-    #  
-    #  resp = Caboose::StdClass.new({
-    #    'refresh' => nil,
-    #    'error' => nil
-    #  })
-    #  
-    #  if (params[:x_response_code].to_i == 1) # Approved
-    #    resp.refresh = true
-    #  else 
-    #    resp.error = "There was an error capture funds:<br /><br />#{params[:x_response_reason_text]}"      
-    #  end
-    #  render :text => "<script type='text/javascript'>parent.capture_funds_response(#{resp.to_json});</script>"
-    #end
-    
     # GET /admin/orders/test-info
     def admin_mail_test_info
       TestMailer.test_info.deliver

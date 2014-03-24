@@ -9,7 +9,7 @@ module CabooseStore
     def init_cart
       
       # Primarily for the relay, check for Order ID coming back
-      session[:cart_id] = params[:order_id] if params[:order_id]
+      session[:cart_id] = params[:order_id] if params[:order_id] and request.env['PATH_INFO'].split('/').first == 'checkout'
       
       # Exit the function if the Cart ID is defined and a corresponding order exists in the database
       return if session[:cart_id] and CabooseStore::Order.exists?(session[:cart_id])

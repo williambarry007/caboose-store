@@ -1,7 +1,5 @@
 module CabooseStore        
   class Order < ActiveRecord::Base
-    include CabooseStore::Concerns::PaymentProcessor
-    
     self.table_name = "store_orders"
     
     belongs_to :customer, :class_name => 'Caboose::User'

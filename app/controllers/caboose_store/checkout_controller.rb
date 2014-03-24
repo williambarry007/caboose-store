@@ -2,7 +2,7 @@ module CabooseStore
   class CheckoutController < ApplicationController
     before_filter :inject_assets
     before_filter :get_order
-    before_filter :ensure_order, except: [:empty, :error, :thanks]
+    before_filter :ensure_order, only: [:index, :shipping, :billing, :finalize]
     
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
@@ -14,10 +14,6 @@ module CabooseStore
     
     def ensure_order
       redirect_to '/checkout/empty' if @order.line_items.empty?
-    end
-    
-    # GET /checkout/empty
-    def empty
     end
     
     # GET /checkout
@@ -103,11 +99,11 @@ module CabooseStore
     def update_shipping_method
       render json: { error: 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
       
+      # Update order
       @order.shipping             = params[:shipping_method][:price].to_f / 100
       @order.shipping_method      = params[:shipping_method][:name]
       @order.shipping_method_code = params[:shipping_method][:code]
       @order.handling             = (@order.shipping * 0.05).round(2)
-      
       @order.calculate_total
       @order.save
       
@@ -125,29 +121,16 @@ module CabooseStore
       
       # Check to see that the order has a valid total and was authorized
       if @order.total > 0 and CabooseStore::PaymentProcessor.authorize(@order, params)
+        
+        # Update order
         @order.date_authorized  = DateTime.now
         @order.auth_amount      = @order.total
         @order.financial_status = 'authorized'
         @order.status           = if @order.test? or @order.customer_id == 2684 then 'testing' else 'pending' end
         @order.save
-      else
-        @order.financial_status = 'unauthorized'
-        @order.save
-      end
-      
-      redirect_to '/checkout/finalize'
-    end
-    
-    # GET /checkout/finalize
-    def finalize
-      
-      # Make sure they didn't come to the page twice
-      if @order.line_items.count > 0 and @order.authorized?
         
-        # Notify the customer
+        # Send out notifications
         OrdersMailer.customer_new_order(@order).deliver
-        
-        # Notify the fulfillment center
         OrdersMailer.fulfillment_new_order(@order).deliver
         
         # Clear everything
@@ -155,16 +138,46 @@ module CabooseStore
         
         redirect_to '/checkout/thanks'
       else
+        @order.financial_status = 'unauthorized'
+        @order.save
+        
         redirect_to '/checkout/error'
       end
+      
+      # redirect_to '/checkout/finalize'
     end
     
-    # GET /checkout/thanks
-    def thanks
+    # GET /checkout/finalize
+    # def finalize
+    #   
+    #   # Make sure they didn't come to the page twice
+    #   if @order.line_items.count > 0 and @order.authorized?
+    #     
+    #     # Notify the customer
+    #     OrdersMailer.customer_new_order(@order).deliver
+    #     
+    #     # Notify the fulfillment center
+    #     OrdersMailer.fulfillment_new_order(@order).deliver
+    #     
+    #     # Clear everything
+    #     session[:cart_id] = nil
+    #     
+    #     redirect_to '/checkout/thanks'
+    #   else
+    #     redirect_to '/checkout/error'
+    #   end
+    # end
+
+    # GET /checkout/empty
+    def empty
     end
     
     # GET /checkout/error
     def error
+    end
+    
+    # GET /checkout/thanks
+    def thanks
     end
   end
 end

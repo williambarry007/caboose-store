@@ -18,7 +18,7 @@ module CabooseStore
       
       # Filter params from url
       url_without_params = request.fullpath.split('?').first
-      
+      ap url_without_params
       # Find the category
       category = Category.where(url: url_without_params).first
       

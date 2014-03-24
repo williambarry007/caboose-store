@@ -14,7 +14,7 @@ var CabooseCheckout = function() {
 	//
 	
 	self.initialize = function() {
-		
+		console.log('init');
 		// Ensure that a user is logged in
 		if (!Caboose.loggedIn && window.location.pathname.substring(0, 9) == '/checkout') Caboose.login();
 		
@@ -65,7 +65,7 @@ var CabooseCheckout = function() {
 	//
 	
 	self.shipping = function() {
-		$('form#shipping-rates').on('submit', function(event) {
+		$('form#shipping-rates').one('submit', function(event) {
 			event.preventDefault();
 			
 			var $form = $(event.delegateTarget)
@@ -92,7 +92,7 @@ var CabooseCheckout = function() {
 	};
 	
 	//
-	// Payment
+	// Billing
 	//
 	
 	self.billing = function() {
@@ -100,7 +100,7 @@ var CabooseCheckout = function() {
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
 		});
 		
-		$('#billing-form').one('submit', function(e) {
+		$('#billing-form').on('submit', function(e) {
 			e.preventDefault();
 			
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
