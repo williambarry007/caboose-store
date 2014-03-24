@@ -126,7 +126,7 @@ module CabooseStore
         @order.date_authorized  = DateTime.now
         @order.auth_amount      = @order.total
         @order.financial_status = 'authorized'
-        @order.status           = if @order.test? or @order.customer_id == 2684 then 'testing' else 'pending' end
+        @order.status           = if @order.test? then 'testing' else 'pending' end
         @order.save
         
         # Send out notifications
