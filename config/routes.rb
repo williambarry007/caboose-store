@@ -12,15 +12,15 @@ CabooseStore::Engine.routes.draw do
   # Checkout
   
   get '/checkout'                 => 'checkout#index'
-  get '/checkout/empty'           => 'checkout#empty'
   put '/checkout/address'         => 'checkout#update_address'
   get '/checkout/shipping'        => 'checkout#shipping'
   get '/checkout/shipping-rates'  => 'checkout#shipping_rates'
   put '/checkout/shipping-method' => 'checkout#update_shipping_method'
   get '/checkout/billing'         => 'checkout#billing'
   get '/checkout/relay/:order_id' => 'checkout#relay'
+  get '/checkout/empty'           => 'checkout#empty'
   get '/checkout/error'           => 'checkout#error'
-  get '/checkout/finalize'        => 'checkout#finalize'
+  get '/checkout/thanks'          => 'checkout#thanks'
   
   # Products
   
