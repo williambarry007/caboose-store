@@ -100,7 +100,7 @@ var CabooseCheckout = function() {
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
 		});
 		
-		$('#billing-form').on('submit', function(e) {
+		$('#billing-form').one('submit', function(e) {
 			e.preventDefault();
 			
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
