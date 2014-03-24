@@ -117,8 +117,6 @@ var CabooseCheckout = function() {
 			$confirm.append( $('</p>').attr('style', 'margin: 24px 0').html('<a href="/checkout/billing">Edit billing info</a>') );
 			$confirm.append( $('</p>').html('<input id="submit-billing" type="button" value="Continue >" />') );
 			
-			console.log($confirm);
-			
 			$form.after($confirm);
 			$form.hide();
 			
