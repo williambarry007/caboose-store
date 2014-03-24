@@ -38,6 +38,73 @@ module CabooseStore
       render :layout => 'caboose/admin'
     end
     
+    # GET /admin/orders/:id/void
+    def admin_void
+      return if !user_is_allowed('orders', 'edit')
+    
+      response = Caboose::StdClass.new({
+        'refresh' => nil,
+        'error' => nil,
+        'success' => nil
+      })
+    
+      order = Order.find(params[:id])
+    
+      if order.financial_status == 'captured'
+        response.error = "This order has already been captured, you will need to refund instead"
+      else
+        if PaymentProcessor.void(order)
+          order.financial_status = 'cancelled'
+          order.status = 'voided'
+          order.save
+        
+          response.success = "Order voided successfully"
+        else
+          response.error = "Error voiding order."
+        end
+      end
+    
+      render json: response
+    end
+  
+    # GET /admin/orders/:id/refund
+    def admin_refund
+      return if !user_is_allowed('orders', 'edit')
+    
+      response = Caboose::StdClass.new({
+        'refresh' => nil,
+        'error' => nil,
+        'success' => nil
+      })
+    
+      order = Order.find(params[:id])
+    
+      if order.financial_status != 'captured'
+        response.error = "This order hasn't been captured yet, you will need to void instead"
+      else
+        if PaymentProcessor.refund(order)
+          order.financial_status = 'refunded'
+          order.status = 'refunded'
+          order.save
+        
+          response.success = "Order refunded successfully"
+        else
+          response.error = "Error refunding order."
+        end
+      end
+    
+      render json: response
+    end
+    
+    # POST /admin/orders/:id/resend-confirmation
+    def admin_resend_confirmation
+      if Order.find(params[:id]).resend_confirmation
+        render json: { success: "Confirmation re-sent successfully." }
+      else
+        render json: { error: "There was an error re-sending the email." }
+      end
+    end
+    
     # GET /admin/orders/:id/json
     def admin_json
       return if !user_is_allowed('orders', 'edit')    

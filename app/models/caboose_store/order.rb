@@ -29,6 +29,10 @@ module CabooseStore
       :date_authorized,
       :date_captured,
       :date_cancelled    
+      
+    def resend_confirmation
+      OrdersMailer.customer_new_order(self).deliver
+    end
     
     def authorized?
       self.financial_status == 'authorized'

@@ -35,6 +35,12 @@ CabooseStore::Engine.routes.draw do
   
   get '/admin/products/add-upcs' => 'products#admin_add_upcs'
   
+  # Orders
+  
+  get  '/admin/orders/:id/void'                => 'orders#admin_void'
+  get  '/admin/orders/:id/refund'              => 'orders#admin_refund'
+  post '/admin/orders/:id/resend-confirmation' => 'orders#admin_resend_confirmation'
+  
   ###########################
   
   post    "/reviews/add"                                => "reviews#add"  

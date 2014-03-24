@@ -4,7 +4,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   def self.api(root, body, test=false)
     
     # Determine if transaction should be a test
-    body['api-key'] = if test or Rails.env == 'development'
+    body['api-key'] = if false #test or Rails.env == 'development'
       '2F822Rw39fx762MaV7Yy86jXGTC7sCDy'
     else
       CabooseStore::api_key
@@ -56,18 +56,18 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   end
   
   def self.void(order)
-    response = self.api 'void', { 'transaction-id' => order.transaction_token.to_s }, order.test?
+    response = self.api 'void', { 'transaction-id' => order.transaction_id }, order.test?
     return response['result-code'].to_i == 100
   end
   
   def self.capture(order)
-    response = self.api 'capture', { 'transaction-id' => order.transaction_id.to_s }, order.test?
+    response = self.api 'capture', { 'transaction-id' => order.transaction_id }, order.test?
     return response['result-code'].to_i == 100
   end
   
   def self.refund(order)
     response = self.api 'refund', {
-      'transaction-id' => order.transaction_id.to_s,
+      'transaction-id' => order.transaction_id,
       'amount'         => order.total.to_s
     }, order.test?
     
