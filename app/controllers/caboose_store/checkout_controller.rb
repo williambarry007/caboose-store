@@ -9,7 +9,7 @@ module CabooseStore
     end
     
     def get_order
-      @order = Order.find(session[:cart_id])
+      ap @order = Order.find(session[:cart_id])
     end
     
     def ensure_order
