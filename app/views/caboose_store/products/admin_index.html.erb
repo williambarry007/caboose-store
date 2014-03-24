@@ -2,18 +2,33 @@
 
 <style type='text/css'>
 #search_form_wrapper { margin-bottom: 10px; position: absolute; top:0; right: 0; }
+label { cursor: pointer; }
+label input[type=checkbox] {
+	height: 15px !important;
+	left: auto !important;
+	margin: 12px 0 !important;
+	position: relative !important;
+	top: auto !important;
+}
 </style>
 
-<div id='new_button'><a href='/admin/products/new'><span>New Product</span></a></div>
+<div id='new_button' style="margin: 0 0 6px">
+	<a href='/admin/products/new'><span>New Product</span></a>
+	<a href="/admin/products/add-upcs" style="margin-left: 6px">Find Products that have Variants with no UPC</a>
+</div>
 
 <div id='search_form_wrapper'>
-  <form action='/admin/products' method='get' id='search_form'>
-    <input type='text' name='id'            placeholder='Product ID'  value="<%= @gen.params['id']            %>" style='width: 100px;' />    
-    <input type='text' name='title_like'    placeholder='Title'       value="<%= @gen.params['title_like']    %>" style='width: 150px;' />    
+	<form action='/admin/products' method='get' id='search_form'>
+		<input type='text' name='id'            placeholder='Product ID'  value="<%= @gen.params['id']            %>" style='width: 100px;' />    
+		<input type='text' name='title_like'    placeholder='Title'       value="<%= @gen.params['title_like']    %>" style='width: 150px;' />    
 		<input type='text' name='name_like'     placeholder='Vendor Name' value="<%= @gen.params['name_like']     %>" style='width: 150px;' />    
-    <input type='submit' value='Search' />
-    <input type='button' value='Clear' onclick="window.location='/admin/products';" />    
-  </form>
+		<input type='submit' value='Search' />
+		<input type='button' value='Clear' onclick="window.location='/admin/products';" />
+		<!-- <br /> -->
+		<!-- <label><input type="checkbox" name="unassigned_variants"
+			<%= 'checked="checked"' if params[:unassigned_variants] and params[:unassigned_variants] == 'on' %>
+		/> Only variants without UPCs</label> -->
+	</form>
 </div>
 
 <% if @products.count > 0 %>

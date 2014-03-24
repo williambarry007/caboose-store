@@ -18,7 +18,7 @@ module CabooseStore
       
       # Filter params from url
       url_without_params = request.fullpath.split('?').first
-      ap url_without_params
+      
       # Find the category
       category = Category.where(url: url_without_params).first
       
@@ -174,23 +174,42 @@ module CabooseStore
     # GET /admin/products
     def admin_index
       return if !user_is_allowed('products', 'view')
-        
+      
+      # Temporary patch for vendor name sorting; Fix this
+      params[:sort] = 'store_vendors.name' if params[:sort] == 'vendor'
+    
       @gen = Caboose::PageBarGenerator.new(params, {
           'title_like'    => '',
           'name_like'     => '',
-          'id'            => ''
+          'id'            => '',
+          'upc_null'      => 'NULL'
       },{
           'model'       => 'CabooseStore::Product',
+        
           'includes'    => {
-            'name_like' => ['vendor', 'name']
+            'name_like' => ['vendor', 'name'],
+            'upc_null'  => ['variants', 'alternate_id']
           },
+        
           'sort'        => 'title',
           'desc'        => false,
           'base_url'    => '/admin/products',
           'use_url_params' => false
       })
-      @products = @gen.items    
+      
+      @products = @gen.items
+      
       render :layout => 'caboose/admin'
+    end
+    
+    # GET /admin/products/add-upcs - TODO remove this; it's a temporary thing for woods-n-water
+    def admin_add_upcs
+      @products = CabooseStore::Product.all(
+        include: :variants,
+        conditions: ['store_variants.alternate_id IS NULL and store_products.upcs IS NOT NULL']
+      )
+      
+      render layout: 'caboose/admin'
     end
       
     # GET /admin/products/:id/general

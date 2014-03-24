@@ -1,0 +1,23 @@
+<h1>Products that have Variants with no UPCs</h1>
+
+<p style="margin: 0 0 6px"><a href="/admin/products">All Products</a></p>
+
+<% if @products.count > 0 %>
+	<table class='data' id='properties_table'>
+		<tr>
+			<th>ID</th>
+			<th>Title</th>
+			<th>Vendor</th>
+		</tr>
+		
+		<% @products.each do |product| %>
+			<tr onclick="window.location='/admin/products/<%= product.id %>/general';">
+				<td><%= raw product.id %></td>
+				<td><%= raw product.title %></td>
+				<td><%= raw product.vendor.nil? ? 'Unknown' : product.vendor.name %></td>
+			</tr>
+		<% end %>
+	</table>
+<% else %>
+  <p>There are no products right now.</p>
+<% end %>

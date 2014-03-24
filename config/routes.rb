@@ -33,6 +33,8 @@ CabooseStore::Engine.routes.draw do
   post '/admin/products/:id/variants/add'    => 'products#admin_add_variants'
   post '/admin/products/:id/variants/remove' => 'products#admin_remove_variants'
   
+  get '/admin/products/add-upcs' => 'products#admin_add_upcs'
+  
   ###########################
   
   post    "/reviews/add"                                => "reviews#add"  
