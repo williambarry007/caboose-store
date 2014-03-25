@@ -187,6 +187,7 @@ module CabooseStore
         'sort'           => 'title',
         'desc'           => false,
         'base_url'       => '/admin/products',
+        'items_per_page' => 25,
         'use_url_params' => false,
         
         'includes' => {
