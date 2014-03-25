@@ -15,17 +15,6 @@ v = @variant
 
 <%= render :partial => 'caboose_store/products/admin_header' %>
 
-<% unless @product.upcs.nil? %>
-	<div><strong>UPCs</strong></div>
-	
-	<ul>
-		<% @product.upcs.split(',').each do |upc| %>
-			<% next if @product.variants.where(alternate_id: upc).any? %>
-			<li><%= upc %></li>
-		<% end %>
-	</ul>
-<% end %>
-
 <p style='font-size: 75%;'><a href='/admin/products/<%= p.id %>/variant-cols'>Edit visible columns</a></p>
 
 <div id='message'></div>

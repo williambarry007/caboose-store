@@ -179,22 +179,19 @@ module CabooseStore
       params[:sort] = 'store_vendors.name' if params[:sort] == 'vendor'
     
       @gen = Caboose::PageBarGenerator.new(params, {
-          'title_like'    => '',
-          'name_like'     => '',
-          'id'            => '',
-          'upc_null'      => 'NULL'
+        'title_like' => '',
+        'name_like'  => '',
+        'id'         => ''
       },{
-          'model'       => 'CabooseStore::Product',
+        'model'          => 'CabooseStore::Product',
+        'sort'           => 'title',
+        'desc'           => false,
+        'base_url'       => '/admin/products',
+        'use_url_params' => false,
         
-          'includes'    => {
-            'name_like' => ['vendor', 'name'],
-            'upc_null'  => ['variants', 'alternate_id']
-          },
-        
-          'sort'        => 'title',
-          'desc'        => false,
-          'base_url'    => '/admin/products',
-          'use_url_params' => false
+        'includes' => {
+          'name_like' => ['vendor', 'name'],
+        }
       })
       
       @products = @gen.items
