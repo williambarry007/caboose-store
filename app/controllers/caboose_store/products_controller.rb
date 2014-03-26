@@ -18,6 +18,7 @@ module CabooseStore
       
       # Filter params from url
       url_without_params = request.fullpath.split('?').first
+      ap url_without_params
       
       # Find the category
       category = Category.where(url: url_without_params).first
@@ -74,7 +75,10 @@ module CabooseStore
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
-        
+      
+      ap @filter
+      ap params
+      
       @pager.set_item_count
     end
     
