@@ -42,7 +42,7 @@ module CabooseStore
         'status'        => 'Active',
         'price_gte'     => '',
         'price_lte'     => '',
-        'sku'           => '',
+        'alternate_id'  => '',
         'search_like'   => ''
         
       }, {
@@ -55,12 +55,11 @@ module CabooseStore
           'vendor_name'   => [ 'vendor'     , 'name'   ],
           'vendor_status' => [ 'vendor'     , 'status' ],
           'price_gte'     => [ 'variants'   , 'price'  ],
-          'price_lte'     => [ 'variants'   , 'price'  ],
-          'sku'           => [ 'variants'   , 'sku'    ]
+          'price_lte'     => [ 'variants'   , 'price'  ]
         },
         
         'abbreviations' => {
-          'search_like' => 'title_concat_sku_concat_vendor_name_like'
+          'search_like' => 'title_concat_alternate_id_concat_vendor_name_like',
         },
         
         'sort'           => 'title',
@@ -75,9 +74,8 @@ module CabooseStore
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
-      
-      ap @filter
-      ap params
+        
+      ap @products
       
       @pager.set_item_count
     end
