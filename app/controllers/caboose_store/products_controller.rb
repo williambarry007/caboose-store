@@ -59,7 +59,7 @@ module CabooseStore
         },
         
         'abbreviations' => {
-          'search_like' => 'title_concat_alternate_id_concat_vendor_name_like',
+          'search_like' => 'title_concat_store_products.alternate_id_concat_vendor_name_like',
         },
         
         'sort'           => 'title',
