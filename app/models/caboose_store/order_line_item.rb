@@ -7,6 +7,7 @@ module CabooseStore
     attr_accessible :id, :variant_id, :quantity, :quantity_shipped
     
     def subtotal
+      raise "Variant with UPC of #{self.variant.alternate_id} for Product ##{self.variant.product.id} doesn't have a price" if self.variant.price.nil?
       self.variant.price * self.quantity / 100 * 100
     end
     

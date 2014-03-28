@@ -136,6 +136,9 @@ module CabooseStore
         # Clear everything
         session[:cart_id] = nil
         
+        # Emit order event
+        Caboose::plugin_hook('order_authorized', @order)
+        
         redirect_to '/checkout/thanks'
       else
         @order.financial_status = 'unauthorized'
@@ -143,31 +146,8 @@ module CabooseStore
         
         redirect_to '/checkout/error'
       end
-      
-      # redirect_to '/checkout/finalize'
     end
     
-    # GET /checkout/finalize
-    # def finalize
-    #   
-    #   # Make sure they didn't come to the page twice
-    #   if @order.line_items.count > 0 and @order.authorized?
-    #     
-    #     # Notify the customer
-    #     OrdersMailer.customer_new_order(@order).deliver
-    #     
-    #     # Notify the fulfillment center
-    #     OrdersMailer.fulfillment_new_order(@order).deliver
-    #     
-    #     # Clear everything
-    #     session[:cart_id] = nil
-    #     
-    #     redirect_to '/checkout/thanks'
-    #   else
-    #     redirect_to '/checkout/error'
-    #   end
-    # end
-
     # GET /checkout/empty
     def empty
     end

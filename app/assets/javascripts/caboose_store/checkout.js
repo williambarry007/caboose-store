@@ -14,7 +14,7 @@ var CabooseCheckout = function() {
 	//
 	
 	self.initialize = function() {
-		console.log('init');
+		
 		// Ensure that a user is logged in
 		if (!Caboose.loggedIn && window.location.pathname.substring(0, 9) == '/checkout') Caboose.login();
 		

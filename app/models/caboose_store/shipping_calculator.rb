@@ -11,14 +11,17 @@ module CabooseStore
     # padded envelope, 20 lbs, 90210 => $13.99
     # box1           , 20 lbs, 90210 => $20.00
     # box2           , 30 lbs, 90210 => $25.00
-    def self.rates(order, service_code = nil)
+    def self.rates(order, service_code=nil)
       total  = 0.0
       weight = 0.0
       
+      # Get total and weight from order
       order.line_items.each do |li|
         total  = total + (li.variant.shipping_unit_value.nil? ? 0 : li.variant.shipping_unit_value)
         weight = weight + (li.variant.weight || 0)
       end
+      
+      # Figure out package dimensions
       
       length = 0
       width  = 0
@@ -38,45 +41,61 @@ module CabooseStore
         height = 14
       end
       
-      origin      = Location.new(:country => 'US', :state => 'AL', :city => 'Tuscaloosa', :zip => '35405')
-      destination = Location.new(:country => 'US', :state => order.shipping_address.state, :city => order.shipping_address.city, :postal_code => order.shipping_address.zip)
-      packages    = [Package.new(weight, [length, width, height], :units => :imperial)]
-      
-      ups = UPS.new(
-        :key => '7CBEA07A8AA3279A',
-        :login => 'ABBE FINE',
-        :password => '*TuskWear10*',
-        :origin_account => 'A102Y2'
-        #:login    => Tuskwear::Application.config.shipping[:ups][:login], 
-        #:password => Tuskwear::Application.config.shipping[:ups][:password], 
-        #:key      => Tuskwear::Application.config.shipping[:ups][:key]
+      # Set origin
+      origin = Location.new(
+        :country => CabooseStore::shipping[:origin][:country],
+        :state   => CabooseStore::shipping[:origin][:state],
+        :city    => CabooseStore::shipping[:origin][:city],
+        :zip     => CabooseStore::shipping[:origin][:zip]
       )
       
-      response = ups.find_rates(origin, destination, packages)
-      rates    = []	
+      # Set destination
+      destination = Location.new(
+        :country     => CabooseStore::shipping[:origin][:country],
+        :state       => order.shipping_address.state,
+        :city        => order.shipping_address.city,
+        :postal_code => order.shipping_address.zip
+      )
       
-      response.rates.each do |r|
-        next if r.service_code != '03' && r.service_code !='02'
+      # Generate package array
+      packages = [Package.new(weight, [length, width, height], units: :imperial)]
+      
+      # Generate UPS object
+      ups = UPS.new(
+        :key            => CabooseStore::shipping[:ups][:key],
+        :login          => CabooseStore::shipping[:ups][:username],
+        :password       => CabooseStore::shipping[:ups][:password],
+        :origin_account => CabooseStore::shipping[:ups][:origin_account]
+      )
+      
+      # Get response from UPS
+      ups_response = ups.find_rates(origin, destination, packages)
+      
+      # Array to hold all rates
+      rates = Array.new
+      
+      ups_response.rates.each do |rate|
+        next if rate.service_code != '03' && rate.service_code !='02'
         
         rates << {
-          'service_code'    => r.service_code,
-          'service_name'    => r.service_name,
-          'total_price'     => r.total_price,
-          'negotiated_rate' => r.negotiated_rate # - 300
-        }	    
+          'service_code'    => rate.service_code,
+          'service_name'    => rate.service_name,
+          'total_price'     => rate.total_price,
+          'negotiated_rate' => rate.negotiated_rate # - 300
+        }
       end
-      
-      return rates    
+      ap rates
+      return rates
     end
     
     # Return the rate for the given service code
     def self.rate(order, service_code)
-      self.rates(order).each do |r|
-        next if r['service_code'] != service_code
-        return r
-      end
-      return nil	            
+      
+      # Attempt to return rate
+      self.rates(order).each { |rate| return rate if rate['service_code'] == service_code }
+      
+      # If all else fails return nil
+      return nil
     end
-    
   end
 end

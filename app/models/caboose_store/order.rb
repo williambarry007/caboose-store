@@ -11,7 +11,7 @@ module CabooseStore
     
     attr_accessible :id,
       :order_number,      # Customer-set unique number of the order
-      :subtotal,              
+      :subtotal,
       :tax,
       :shipping_method,
       :shipping_method_code,
