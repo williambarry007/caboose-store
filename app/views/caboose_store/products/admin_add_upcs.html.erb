@@ -2,6 +2,7 @@
 
 <p style="margin: 0 0 6px"><a href="/admin/products">All Products</a></p>
 
+<br />
 <form method="get" action="/admin/products/add-upcs">
 	<select name="vendor_id">
 		<% CabooseStore::Vendor.all.each do |vendor| %>
@@ -10,7 +11,7 @@
 	</select>
 	
 	<input type="submit" value="Filter">
-</form>
+</form><br />
 
 <% if @products.count > 0 %>
 	<table class='data' id='properties_table'>
