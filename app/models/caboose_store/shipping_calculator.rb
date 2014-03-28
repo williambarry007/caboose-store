@@ -84,7 +84,7 @@ module CabooseStore
           'negotiated_rate' => rate.negotiated_rate # - 300
         }
       end
-      ap rates
+      
       return rates
     end
     
