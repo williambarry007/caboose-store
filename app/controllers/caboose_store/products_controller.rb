@@ -75,8 +75,6 @@ module CabooseStore
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
         
-      ap @products
-      
       @pager.set_item_count
     end
     
@@ -204,10 +202,12 @@ module CabooseStore
     
     # GET /admin/products/add-upcs - TODO remove this; it's a temporary thing for woods-n-water
     def admin_add_upcs
+      params[:vendor_id] if params[:vendor_id] and params[:vendor_id].empty?
+      
       conditions = if params[:vendor_id]
-        "store_variants.price IS NULL and store_vendors.id = #{params[:vendor_id]} or store_variants.price < 1 and store_vendors.id = #{params[:vendor_id]}"
+        "store_variants.alternate_id IS NULL and store_vendors.id = #{params[:vendor_id]}"
       else
-        "store_variants.price IS NULL or store_variants.price < 1"
+        "store_variants.alternate_id IS NULL"
       end
       
       @products = CabooseStore::Product.all(

@@ -137,7 +137,7 @@ module CabooseStore
         session[:cart_id] = nil
         
         # Emit order event
-        Caboose::plugin_hook('order_authorized', @order)
+        Caboose.plugin_hook('order_authorized', @order)
         
         redirect_to '/checkout/thanks'
       else
