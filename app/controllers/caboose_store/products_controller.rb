@@ -204,9 +204,15 @@ module CabooseStore
     
     # GET /admin/products/add-upcs - TODO remove this; it's a temporary thing for woods-n-water
     def admin_add_upcs
+      conditions = if params[:vendor_id]
+        "store_variants.price IS NULL and store_vendors.id = #{params[:vendor_id]} or store_variants.price < 1 and store_vendors.id = #{params[:vendor_id]}"
+      else
+        "store_variants.price IS NULL or store_variants.price < 1"
+      end
+      
       @products = CabooseStore::Product.all(
-        include: :variants,
-        conditions: ['store_variants.alternate_id IS NULL and store_products.upcs IS NOT NULL']
+        include: [:variants, :vendor],
+        conditions: conditions
       )
       
       render layout: 'caboose/admin'

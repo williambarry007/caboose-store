@@ -1,6 +1,16 @@
-<h1>Products that have Variants with no UPCs</h1>
+<h1>Products that have Variants with no or prices below $1</h1>
 
 <p style="margin: 0 0 6px"><a href="/admin/products">All Products</a></p>
+
+<form method="get" action="/admin/products/add-upcs">
+	<select name="vendor_id">
+		<% CabooseStore::Vendor.all.each do |vendor| %>
+			<option value="<%= vendor.id %>"><%= vendor.name %></option>
+		<% end %>
+	</select>
+	
+	<input type="submit" value="Filter">
+</form>
 
 <% if @products.count > 0 %>
 	<table class='data' id='properties_table'>
