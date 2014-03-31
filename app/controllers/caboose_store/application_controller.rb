@@ -8,6 +8,9 @@ module CabooseStore
     
     def init_cart
       
+      ap "INIT CART"
+      ap session[:cart_id]
+      
       # Primarily for the relay, check for Order ID coming back
       session[:cart_id] = params[:order_id] if params[:order_id] and request.env['PATH_INFO'].include?('checkout')
       

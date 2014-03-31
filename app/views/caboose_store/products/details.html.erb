@@ -87,10 +87,9 @@ ol.carousel-indicators li.thumbnail {
           <div class="row-fluid">
             <div class="span5">
               <div id="itemsingle" class="carousel slide clearfix">
-              
                 <div class="carousel-inner">
                  <% if p.product_images != [] %>
-                  <% p.product_images.each_index do |i| %>  
+                  <% p.product_images.each_index do |i| %>
                   <% if i == 0 %>
                     <div class="item active" id="img_<%= p.product_images[i].id %>" style='position: relative;'>
                   <% else %>

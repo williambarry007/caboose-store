@@ -6,6 +6,7 @@ module CabooseStore
     has_many :children, :class_name => 'Category', :foreign_key => 'parent_id', :order => 'name'    
     has_many :products, :through => :category_memberships, :order => 'title'
     has_many :category_memberships
+    
     has_attached_file :image,
       :path => "categories/:id_:style.jpg",
       :default_url => '/categories/:id_:style.jpg',
@@ -18,6 +19,10 @@ module CabooseStore
       }
     
     attr_accessible :id, :parent_id, :name, :url, :slug
+    
+    def self.top_level
+      CabooseStore::Category.find_by_url('/products').children
+    end
     
     def ancestry
       return [self] if self.parent.nil?

@@ -12,7 +12,6 @@ module CabooseStore
         @review = Review.new
         @reviews = Review.where(product_id: @product.id).limit(10).order("id DESC") || nil
         @logged_in_user = logged_in_user
-        
         render 'caboose_store/products/details' and return
       end
       

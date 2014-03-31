@@ -66,6 +66,8 @@ var CabooseCart = function() {
 	//
 	
 	self.open = function(mobile) {
+		console.log('OPEN SESAME');
+		
 		$.colorbox({
 			href: '/modal',
 			iframe: true,

@@ -1,10 +1,41 @@
 module CabooseStore
-  class VariantsController < ApplicationController  
+  class VariantsController < CabooseStore::ApplicationController
+    
+    # POST /variants/find-by-options
+    def find_by_options
       
+      # Create the vars that will become the full conditions statement
+      where  = ['product_id=?']
+      values = [ params[:product_id] ]
+      
+      # Append option values if they exist
+      
+      if params[:option1]
+        where  << 'option1=?'
+        values << params[:option1]
+      end
+      
+      if params[:option2]
+        where  << 'option2=?'
+        values << params[:option2]
+      end
+      
+      if params[:option3]
+        where  << 'option3=?'
+        values << params[:option3]
+      end
+      
+      # Combine all the options into a single conditions statement
+      conditions = [ where.join(' AND ') ].concat(values)
+      
+      # Return whatever is found
+      render json: Variant.where(conditions).first
+    end
+    
     #=============================================================================
     # Admin actions
     #=============================================================================
-       
+     
     # GET /admin/variants/:variant_id/edit
     # GET /admin/products/:product_id/variants/:variant_id/edit
     def admin_edit
@@ -13,54 +44,54 @@ module CabooseStore
       @product = @variant.product
       render :layout => 'caboose/admin'
     end
-    
+  
     # GET /admin/variants
     def admin_group
       return if !user_is_allowed('variants', 'edit')
-      
+    
       joins  = []
       where  = ''
       values = []
-      
+    
       if params[:category_ids]
         joins  << [:category_memberships]
         where  << 'store_category_memberships.category_id IN (?)'
         values << params[:category_ids]
       end
-      
+    
       if params[:vendor_ids]
         joins  << [:vendor]
         where  << 'store_vendors.id IN (?)'
         values << params[:vendor_ids]
       end
-      
+    
       if params[:title]
         where  << 'LOWER(store_products.title) LIKE ?'
         values << "%#{params[:title].downcase}%"
       end
-      
+    
       # Query for all relevant products
       products = values.any? ? CabooseStore::Product.joins(joins).where([where].concat(values)) : []
-      
+    
       # Grab variants for each product
       @variants = products.collect { |product| product.variants }.flatten
-      
+    
       # Grab all categories; except for all and uncategorized
       @categories = CabooseStore::Category.where('parent_id IS NOT NULL')
-      
+    
       # Grab all vendors
       @vendors = CabooseStore::Vendor.all
-      
+    
       render layout: 'caboose/admin'
     end
-    
+  
     # PUT /admin/variants/:id
     def admin_update
       return if !user_is_allowed('variants', 'edit')
-      
+    
       resp = Caboose::StdClass.new({'attributes' => {}})
       v = Variant.find(params[:id])    
-      
+    
       save = true    
       params.each do |name,value|
         case name        
@@ -101,7 +132,7 @@ module CabooseStore
       resp.success = save && v.save
       render :json => resp
     end
-    
+  
     # GET /admin/products/:id/variants/new
     def admin_new
       return if !user_is_allowed('variants', 'add')
@@ -110,7 +141,7 @@ module CabooseStore
       @variant = Variant.new
       render :layout => 'caboose/admin'
     end
-    
+  
     # POST /admin/products/:id/variants
     def admin_add
       return if !user_is_allowed('variants', 'add')
@@ -118,7 +149,7 @@ module CabooseStore
         :error => nil,
         :refresh => nil
       )
-      
+    
       p = Product.find(params[:id])
       v = Variant.new(:product_id => p.id)
       v.option1 = p.default1
@@ -129,13 +160,13 @@ module CabooseStore
       resp.refresh = true
       render :json => resp
     end
-    
+  
     # PUT /admin/variants/:id/attach-to-image
     def admin_attach_to_image
       render :json => false if !user_is_allowed('variants', 'edit')         
       variant_id = params[:id].to_i
       img = ProductImage.find(params[:product_image_id])
-  
+
       exists = false
       img.variants.each do |v|
         if v.id == variant_id
@@ -147,14 +178,14 @@ module CabooseStore
         render :json => true
         return
       end
-      
+    
       img.variants = [] if img.variants.nil?
       img.variants << Variant.find(variant_id)
       img.save
-      
+    
       render :json => true
     end
-    
+  
     # PUT /admin/variants/:id/unattach-from-image
     def admin_unattach_from_image
       render :json => false if !user_is_allowed('variants', 'edit')
@@ -164,7 +195,7 @@ module CabooseStore
       img.save
       render :json => true
     end
-    
+  
     # DELETE /admin/variants/:id
     def admin_delete
       return if !user_is_allowed('variants', 'delete')
@@ -175,7 +206,7 @@ module CabooseStore
         :redirect => "/admin/products/#{v.product_id}/variants"
       })
     end
-    
+  
     # GET /admin/variants/status-options
     def admin_status_options
       arr = ['Active', 'Inactive', 'Deleted']
@@ -188,6 +219,5 @@ module CabooseStore
       end
       render :json => options
     end
-    
   end
 end

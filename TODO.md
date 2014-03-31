@@ -16,3 +16,4 @@
 0 - Refactor mailers
 0 - Refactor routes
 0 - Refactor assets
+0 - Add awesome print to gemfile.. or quit using awesome print

@@ -1,5 +1,5 @@
 module CabooseStore
-  class CartController < ApplicationController
+  class CartController < CabooseStore::ApplicationController
     before_filter :get_order, except: [:update, :delete]
     
     def get_order
