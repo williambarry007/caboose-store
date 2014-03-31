@@ -8,7 +8,7 @@ class CabooseStore::CheckoutController < CabooseStore::ApplicationController
   end
   
   def get_order
-    ap @order = Order.find(session[:cart_id])
+    ap @order = CabooseStore::Order.find(session[:cart_id])
   end
   
   def ensure_order
