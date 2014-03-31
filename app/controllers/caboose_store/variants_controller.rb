@@ -3,33 +3,7 @@ module CabooseStore
     
     # POST /variants/find-by-options
     def find_by_options
-      
-      # Create the vars that will become the full conditions statement
-      where  = ['product_id=?']
-      values = [ params[:product_id] ]
-      
-      # Append option values if they exist
-      
-      if params[:option1]
-        where  << 'option1=?'
-        values << params[:option1]
-      end
-      
-      if params[:option2]
-        where  << 'option2=?'
-        values << params[:option2]
-      end
-      
-      if params[:option3]
-        where  << 'option3=?'
-        values << params[:option3]
-      end
-      
-      # Combine all the options into a single conditions statement
-      conditions = [ where.join(' AND ') ].concat(values)
-      
-      # Return whatever is found
-      render json: Variant.where(conditions).first
+      render json: Variant.find_by_options(params[:product_id], params[:option1], params[:option2], params[:option3])
     end
     
     #=============================================================================

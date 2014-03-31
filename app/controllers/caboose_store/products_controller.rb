@@ -1,5 +1,5 @@
 module CabooseStore
-  class ProductsController < ApplicationController  
+  class ProductsController < CabooseStore::ApplicationController  
     
     # GET /products || GET /products/:id
     def index

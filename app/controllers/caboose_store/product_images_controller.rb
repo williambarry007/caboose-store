@@ -1,5 +1,5 @@
 module CabooseStore
-  class ProductImagesController < ApplicationController  
+  class ProductImagesController < CabooseStore::ApplicationController  
       
     #=============================================================================
     # Admin actions

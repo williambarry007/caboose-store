@@ -1,5 +1,5 @@
 module CabooseStore
-  class ReviewsController < ApplicationController  
+  class ReviewsController < CabooseStore::ApplicationController  
   
     def add
       content = params[:content]

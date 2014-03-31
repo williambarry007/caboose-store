@@ -1,5 +1,5 @@
 module CabooseStore
-  class CategoriesController < ApplicationController  
+  class CategoriesController < CabooseStore::ApplicationController  
     
     #=============================================================================
     # Admin actions

@@ -1,10 +1,10 @@
 module CabooseStore
   class CartController < CabooseStore::ApplicationController
-    before_filter :get_order, except: [:update, :delete]
-    
-    def get_order
-      ap @order = Order.find(session[:cart_id])
-    end
+    # before_filter :get_order, except: [:update, :delete]
+    # 
+    # def get_order
+    #   ap @order = Order.find(session[:cart_id])
+    # end
     
     # GET /cart/mobile
     def mobile
@@ -21,19 +21,21 @@ module CabooseStore
     def add
       
       # Track down the variant, it's got to be somewhere
-      variant = if params[:id]
-        Variant.find(params[:id])
-      else
-        return false unless params[:product_id]
-        
-        variants = Product.find(params[:product_id]).variants
-        variants = variants.where(option1: params[:option1]) if params[:option1]
-        variants = variants.where(option2: params[:option2]) if params[:option2]
-        variants = variants.where(option3: params[:option3]) if params[:option3]
-        
-        # There can only be one
-        variants.first
-      end
+      # variant = if params[:id]
+      #   Variant.find(params[:id])
+      # else
+      #   return false unless params[:product_id]
+      #   
+      #   variants = Product.find(params[:product_id]).variants
+      #   variants = variants.where(option1: params[:option1]) if params[:option1]
+      #   variants = variants.where(option2: params[:option2]) if params[:option2]
+      #   variants = variants.where(option3: params[:option3]) if params[:option3]
+      #   
+      #   # There can only be one
+      #   variants.first
+      # end
+      
+      variant = Variant.find_by_options(params[:product_id], params[:option1], params[:option2], params[:option3])
       
       # This shouldn't ever happen.. but you know how it goes
       render json: { error: 'There was an error adding the item to your cart.' } and return if variant.price.nil?
@@ -82,10 +84,14 @@ module CabooseStore
     # PUT /cart/item/:id
     def update
       line_item = OrderLineItem.find(params[:id])
-      line_item.update_attributes(params[:attributes])
-      line_item.save
+      quantity  = params[:attributes][:quantity].to_i
       
-      render json: line_item
+      if quantity > line_item.variant.quantity_in_stock
+        render json: { error: true, message: "There are only #{line_item.variant.quantity_in_stock} left in stock" }
+      else
+        line_item.update_attribute(:quantity, params[:attributes][:quantity])
+        render json: { success: true, item: line_item }
+      end
     end
     
     # DELETE /cart/item/:id

@@ -66,8 +66,6 @@ var CabooseCart = function() {
 	//
 	
 	self.open = function(mobile) {
-		console.log('OPEN SESAME');
-		
 		$.colorbox({
 			href: '/modal',
 			iframe: true,
@@ -128,7 +126,7 @@ var CabooseCart = function() {
 				, id         = $target.data('id')
 				, form       = $target.serializeArray()
 				, attributes = _.object( _.pluck(form, 'name'), _.pluck(form, 'value') );
-			
+				
 			self.update(id, attributes);
 		});
 		
@@ -200,8 +198,12 @@ var CabooseCart = function() {
 			data: {attributes: attributes},
 			success: function(response) {
 				
-				// Update cart item quantity
-				_.find(self.items, function(item) { return item.id == response.id }).quantity = response.quantity;
+				// If successful update line item quantity; otherwise, notify the user with the received message
+				if (response.success) {
+					_.find(self.items, function(item) { return item.id == response.item.id }).quantity = response.item.quantity;
+				} else if (response.error) {
+					alert(response.message);
+				}
 				
 				if (callback) callback(response);
 			}
