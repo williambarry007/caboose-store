@@ -128,26 +128,34 @@ module CabooseStore
         @order.financial_status = 'authorized'
         @order.status           = if @order.test? then 'testing' else 'pending' end
         @order.save
-      
+        
         # Send out notifications
         OrdersMailer.customer_new_order(@order).deliver
         OrdersMailer.fulfillment_new_order(@order).deliver
-      
+        
         # Clear everything
         session[:cart_id] = nil
-      
+        
         # Emit order event
         Caboose.plugin_hook('order_authorized', @order)
-      
+        
+        # Decrement quantities of variants
+        @order.decrement_quantities
+        
+        # @order.line_items.each do |line_item|
+        #   quantity = @order.line_item.variant.quantity_in_stock
+        #   @order.line_item.variant
+        # end
+        
         redirect_to '/checkout/thanks'
       else
         @order.financial_status = 'unauthorized'
         @order.save
-      
+        
         redirect_to '/checkout/error'
       end
     end
-  
+    
     # GET /checkout/empty
     def empty
     end

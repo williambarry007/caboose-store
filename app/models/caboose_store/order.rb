@@ -30,6 +30,22 @@ module CabooseStore
       :date_captured,
       :date_cancelled    
       
+    def decrement_quantities
+      self.line_items.each do |line_item|
+        
+        # Decrement variant quantity
+        line_item.variant.update_attribute(:quantity_in_stock, line_item.variant.quantity_in_stock - line_item.quantity)
+      end
+    end
+    
+    def cancel
+      self.line_items.each do |line_item|
+        
+        # Increment variant quantity
+        line_item.variant.update_attribute(:quantity_in_stock, line_item.variant.quantity_in_stock + line_item.quantity)
+      end
+    end
+    
     def resend_confirmation
       OrdersMailer.customer_new_order(self).deliver
     end

@@ -24,7 +24,7 @@ module CabooseStore
         session[:cart_id] = order.id
       end
       
-      @order = CabooseStore::Order.find(session[:cart_id])
+      ap @order = CabooseStore::Order.find(session[:cart_id])
       
       # Exit the function if the Cart ID is defined and a corresponding order exists in the database
       # return if session[:cart_id] and CabooseStore::Order.exists?(session[:cart_id])

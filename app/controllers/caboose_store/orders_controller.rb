@@ -57,7 +57,10 @@ module CabooseStore
           order.financial_status = 'cancelled'
           order.status = 'voided'
           order.save
-        
+          
+          # Add the variant quantities ordered back
+          order.cancel
+          
           response.success = "Order voided successfully"
         else
           response.error = "Error voiding order."
@@ -86,7 +89,10 @@ module CabooseStore
           order.financial_status = 'refunded'
           order.status = 'refunded'
           order.save
-        
+          
+          # Add the variant quantities ordered back
+          order.cancel
+          
           response.success = "Order refunded successfully"
         else
           response.error = "Error refunding order."
