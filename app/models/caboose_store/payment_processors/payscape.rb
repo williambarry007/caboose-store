@@ -10,6 +10,8 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
       CabooseStore::api_key
     end
     
+    ap "API key used: #{body['api-key']}"
+    
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl         = true
@@ -23,7 +25,6 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     document.root.elements.each { |element| response[element.name] = element.text }
     
     ap response
-    ap "API key used: #{body['api-key']}"
     
     return response
   end
@@ -48,6 +49,23 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     order.save
     
     return response['form-url']
+  end
+  
+  def self.authorized?(order)
+    uri              = URI.parse("https://secure.payscapegateway.com/api/query.php?username=#{CabooseStore::payscape_username}&password=#{CabooseStore::payscape_password}&transaction_id=#{order.transaction_id}")
+    http             = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl     = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request          = Net::HTTP::Get.new(uri.request_uri)
+    response         = http.request(request)
+    document         = Nokogiri::XML response.body
+    actions          = Hash.new
+    
+    document.xpath('//action').each { |action| actions[action.xpath('action_type').text] = action.xpath('success').text == '1' }
+    
+    ap actions
+    
+    return actions['auth']
   end
   
   def self.authorize(order, params)

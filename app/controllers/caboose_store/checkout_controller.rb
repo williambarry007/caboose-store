@@ -3,19 +3,19 @@ module CabooseStore
     before_filter :inject_assets
     before_filter :get_order
     before_filter :ensure_order, only: [:index, :shipping, :billing, :finalize]
-  
+    
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
     end
-  
+    
     def get_order
       ap @order = Order.find(session[:cart_id])
     end
-  
+    
     def ensure_order
       redirect_to '/checkout/empty' if @order.line_items.empty?
     end
-  
+    
     # GET /checkout
     def index
       if logged_in?
@@ -23,14 +23,14 @@ module CabooseStore
         @order.save
       end
     end
-  
+    
     # PUT /checkout/shipping-address
     def update_address
-    
+      
       # Grab or create addresses
       shipping_address = if @order.shipping_address then @order.shipping_address else Address.new end
       billing_address  = if @order.billing_address  then @order.billing_address  else Address.new end
-  
+        
       # Shipping address
       shipping_address.first_name = params[:shipping][:first_name]
       shipping_address.last_name  = params[:shipping][:last_name]
@@ -40,7 +40,7 @@ module CabooseStore
       shipping_address.city       = params[:shipping][:city]
       shipping_address.state      = params[:shipping][:state]
       shipping_address.zip        = params[:shipping][:zip]
-  
+      
       # Billing address
       if params[:shipping][:use_as_billing]
         billing_address.update_attributes(shipping_address.attributes)
@@ -54,7 +54,7 @@ module CabooseStore
         billing_address.state      = params[:billing][:state]
         billing_address.zip        = params[:billing][:zip]
       end
-  
+      
       # Require fields
       if (
         shipping_address.first_name.strip.length == 0 or billing_address.first_name.strip.length == 0 ||
@@ -70,31 +70,31 @@ module CabooseStore
       elsif (shipping_address.zip.strip.length < 5 or billing_address.zip.strip.length < 5)
         render json: { error: 'A valid zip code is required.' } and return
       end
-    
+      
       # Save address info; generate ids
       shipping_address.save
       billing_address.save
-    
+      
       # Associate address info with order
       @order.shipping_address_id = shipping_address.id
       @order.billing_address_id  = billing_address.id
-    
+      
       # Calculate tax and shipping
       @order.tax = ( @order.subtotal * TaxCalculator.tax_rate(shipping_address) ).round(2)
-    
+      
       # Calculate total and save
       @order.calculate_total
       @order.save
-    
+      
       render json: { redirect: 'checkout/shipping' }
     end
-  
+    
     # GET /checkout/shipping
     def shipping
       @shipping_address = @order.shipping_address
       @shipping_rates   = ShippingCalculator.rates(@order)
     end
-  
+    
     # PUT /checkout/shipping-method
     def update_shipping_method
       render json: { error: 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
@@ -112,8 +112,9 @@ module CabooseStore
   
     # GET /checkout/billing
     def billing
+      redirect_to '/checkout/thanks' if @order.authorized?
       @shipping_address = @order.shipping_address
-      @form_url         = CabooseStore::PaymentProcessor.form_url(@order)
+      @form_url         = PaymentProcessor.form_url(@order)
     end
   
     # GET /checkout/relay/:order_id
@@ -127,7 +128,6 @@ module CabooseStore
         @order.auth_amount      = @order.total
         @order.financial_status = 'authorized'
         @order.status           = if @order.test? then 'testing' else 'pending' end
-        @order.save
         
         # Send out notifications
         OrdersMailer.customer_new_order(@order).deliver
@@ -141,19 +141,11 @@ module CabooseStore
         
         # Decrement quantities of variants
         @order.decrement_quantities
-        
-        # @order.line_items.each do |line_item|
-        #   quantity = @order.line_item.variant.quantity_in_stock
-        #   @order.line_item.variant
-        # end
-        
-        redirect_to '/checkout/thanks'
       else
         @order.financial_status = 'unauthorized'
-        @order.save
-        
-        redirect_to '/checkout/error'
       end
+      
+      @order.save
     end
     
     # GET /checkout/empty

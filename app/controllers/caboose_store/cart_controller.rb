@@ -19,31 +19,21 @@ module CabooseStore
     
     # POST /cart/item/:id || Post /cart/item
     def add
+      variant = if params[:id]
+        Variant.find(params[:id])
+      else
+        Variant.find_by_options(params[:product_id], params[:option1], params[:option2], params[:option3])
+      end
       
-      # Track down the variant, it's got to be somewhere
-      # variant = if params[:id]
-      #   Variant.find(params[:id])
-      # else
-      #   return false unless params[:product_id]
-      #   
-      #   variants = Product.find(params[:product_id]).variants
-      #   variants = variants.where(option1: params[:option1]) if params[:option1]
-      #   variants = variants.where(option2: params[:option2]) if params[:option2]
-      #   variants = variants.where(option3: params[:option3]) if params[:option3]
-      #   
-      #   # There can only be one
-      #   variants.first
-      # end
-      
-      variant = Variant.find_by_options(params[:product_id], params[:option1], params[:option2], params[:option3])
+      quantity = params[:quantity].to_i > 0 ? params[:quantity].to_i : 1
       
       # This shouldn't ever happen.. but you know how it goes
-      render json: { error: 'There was an error adding the item to your cart.' } and return if variant.price.nil?
+      render json: { error: 'There was an error adding the item to your cart.' } and return if variant.nil? or variant.price.nil?
       
       # Unless variant is set to ignore quantity, make sure that requested quantity isn't greater than the quantity in stock
       unless variant.ignore_quantity
         render json: { error: 'That item is out of stock.' } and return if variant.quantity_in_stock.nil? or variant.quantity_in_stock < 1
-        render json: { error: "There are only #{variant.quantity_in_stock} left in stock." } and return if params[:quantity].to_i > variant.quantity_in_stock
+        render json: { error: "There are only #{variant.quantity_in_stock} left in stock." } and return if quantity > variant.quantity_in_stock
       end
       
       # Check to see if the line item exists
@@ -54,11 +44,11 @@ module CabooseStore
           
           # Check if the quantity already requested plus the quantity being requested vs the quantity in stock
           unless variant.ignore_quantity
-            render json: { error: "There are only #{variant.quantity_in_stock} in stock" } and return if line_item.quantity + params[:quantity].to_i > variant.quantity_in_stock
+            render json: { error: "There are only #{variant.quantity_in_stock} in stock" } and return if line_item.quantity + quantity > variant.quantity_in_stock
           end
           
           # Update the line item's quantity
-          line_item.quantity += params[:quantity].to_i
+          line_item.quantity += quantity
           line_item.save
           
           # Otherwise pass back the json response
@@ -69,7 +59,7 @@ module CabooseStore
       # When life gives you lemons, make a line item
       line_item             = OrderLineItem.new
       line_item.variant     = variant
-      line_item.quantity    = params[:quantity].to_i || 1
+      line_item.quantity    = quantity
       line_item.unit_price  = variant.price
       line_item.variant_sku = variant.sku
       

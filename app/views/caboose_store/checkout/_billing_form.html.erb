@@ -1,6 +1,6 @@
 <input id="billing-amount" type="hidden" value="<%= @order.total %>" />
 
-<form id="billing-form" action="<%= @form_url %>" method="post">
+<form id="billing-form" action="<%= @form_url %>" method="post" target="payment-request">
 	<input name="billing-cc-exp" type="hidden" value="01<%= DateTime.now.year.to_s[2..4] %>" />
 	
 	<div>
@@ -35,3 +35,5 @@
 	<input type="button" value="< Back" onclick="window.location='/checkout/shipping';" />
 	<input type="submit" value="Continue >" />
 </form>
+
+<iframe style="display: none" id="payment-request" name="payment-request"></iframe>

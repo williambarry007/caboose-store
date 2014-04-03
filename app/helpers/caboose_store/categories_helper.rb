@@ -1,6 +1,13 @@
 module CabooseStore
   module CategoriesHelper
-                    
+    def top_level_categories
+      CabooseStore::Category.top_level
+    end
+    
+    def categories_sample(number)
+      CabooseStore::Category.sample(number)
+    end
+    
     def categories_tree(cat)
       str = "<ul>"
       str << categories_tree_helper(cat)
@@ -33,6 +40,5 @@ module CabooseStore
       end
       return str
     end
-    
   end
 end

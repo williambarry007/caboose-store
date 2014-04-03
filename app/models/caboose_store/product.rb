@@ -1,3 +1,9 @@
+#
+# Product
+#
+# :: Class Methods
+# :: Instance Methods
+
 module CabooseStore        
   class Product < ActiveRecord::Base
     self.table_name = "store_products"
@@ -24,7 +30,19 @@ module CabooseStore
       :default3,
       :status,
       :alternate_id
-      
+    
+    # 
+    # Class Methods
+    #
+    
+    def self.active
+      where(status: 'Active')
+    end
+    
+    #
+    # Instance Methods
+    #
+    
     def options
       arr = []
       arr << self.option1 if !self.option1.nil? && self.option1.strip.length > 0
@@ -73,6 +91,5 @@ module CabooseStore
     def live_variants
       return self.variants.where(:status => ['Active', 'Inactive'])
     end
-      
   end
 end

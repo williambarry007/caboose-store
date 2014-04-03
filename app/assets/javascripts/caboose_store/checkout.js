@@ -96,6 +96,14 @@ var CabooseCheckout = function() {
 	//
 	
 	self.billing = function() {
+		window.relay = function(authorized) {
+			if (authorized) {
+				window.location.replace('/checkout/thanks');
+			} else {
+				window.location.replace('/checkout/error');
+			}
+		};
+		
 		$('#billing-expiration-month, #billing-expiration-year').on('change', function(event) {
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
 		});
@@ -123,6 +131,8 @@ var CabooseCheckout = function() {
 			$confirm.find('#submit-billing').on('click', function(e) {
 				e.preventDefault();
 				$form.submit();
+				$confirm.after( $('</p>').addClass('loading').text('Authorizing transaction..') );
+				$confirm.hide();
 			});
 		});
 	};

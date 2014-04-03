@@ -1,7 +1,10 @@
 module CabooseStore
   module ProductsHelper
+    def active_products
+      CabooseStore::Product.active
+    end
     
-    def category_options(top_categories, selected_id = nil)
+    def category_options(top_categories, selected_id=nil)
       arr = []
       top_categories.each do |cat|
         category_options_helper(cat, selected_id, arr)

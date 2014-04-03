@@ -9,6 +9,7 @@ module CabooseStore
         @product = Product.find(params[:id])
         render 'product/not_available' and return if @product.status == 'Inactive'
         
+        @category = @product.category_memberships.first.category
         @review = Review.new
         @reviews = Review.where(product_id: @product.id).limit(10).order("id DESC") || nil
         @logged_in_user = logged_in_user
@@ -73,7 +74,7 @@ module CabooseStore
       @filter   = SearchFilter.find_from_url(request.fullpath, @pager, ['page'])
       @products = @pager.items
       @category = if @filter['category_id'] then Category.find(@filter['category_id'].to_i) else nil end
-        
+      
       @pager.set_item_count
     end
     

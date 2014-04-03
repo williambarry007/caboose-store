@@ -51,7 +51,7 @@ module CabooseStore
     end
     
     def authorized?
-      self.financial_status == 'authorized'
+      self.financial_status == 'authorized' or PaymentProcessor.authorized?(self)
     end
       
     def test?
