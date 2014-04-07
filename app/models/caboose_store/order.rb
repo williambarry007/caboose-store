@@ -17,9 +17,9 @@ module CabooseStore
       :shipping_method_code,
       :shipping,
       :discount,
-      :total,    
+      :total,
       :status,            # The current order status. One of: cart, pending, backordered, fulfilled
-      :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'captured', 'voided', 'refunded'        
+      :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'captured', 'voided', 'refunded'
       :notes,             # The note which is attached to the order.
       :referring_site,    # Contains the url of the referrer that brought the customer to your store
       :landing_site,      # Contains the path of the landing site the customer used. The first page that the customer saw when he/she reached the store.
@@ -28,7 +28,7 @@ module CabooseStore
       :date_created,
       :date_authorized,
       :date_captured,
-      :date_cancelled    
+      :date_cancelled
       
     def decrement_quantities
       self.line_items.each do |line_item|

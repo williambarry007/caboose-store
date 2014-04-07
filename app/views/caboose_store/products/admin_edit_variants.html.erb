@@ -27,7 +27,6 @@ v = @variant
   <% if @cols['option3'           ] && p.option3 %><th valign='bottom'><%= p.option3    %></th><% end %>
   <% if @cols['status'            ] == true      %><th valign='bottom'>Status             </th><% end %>
   <% if @cols['alternate_id'      ] == true      %><th valign='bottom'>Alternate ID       </th><% end %>
-  <% if @cols['sku'               ] == true      %><th valign='bottom'>SKU                </th><% end %>
   <% if @cols['barcode'           ] == true      %><th valign='bottom'>Barcode            </th><% end %>
   <% if @cols['price'             ] == true      %><th valign='bottom'>Price              </th><% end %>
   <% if @cols['quantity_in_stock' ] == true      %><th valign='bottom'>Quantity           </th><% end %>
@@ -50,7 +49,6 @@ v = @variant
   <% if @cols['option3'           ] && p.option3 %><td><div id='variant_<%= v.id %>_option3'           ></div></td><% end %>
   <% if @cols['status'            ] == true      %><td><div id='variant_<%= v.id %>_status'            ></div></td><% end %>
   <% if @cols['alternate_id'      ] == true      %><td><div id='variant_<%= v.id %>_alternate_id'      ></div></td><% end %>
-  <% if @cols['sku'               ] == true      %><td><div id='variant_<%= v.id %>_sku'               ></div></td><% end %>                         
   <% if @cols['barcode'           ] == true      %><td><div id='variant_<%= v.id %>_barcode'           ></div></td><% end %> 
   <% if @cols['price'             ] == true      %><td><div id='variant_<%= v.id %>_price'             ></div></td><% end %> 
   <% if @cols['quantity_in_stock' ] == true      %><td><div id='variant_<%= v.id %>_quantity_in_stock' ></div></td><% end %> 

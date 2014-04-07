@@ -77,7 +77,7 @@ body {
   height: 80px;
   background: #e1e1e1;
   border-bottom: #aaa 1px solid;
-  font-size: 36pt;
+  font-size: 27px !important;
 }
 
 #content h1.model_attribute_h1 {
@@ -86,7 +86,7 @@ body {
   height: auto;
   background: transparent;
   border-bottom: none;
-  font-size: 36pt;
+  font-size: 27px !important;
 }
 
 p.current_page_editing {

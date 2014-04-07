@@ -57,6 +57,18 @@ $(document).ready(function() {
       { name: 'date_available'  , nice_name: 'Date Available'       , type: 'text'      , value: <%= raw Caboose.json(date_available    ) %>, width: 500 }
     ]
   });
+	
+	$(document).on('change', 'select', function() {
+		$select = $(this);
+		value   = $('option:selected', $select).val();
+		
+		// console.log($('option[selected]', $select).val());
+		// console.log($('option:selected', $select).val());
+		
+		// $('option[selected]', $select).attr('selected', false);
+		conosle.log(value)
+		$select.parent().find('input').val(value);
+	});
 });
 
 var modal = false;
