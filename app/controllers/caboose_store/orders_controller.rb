@@ -1,8 +1,5 @@
 module CabooseStore
   class OrdersController < CabooseStore::ApplicationController
-      
-    helper :authorize_net
-    protect_from_forgery :except => :authnet_relay_response
     
     # GET /admin/orders
     def admin_index
