@@ -1,13 +1,11 @@
 <h1>Categories</h1>
-
-<div id='new_button'><a href='/admin/categories/new'><span>New Category</span></a></div>
-
-<%= raw categories_tree(@top_category) %>
+<a href='/admin/categories/new'>New Category</a>
+<%= category_list %>
 
 <% content_for :caboose_js do %>
-<script type='text/javascript'>
-$(document).ready(function() { 
-  var modal = new CabooseModal(800);
-});
-</script>
+	<script type='text/javascript'>
+		$(document).ready(function() { 
+		  var modal = new CabooseModal(800);
+		});
+	</script>
 <% end %>
