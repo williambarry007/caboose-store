@@ -1,10 +1,5 @@
 module CabooseStore
   class CartController < CabooseStore::ApplicationController
-    # before_filter :get_order, except: [:update, :delete]
-    # 
-    # def get_order
-    #   ap @order = Order.find(session[:cart_id])
-    # end
     
     # GET /cart/mobile
     def mobile

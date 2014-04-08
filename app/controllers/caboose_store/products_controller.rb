@@ -113,16 +113,16 @@ module CabooseStore
       end
       
       # Query for all relevant products
-      products = values.any? ? CabooseStore::Product.joins(joins).where([where.join(' AND ')].concat(values)) : []
+      products = values.any? ? Product.joins(joins).where([where.join(' AND ')].concat(values)) : []
       
       # Grab variants for each product
       @variants = products.collect { |product| product.variants }.flatten
       
       # Grab all categories; except for "all" and "uncategorized"
-      @categories = CabooseStore::Category.where('parent_id IS NOT NULL AND name IS NOT NULL').order(:url)
+      @categories = Category.where('parent_id IS NOT NULL AND name IS NOT NULL').order(:url)
       
       # Grab all vendors
-      @vendors = CabooseStore::Vendor.where('name IS NOT NULL').order(:name)
+      @vendors = Vendor.where('name IS NOT NULL').order(:name)
       
       render layout: 'caboose/admin'
     end
@@ -166,7 +166,7 @@ module CabooseStore
     
     # GET /admin/products/update-vendor-status/:id
     def admin_update_vendor_status
-      vendor = CabooseStore::Vendor.find(params[:id])
+      vendor = Vendor.find(params[:id])
       vendor.status = params[:status]
       render json: vendor.save
     end
@@ -210,7 +210,7 @@ module CabooseStore
         "store_variants.alternate_id IS NULL"
       end
       
-      @products = CabooseStore::Product.all(
+      @products = Product.all(
         include: [:variants, :vendor],
         conditions: conditions
       )
