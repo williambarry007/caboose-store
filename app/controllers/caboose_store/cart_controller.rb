@@ -1,12 +1,6 @@
 module CabooseStore
   class CartController < CabooseStore::ApplicationController
     
-    # GET /cart/mobile
-    def mobile
-      render '/caboose_store/cart/empty' and return if @order.line_items.empty?
-      render '/caboose_store/cart/index'
-    end
-    
     # GET /cart/items
     def list
       render json: @order.line_items.collect { |line_item| line_item.cart_info }
