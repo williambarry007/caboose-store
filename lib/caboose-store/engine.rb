@@ -64,7 +64,12 @@ module CabooseStore
         when 'payscape'      then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::Payscape
       end
     end
+    
+    initializer 'caboose_store.cart', after: :finish_hook do |app|
+      ActiveSupport.on_load(:action_controller) do
+        include CabooseStore::Cart
+      end
+    end
   end
 end
 
-      

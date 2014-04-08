@@ -35,6 +35,10 @@ module CabooseStore
     # Class Methods
     #
     
+    def self.with_images
+      joins(:product_images)
+    end
+    
     def self.active
       where(status: 'Active')
     end
