@@ -2,7 +2,7 @@ module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     before_filter :inject_assets
     before_filter :get_order
-    before_filter :ensure_order, only: [:index, :shipping, :billing, :finalize]
+    before_filter :ensure_order, :only => [:index, :shipping, :billing, :finalize]
     
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
@@ -60,15 +60,15 @@ module CabooseStore
         shipping_address.first_name.strip.length == 0 or billing_address.first_name.strip.length == 0 ||
         shipping_address.last_name.strip.length  == 0 or billing_address.last_name.strip.length  == 0
       )
-        render json: { error: 'A name is required.' } and return
+        render :json => { :error => 'A name is required.' } and return
       elsif (shipping_address.address1.strip.length == 0 or billing_address.address1.strip.length == 0)
-        render json: { error: 'An address is required.' } and return
+        render :json => { :error => 'An address is required.' } and return
       elsif (shipping_address.city.strip.length == 0 or billing_address.city.strip.length == 0 )
-        render json: { error: 'A city is required.' } and return
+        render :json => { :error => 'A city is required.' } and return
       elsif (shipping_address.state.strip.length == 0 or billing_address.state.strip.length == 0)
-        render json: { error: 'A state is required.' } and return
+        render :json => { :error => 'A state is required.' } and return
       elsif (shipping_address.zip.strip.length < 5 or billing_address.zip.strip.length < 5)
-        render json: { error: 'A valid zip code is required.' } and return
+        render :json => { :error => 'A valid zip code is required.' } and return
       end
       
       # Save address info; generate ids
@@ -86,7 +86,7 @@ module CabooseStore
       @order.calculate_total
       @order.save
       
-      render json: { redirect: 'checkout/shipping' }
+      render :json => { :redirect => 'checkout/shipping' }
     end
     
     # GET /checkout/shipping
@@ -97,7 +97,7 @@ module CabooseStore
     
     # PUT /checkout/shipping-method
     def update_shipping_method
-      render json: { error: 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
+      render :json => { :error => 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
     
       # Update order
       @order.shipping             = params[:shipping_method][:price].to_f / 100
@@ -107,7 +107,7 @@ module CabooseStore
       @order.calculate_total
       @order.save
     
-      render json: { redirect: '/checkout/billing' }
+      render :json => { :redirect => '/checkout/billing' }
     end
   
     # GET /checkout/billing

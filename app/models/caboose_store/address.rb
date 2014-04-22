@@ -1,6 +1,6 @@
 module CabooseStore
   class Address < ActiveRecord::Base
-    self.table_name = "store_addresses"
+    self.table_name = 'store_addresses'
     
     attr_accessible :id,
       :name,
@@ -18,13 +18,5 @@ module CabooseStore
       :country,
       :country_code,
       :phone
-  
-    #validates :street, presence: true
-    #validates :address1, presence: true
-    #validates :city, presence: true
-    #validates :zip, numericality: true
-    #validates :phone, uniqueness: true
-    #validates :company, presence: true
-      
   end
 end

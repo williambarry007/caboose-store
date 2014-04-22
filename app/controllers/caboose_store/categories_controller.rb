@@ -22,9 +22,9 @@ module CabooseStore
       return unless user_is_allowed('categories', 'add')
       
       if params[:parent_id].nil? or params[:parent_id].empty?
-        render json: { error: 'Please select a parent category.' }
+        render :json => { :error => 'Please select a parent category.' }
       elsif params[:name].nil? or params[:name].empty?
-        render json: { error: 'This title cannot be empty' }
+        render :json => { :error => 'This title cannot be empty' }
       else
         category           = Category.new
         category.parent_id = params[:parent_id]
@@ -33,9 +33,9 @@ module CabooseStore
         category.url       = "#{Category.find(params[:parent_id]).url}/#{category.slug}"
         
         if category.save
-          render json: { success: true, redirect: "/admin/categories/#{category.id}/edit" }
+          render :json => { :success => true, :redirect => "/admin/categories/#{category.id}/edit" }
         else
-          render json: { error: 'There was an error saving the category.' }
+          render :json => { :error => 'There was an error saving the category.' }
         end
       end
     end
@@ -71,7 +71,7 @@ module CabooseStore
       response[:attributes][:image] = { value: category.image.url(:medium) } if params[:image]
       
       # Respond to update request
-      render json: response
+      render :json => response
     end
     
     # DELETE /admin/categories/:id
@@ -81,11 +81,11 @@ module CabooseStore
       category = Category.find(params[:id])
       
       if category.products.any?
-        render json: { error: "Can't delete a category that has products in it." }
+        render :json => { :error => "Can't delete a category that has products in it." }
       elsif category.children.any?
-        render json: { error: "You can't delete a category that has child categories." }
+        render :json => { :error => "You can't delete a category that has child categories." }
       else
-        render json: { success: category.destroy, redirect: '/admin/categories' }
+        render :json => { :success => category.destroy, :redirect => '/admin/categories' }
       end
     end
   end

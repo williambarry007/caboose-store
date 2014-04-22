@@ -50,5 +50,33 @@ module CabooseStore
       # Return the options array
       return options
     end
+    
+    def category_checkboxes(top_categories, selected_ids = nil)
+      str = "<ul>"
+      top_categories.each do |cat|
+        category_checkboxes_helper(cat, selected_ids, str)
+      end
+      str << "</ul>"
+      return str
+    end
+    
+    def category_checkboxes_helper(cat, selected_ids, str, prefix = "")
+      str << "<li>"
+      if cat.children && cat.children.count > 0
+        str << "<input type='checkbox' id='cat_#{cat.id}' value='#{cat.id}'"
+        str << " checked='true'" if selected_ids && selected_ids.include?(cat.id)
+        str << "> <label for='#{cat.id}'><h3>#{cat.name}</h3></label>"
+      else
+        str << "<input type='checkbox' id='cat_#{cat.id}' value='#{cat.id}'"
+        str << " checked='true'" if selected_ids && selected_ids.include?(cat.id)
+        str << "> <label for='#{cat.id}'>#{cat.name}</label>"
+      end
+      cat.children.each do |cat2|
+        str << "<ul>"
+        category_checkboxes_helper(cat2, selected_ids, str, "#{prefix}&nbsp;&nbsp;")
+        str << "</ul>"
+      end
+      str << "</li>"
+    end
   end
 end

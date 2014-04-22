@@ -4,7 +4,7 @@ module CabooseStore
   class OrderPdf < Prawn::Document
     
     attr_accessor :order
-  
+    
     def to_pdf
       image open("https://dmwwflw4i3miv.cloudfront.net/logo.png"), :position => :center
       text " "
@@ -73,10 +73,8 @@ module CabooseStore
       tbl << [{ :content => "#{order.shipping_method} Shipping & Handling"  , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.shipping + order.handling) , :align => :right }]    
       tbl << [{ :content => "Discount"                                      , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.discount )                 , :align => :right }]
       tbl << [{ :content => "Total"                                         , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.total    )                 , :align => :right }]
-  
-      table tbl
       
+      table tbl
     end
-    
   end
 end

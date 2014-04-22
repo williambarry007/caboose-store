@@ -6,25 +6,25 @@
 
 module CabooseStore
   class Category < ActiveRecord::Base
-    self.table_name = "store_categories"
+    self.table_name = 'store_categories'
     
-    belongs_to :parent, class_name: 'Category', foreign_key: 'parent_id'
-    has_many :children, class_name: 'Category', foreign_key: 'parent_id', order: 'name'    
-    has_many :products, through: :category_memberships, order: 'title'
+    belongs_to :parent, :class_name => 'Category', :foreign_key => 'parent_id'
+    has_many :children, :class_name => 'Category', :foreign_key => 'parent_id', :order => 'name'
+    has_many :products, :through => :category_memberships, :order => 'title'
     has_many :category_memberships
     
     has_attached_file :image,
-      path: "categories/:id_:style.jpg",
-      default_url: '/categories/:id_:style.jpg',
-      styles: {
+      :path => 'categories/:id_:style.jpg',
+      :default_url => '/categories/:id_:style.jpg',
+      :styles => {
         tiny:   '100x100>',
         thumb:  '250x250>',
         medium: '400x400>',
         large:  '800x800>',
         huge:   '1200x1200>'
       }
-    
-    validates_attachment_content_type :image, content_type: %w(image/jpeg image/jpg image/png)
+      
+    validates_attachment_content_type :image, :content_type => %w(image/jpeg image/jpg image/png)
     
     attr_accessible :id, :parent_id, :name, :url, :slug
     
@@ -62,7 +62,7 @@ module CabooseStore
     end
     
     def active_products
-      self.products.where(status: 'Active')
+      self.products.where(:status => 'Active')
     end
     
     def ancestry

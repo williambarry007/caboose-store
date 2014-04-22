@@ -9,10 +9,11 @@ module CabooseStore
         @product = Product.find(params[:id])
         render 'product/not_available' and return if @product.status == 'Inactive'
         
-        @category = @product.categories.first
-        @review = Review.new
-        @reviews = Review.where(product_id: @product.id).limit(10).order("id DESC") || nil
+        @category       = @product.categories.first
+        @review         = Review.new
+        @reviews        = Review.where(:product_id => @product.id).limit(10).order("id DESC") || nil
         @logged_in_user = logged_in_user
+        
         render 'caboose_store/products/details' and return
       end
       
@@ -21,7 +22,7 @@ module CabooseStore
       ap url_without_params
       
       # Find the category
-      category = Category.where(url: url_without_params).first
+      category = Category.where(:url => url_without_params).first
       
       # Set category ID
       params['category_id'] = category.id
@@ -34,7 +35,6 @@ module CabooseStore
       
       # Otherwise looking at a category or search parameters
       @pager = Caboose::Pager.new(params, {
-        
         'category_id'   => '',
         'vendor_id'     => '',
         'vendor_name'   => '',
@@ -44,10 +44,16 @@ module CabooseStore
         'price_lte'     => '',
         'alternate_id'  => '',
         'search_like'   => ''
-        
       }, {
+        'model'          => 'CabooseStore::Product',
+        'sort'           => 'title',
+        'base_url'       => url_without_params,
+        'items_per_page' => 15,
+        'use_url_params' => false,
         
-        'model' => 'CabooseStore::Product',
+        'abbreviations' => {
+          'search_like' => 'title_concat_store_products.alternate_id_concat_vendor_name_like',
+        },
         
         'includes' => {
           'category_id'   => [ 'categories' , 'id'     ],
@@ -56,17 +62,7 @@ module CabooseStore
           'vendor_status' => [ 'vendor'     , 'status' ],
           'price_gte'     => [ 'variants'   , 'price'  ],
           'price_lte'     => [ 'variants'   , 'price'  ]
-        },
-        
-        'abbreviations' => {
-          'search_like' => 'title_concat_store_products.alternate_id_concat_vendor_name_like',
-        },
-        
-        'sort'           => 'title',
-        'base_url'       => url_without_params,
-        'items_per_page' => 15,
-        'use_url_params' => false
-        
+        }
       })
       
       SearchFilter.delete_all
@@ -124,7 +120,7 @@ module CabooseStore
       # Grab all vendors
       @vendors = Vendor.where('name IS NOT NULL').order(:name)
       
-      render layout: 'caboose/admin'
+      render :layout => 'caboose/admin'
     end
     
     # POST /admin/products/:id/variants/add
@@ -177,12 +173,12 @@ module CabooseStore
       
       # Temporary patch for vendor name sorting; Fix this
       params[:sort] = 'store_vendors.name' if params[:sort] == 'vendor'
-    
+      
       @gen = Caboose::PageBarGenerator.new(params, {
-        'title_like' => '',
-        'name_like'  => '',
-        'id'         => ''
-      },{
+        'vendor_name'  => '',
+        'search_like'  => '', 
+        'price'        => params[:filters] && params[:filters][:missing_prices] ? 0 : ''
+      }, {
         'model'          => 'CabooseStore::Product',
         'sort'           => 'title',
         'desc'           => false,
@@ -190,13 +186,29 @@ module CabooseStore
         'items_per_page' => 25,
         'use_url_params' => false,
         
+        'abbreviations' => {
+          'search_like' => 'title_concat_vendor_name_like'
+        },
+        
         'includes' => {
-          'name_like' => ['vendor', 'name'],
+          'vendor_name'  => [ 'vendor'         , 'name'  ],
+          'price'        => [ 'variants'       , 'price' ]
         }
       })
       
-      @products = @gen.items
+      # Make a copy of all the items; so it can be filtered more
+      @all_products = @gen.all_records
       
+      # Apply any extra filters
+      if params[:filters]
+        @all_products = @all_products.includes(:product_images).where('store_product_images.id IS NULL') if params[:filters][:missing_images]
+        @all_products = @all_products.where('vendor_id IS NULL') if params[:filters][:no_vendor]
+      end
+      
+      # Get the correct page of the results
+      @products = @all_products.limit(@gen.limit).offset(@gen.offset)
+      
+      # ap @products.all_items.joins(:product_images)
       render :layout => 'caboose/admin'
     end
     
@@ -215,7 +227,7 @@ module CabooseStore
         conditions: conditions
       )
       
-      render layout: 'caboose/admin'
+      render :layout => 'caboose/admin'
     end
       
     # GET /admin/products/:id/general

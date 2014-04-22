@@ -51,9 +51,34 @@ var CabooseCart = function() {
 				$('form[caboose-cart=add]').on('submit', function(event) {
 					event.preventDefault();
 					
+					// Initially set the indecator variable to false
+					var stop_submission = false;
+					
+					$('.custom-input').each(function(index, el) {
+						$el = $(el)
+						
+						// If the value is empty or equal to the placeholder; val() will return the placeholder value if it's empty
+						if ( $el.val() == "" || $el.val() == $el.attr('placeholder') ) {
+							
+							// Notify the user that an input is required; assuming all custom inputs are required
+							alert('You must enter a value for ' + $el.attr('placeholder'));
+							
+							// Indicate that errors were found
+							stop_submission = true;
+							
+							// Exit the each loop
+							return false;
+						}
+					});
+					
+					// Exit function if errors were found
+					if (stop_submission) return false;
+					
+					// Collect the form data
 					var data = $(event.delegateTarget).serializeArray()
 						, json = _.object( _.pluck(data, 'name'), _.pluck(data, 'value') );
-					
+						
+					// Add to cart and open up if this is a desktop browser
 					self.add(json);
 					if (!$.browser.mobile) self.open();
 				});

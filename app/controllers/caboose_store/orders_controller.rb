@@ -4,33 +4,36 @@ module CabooseStore
     # GET /admin/orders
     def admin_index
       return if !user_is_allowed('orders', 'view')
-  
-      @gen = Caboose::PageBarGenerator.new(params, {
-          'customer_id'           => '', 
-          'status'                => 'pending',
-          'shipping_method_code'  => '',
-          'id'                    => ''
-      },{
-          'model'       => 'CabooseStore::Order',
-          'sort'        => 'id',
-          'desc'        => 1,
-          'base_url'    => '/admin/orders'
-      })    
-      @orders = @gen.items
+      
+      @pager = Caboose::PageBarGenerator.new(params, {
+        'customer_id'          => '', 
+        'status'               => 'pending',
+        'shipping_method_code' => '',
+        'id'                   => ''
+      }, {
+        'model'          => 'CabooseStore::Order',
+        'sort'           => 'id',
+        'desc'           => 1,
+        'base_url'       => '/admin/orders',
+        'use_url_params' => false
+      })
+      
+      @orders    = @pager.items
       @customers = Caboose::User.reorder('last_name, first_name').all
+      
       render :layout => 'caboose/admin'
     end
     
     # GET /admin/orders/new
     def admin_new
-      return if !user_is_allowed('orders', 'add')       
-      @products = Product.reorder('title').all    
+      return if !user_is_allowed('orders', 'add')
+      @products = Product.by_title
       render :layout => 'caboose/admin'
     end
       
     # GET /admin/orders/:id
     def admin_edit
-      return if !user_is_allowed('orders', 'edit')    
+      return if !user_is_allowed('orders', 'edit')
       @order = Order.find(params[:id])
       render :layout => 'caboose/admin'
     end
@@ -64,7 +67,7 @@ module CabooseStore
         end
       end
     
-      render json: response
+      render :json => response
     end
   
     # GET /admin/orders/:id/refund
@@ -96,15 +99,15 @@ module CabooseStore
         end
       end
     
-      render json: response
+      render :json => response
     end
     
     # POST /admin/orders/:id/resend-confirmation
     def admin_resend_confirmation
       if Order.find(params[:id]).resend_confirmation
-        render json: { success: "Confirmation re-sent successfully." }
+        render :json => { success: "Confirmation re-sent successfully." }
       else
-        render json: { error: "There was an error re-sending the email." }
+        render :json => { error: "There was an error re-sending the email." }
       end
     end
     
@@ -121,7 +124,7 @@ module CabooseStore
        
       pdf = OrderPdf.new
       pdf.order = Order.find(params[:id])             
-      send_data pdf.to_pdf, filename: "order_#{pdf.order.id}.pdf", type: "application/pdf", disposition: "inline"
+      send_data pdf.to_pdf, :filename => "order_#{pdf.order.id}.pdf", :type => "application/pdf", :disposition => "inline"
       
       #@order = Order.find(params[:id])
       #render :layout => 'caboose/admin'
@@ -211,7 +214,7 @@ module CabooseStore
       arr.each do |status|
         options << {
           :value => status,
-          :text => status
+          :text  => status
         }
       end
       render :json => options
@@ -223,7 +226,7 @@ module CabooseStore
       
       resp = Caboose::StdClass.new({
         'refresh' => nil,
-        'error' => nil,
+        'error'   => nil,
         'success' => nil
       })
       
@@ -264,7 +267,7 @@ module CabooseStore
       resp = Caboose::StdClass.new({
         'refresh' => nil,
         'success' => nil,
-        'error' => nil
+        'error'   => nil
       })
       order = Order.find(params[:id])    
       Quickbooks.create_order(order)
@@ -333,8 +336,6 @@ module CabooseStore
                    
       # Print out the lines
       render :text => tsv.join("\n")
-      
     end
-    
   end
 end

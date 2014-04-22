@@ -2,7 +2,7 @@ require 'json'
 
 module CabooseStore
   class SearchFilter < ActiveRecord::Base
-    self.table_name = "store_search_filters"
+    self.table_name = 'store_search_filters'
     
     attr_accessible :id,
       :url,
@@ -153,7 +153,7 @@ module CabooseStore
             max = price_range.last
             
             # Skip to next variant if the price isnt defined
-            next if variant.price.nil?
+            next if variant.price < 1
             
             # Increment price count at index if the varaint is within the price range
             if variant.price > min and variant.price < max

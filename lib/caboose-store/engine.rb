@@ -1,5 +1,5 @@
-
 require 'caboose'
+require 'utils/bootstrapper'
 
 module CabooseStore
   class Engine < ::Rails::Engine
@@ -46,7 +46,7 @@ module CabooseStore
     
     initializer 'caboose_store.cart', after: :finish_hook do |app|
       ActiveSupport.on_load(:action_controller) do
-        include CabooseStore::Cart
+        include CabooseStore::BootStrapper
       end
     end
   end

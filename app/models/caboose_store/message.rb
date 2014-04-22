@@ -7,12 +7,10 @@ module CabooseStore
     attr_accessor :name, :email, :body
     
     validates :name, :email, :body, presence: true
-    validates :email, format: { with: %r{.+@.+\..+} }, allow_blank: false
+    validates :email, format: { :with => %r{.+@.+\..+} }, allow_blank: false
     
-    def initialize(attributes = {})
-      attributes.each do |name, value|
-        send("#{name}=", value)
-      end
+    def initialize(attributes={})
+      attributes.each { |name, value| send("#{name}=", value) }
     end
     
     def persisted?

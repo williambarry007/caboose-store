@@ -1,6 +1,12 @@
+#
+# Order
+#
+# :: Class Methods
+# :: Instance Methods
+
 module CabooseStore        
   class Order < ActiveRecord::Base
-    self.table_name = "store_orders"
+    self.table_name = 'store_orders'
     
     belongs_to :customer, :class_name => 'Caboose::User'
     belongs_to :shipping_address, :class_name => 'Address'
@@ -10,7 +16,7 @@ module CabooseStore
     has_many :order_line_items
     
     attr_accessible :id,
-      :order_number,      # Customer-set unique number of the order
+      :order_number,
       :subtotal,
       :tax,
       :shipping_method,
@@ -30,6 +36,16 @@ module CabooseStore
       :date_captured,
       :date_cancelled
       
+    #
+    # Class Methods
+    #
+    
+    #...
+    
+    #
+    # Instance Methods
+    #
+    
     def decrement_quantities
       self.line_items.each do |line_item|
         
@@ -55,40 +71,42 @@ module CabooseStore
     end
       
     def test?
-      return self.customer_id == 1
+      self.customer_id == 1
     end
     
     def line_items
-      return self.order_line_items
+      self.order_line_items
     end
     
     def subtotal
-      return self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
+      self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
     end
     
     # Array of any Line Items which have been fulfilled (marked as shipped on the order screen).
     def fulfilled_line_items
-      return self.order_line_items.where(:status => 'shipped').all
+      self.order_line_items.where(:status => 'shipped').all
     end
     
     # Array of those Line Items which have not yet been fulfilled (marked as shipped on the order screen).
     def unfulfilled_line_items
-      return self.order_line_items.where('status != ?', 'shipped').all
+      self.order_line_items.where('status != ?', 'shipped').all
     end
     
     def cancelled
-      return self.status == 'cancelled'
+      self.status == 'cancelled'
     end
     
     # Returns true if there is at least one item in the order that requires shipping, and returns false otherwise
     def requires_shipping
       requires = false
-      self.order_line_items.each do |li|
-        if li.variant.requires_shipping
+      
+      self.order_line_items.each do |line_item|
+        if line_item.variant.requires_shipping
           requires = true
           break
         end
       end
+      
       return requires
     end
     
@@ -96,7 +114,7 @@ module CabooseStore
       self.calculate_discount
       
       self.total  = self.subtotal
-      self.total += self.tax if self.tax
+      self.total += self.tax      if self.tax
       self.total += self.shipping if self.shipping
       self.total += self.handling if self.handling
       self.total -= self.discount if self.discount
@@ -107,15 +125,15 @@ module CabooseStore
     def calculate_discount        
       
       percentage_off = 0.0
-      amount_off = 0.0
-      no_shipping = false
-      no_tax = false
+      amount_off     = 0.0
+      no_shipping    = false
+      no_tax         = false
       
-      self.discounts.each do |d|
-        percentage_off = percentage_off + d.amount_percentage
-        amount_off = amount_off + d.amount_flat
-        no_shipping = true if d.no_shipping
-        no_tax = true if d.no_tax
+      self.discounts.each do |discount|
+        percentage_off = percentage_off + discount.amount_percentage
+        amount_off     = amount_off + discount.amount_flat
+        no_shipping    = true if discount.no_shipping
+        no_tax         = true if discount.no_tax
       end
       
       x = 0.0

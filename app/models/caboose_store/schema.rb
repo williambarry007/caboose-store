@@ -21,6 +21,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :country_code  , :string  ],
         [ :phone         , :string  ]
       ],
+      
       CabooseStore::Category => [        
         [ :parent_id	           , :integer   ],
         [ :name	                 , :string    ],
@@ -35,10 +36,12 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :square_scale_factor	 , :numeric   ],
         [ :sort	                 , :integer   ]
       ],
+      
       CabooseStore::CategoryMembership => [        
         [ :category_id	         , :integer ],
         [ :product_id	           , :integer ]      
       ],
+      
       CabooseStore::Discount => [
         [ :id	                   , :integer  ],
         [ :name	                 , :string   ],
@@ -48,20 +51,26 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :no_shipping	         , :boolean  ],
         [ :no_tax	               , :boolean  ]
       ],
+      
       CabooseStore::OrderDiscount => [
         [ :order_id	             , :integer ],
         [ :discount_id	         , :integer ]
       ],
+      
       CabooseStore::OrderLineItem => [
         [ :order_id	             , :integer  ],
         [ :variant_id	           , :integer  ],
+        [ :parent_id             , :integer  ],
         [ :quantity	             , :integer  ],
         [ :status	               , :string   ],
         [ :tracking_number	     , :string   ],
         [ :quantity_shipped	     , :integer  ],
         [ :unit_price	           , :numeric  ],
-        [ :variant_sku	         , :string   ]
+        [ :variant_sku	         , :string   ],
+        [ :custom_input          , :text     ],
+        [ :notes                 , :text     ]
       ],
+      
       CabooseStore::Order => [
         [ :email	               , :string   ],
         [ :order_number	         , :string   ],
@@ -96,6 +105,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :transaction_id	       , :string   ],
         [ :transaction_service   , :string   ]
       ],
+      
       CabooseStore::ProductImage => [
         [ :product_id	           , :integer  ],
         [ :title	               , :string   ],
@@ -107,10 +117,12 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :square_offset_y	     , :integer  ],
         [ :square_scale_factor	 , :numeric  ]
       ],
+      
       CabooseStore::ProductImageVariant => [
         [ :product_image_id	     , :integer ],
         [ :variant_id	           , :integer ]
       ],
+      
       CabooseStore::Product => [
         [ :title	               , :string    ],
         [ :description	         , :text      ],
@@ -127,14 +139,17 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :seo_title	           , :string    ],
         [ :seo_description	     , :string    ],
         [ :alternate_id	         , :string    ],
-        [ :date_available	       , :datetime  ]
+        [ :date_available	       , :datetime  ],
+        [ :custom_input          , :text      ]
       ],
+      
       CabooseStore::Review => [
         [ :product_id	           , :integer   ],
         [ :content	             , :string    ],
         [ :name	                 , :string    ],
         [ :rating	               , :decimal   ] 
       ],      
+      
       CabooseStore::SearchFilter => [
         [ :url                   , :string   ],
         [ :title_like            , :string   ],
@@ -147,10 +162,11 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :option3               , :text     ],        
         [ :prices                , :text     ] 
       ],
+      
       CabooseStore::Variant => [
         [ :sku	                 , :string   ],
         [ :barcode	             , :string   ],
-        [ :price	               , :numeric  ],
+        [ :price	               , :numeric  , :default => 0 ],
         [ :available	           , :boolean  ],
         [ :quantity_in_stock	   , :integer  ],
         [ :ignore_quantity       , :boolean  ],
@@ -170,20 +186,27 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :alternate_id	         , :string   ],
         [ :status	               , :string   ]
       ],
+      
       CabooseStore::Vendor => [
         [ :name	  , :string ],
         [ :status , :string, { default: 'Active' } ]
+      ],
+      
+      CabooseStore::CustomizationMembership => [
+        [ :product_id       , :integer ],
+        [ :customization_id , :integer ]
       ]
     }
   end
   
   def self.load_data
     if !CabooseStore::Category.exists?(1)
-      CabooseStore::Category.create({ :id => 1, :name => 'All Products', :url => '/products', :slug => 'products' })
+      CabooseStore::Category.create({
+        id: 1,
+        name: 'All Products',
+        url: '/products',
+        slug: 'products'
+      })
     end
-    if !CabooseStore::Vendor.exists?(1)
-      CabooseStore::Vendor.create({ :id => 1, :name => 'Unknown' })
-    end      
   end
-  
 end

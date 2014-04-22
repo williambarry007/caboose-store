@@ -7,7 +7,13 @@
 	
 	<% @order.line_items.each do |line_item| %>
 		<tr>
-			<td><%= line_item.variant.product.title %><br /><%= line_item.variant.title %></td>
+			<td>
+				<%= line_item.variant.product.title %> - <%= line_item.variant.title %>
+				
+				<% line_item.customizations.each do |customization| %>
+					<p><%= "- #{customization.variant.product.custom_input}: #{customization.custom_input}"%></p>
+				<% end %>
+			</td>
 			<td align="right"><%= line_item.quantity %></td>
 			<td align="right"><%= number_to_currency(line_item.subtotal) %></td>
 		</tr>

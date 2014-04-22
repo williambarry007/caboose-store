@@ -1,3 +1,9 @@
+# Refactoring
+
+0 - Move all non-models from the /app/models directory to /lib
+
+---
+
 0 - Decouple from Woods-n-Water
 
 # After Expeditions Launch

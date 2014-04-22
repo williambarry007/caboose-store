@@ -12,12 +12,9 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/williambarry007/caboose-store"
   s.summary     = "E-Commerce plugin for Caboose CMS"
   s.description = "Sell products on your site using Caboose."
-
-  s.files = Dir["{app,config,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
-  s.test_files = Dir["test/**/*"]
+  s.files       = Dir["{app,config,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
+  s.test_files  = Dir["test/**/*"]
   s.executables = ['']
-
-  #s.add_dependency "caboose-cms", "=0.2.82"
-  s.add_dependency "caboose-cms"
   
+  s.add_dependency "caboose-cms"
 end

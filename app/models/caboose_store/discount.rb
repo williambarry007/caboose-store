@@ -1,6 +1,6 @@
 module CabooseStore
   class Discount < ActiveRecord::Base
-    self.table_name = "store_discounts"
+    self.table_name = 'store_discounts'
     
     attr_accessible :id,
       :name,              # The name of this discount
@@ -9,6 +9,5 @@ module CabooseStore
       :amount_percentage, # Amount of savings as a percentage off the total
       :no_shipping,       # Whether or not it's a free shipping discount
       :no_tax             # Whether or not it's a free shipping discount
-      
   end
 end
