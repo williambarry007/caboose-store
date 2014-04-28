@@ -143,9 +143,9 @@ module CabooseStore
         option3['name'] << product.option3
         
         product.variants.each do |variant|
-          option1['values'] << variant.option1
-          option2['values'] << variant.option2
-          option3['values'] << variant.option3
+          option1['values'] << variant.option1.strip if !variant.option1.nil?
+          option2['values'] << variant.option2.strip if !variant.option2.nil?
+          option3['values'] << variant.option3.strip if !variant.option3.nil?
           
           # Iterate over price ranges
           price_ranges.each_with_index do |price_range, index|

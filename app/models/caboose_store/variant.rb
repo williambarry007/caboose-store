@@ -13,9 +13,11 @@ module CabooseStore
     has_many :product_images, :through => :product_image_variants
     
     attr_accessible :id,
+      :alternate_id,
       :product_id,
       :barcode,            # Returns the barcode value of the variant.
       :price,              # Variant’s price.
+      :ignore_quantity,
       :quantity_in_stock,  # How many of this variants are in stock for this shop.
       :allow_backorder,    # Whether to allow items with no inventory to be added to the cart    
       :status,             # Current status: active, inactive, deleted

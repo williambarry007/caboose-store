@@ -52,11 +52,12 @@ module CabooseStore
         'use_url_params' => false,
         
         'abbreviations' => {
-          'search_like' => 'title_concat_store_products.alternate_id_concat_vendor_name_like',
+          'search_like' => 'title_concat_store_products.alternate_id_concat_vendor_name_concat_category_name_like',
         },
         
         'includes' => {
           'category_id'   => [ 'categories' , 'id'     ],
+          'category_name' => [ 'categories' , 'name'   ],
           'vendor_id'     => [ 'vendor'     , 'id'     ],
           'vendor_name'   => [ 'vendor'     , 'name'   ],
           'vendor_status' => [ 'vendor'     , 'status' ],

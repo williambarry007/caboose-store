@@ -9,6 +9,8 @@ module CabooseStore
     # POST /cart/item/:id || Post /cart/item
     def add
       
+      ap params
+      
       # Find the variant either with a passed in ID or with it's associated options
       variant = if params[:id]
         Variant.find(params[:id])
@@ -35,20 +37,24 @@ module CabooseStore
           # Huzzah!
           if line_item.variant.id == variant.id
             
+            ap "FOUND EXISTING LINE ITEM"
+            
             # Check if the quantity already requested plus the quantity being requested vs the quantity in stock
             render :json => { :error => "There are only #{variant.quantity_in_stock} in stock" } and return if !variant.ignore_quantity && line_item.quantity + quantity > variant.quantity_in_stock
             
             # If there are any customizations
             if line_item.customizations.any? || params[:customizations]
-            
+              
+              ap "CHECK FOR CUSTOMIZATIONS"
+              
               # Ensure that customizations were passed and that there is an equivelant number
               break if line_item.customizations.empty? || params[:customizations].nil? || line_item.customizations.count != params[:customizations].count
               
               params[:customizations].each do |customization_id, options|
                 customization_variant   = Variant.find_by_options(customization_id, options[:option1], options[:option2], options[:option3])
-                line_item_customization = line_item.customizations.find { |line_item_customization| line_item_customization.variant_id == customization_variant.id }
+                line_item_customization = line_item.customizations.find { |customization| customization.variant_id == customization_variant.id }
                 
-                throw :break if customization_variant != line_item_customization.variant || options[:custom_input] != line_item_customization.custom_input
+                throw :break if line_item_customization.nil? || customization_variant != line_item_customization.variant || options[:custom_input] != line_item_customization.custom_input
               end
             end
             
@@ -71,7 +77,7 @@ module CabooseStore
       line_item.save
       
       # Check to see if any customizations were passed
-      if params[:customizations].any?
+      if !params[:customizations].nil?
         params[:customizations].each do |customization_id, options|
           line_item_customization              = OrderLineItem.new
           line_item_customization.parent_id    = line_item.id

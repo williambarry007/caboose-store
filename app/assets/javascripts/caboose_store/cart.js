@@ -185,13 +185,15 @@ var CabooseCart = function() {
 	self.add = function(something, callback) {
 		var id   = _.isNumber(something) ? something : ''
 			, data = _.isObject(something) ? something : {};
-			
+      
 		$.ajax({
 			url: '/cart/item/' + id,
 			type: 'post',
 			data: data,
 			success: function(response) {
-				
+        
+        console.log(response);
+        
 				if (response.error) {
 					alert(response.error);
 				} else {
