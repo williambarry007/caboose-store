@@ -116,7 +116,7 @@ module CabooseStore
       @shipping_address = @order.shipping_address
       @form_url         = PaymentProcessor.form_url(@order)
     end
-    
+  
     # GET /checkout/relay/:order_id
     def relay
       
@@ -137,7 +137,7 @@ module CabooseStore
         session[:cart_id] = nil
         
         # Emit order event
-        # Caboose.plugin_hook('order_authorized', @order)
+        Caboose.plugin_hook('order_authorized', @order)
         
         # Decrement quantities of variants
         @order.decrement_quantities
