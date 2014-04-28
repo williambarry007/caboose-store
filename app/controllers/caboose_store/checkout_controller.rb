@@ -116,13 +116,13 @@ module CabooseStore
       @shipping_address = @order.shipping_address
       @form_url         = PaymentProcessor.form_url(@order)
     end
-  
+    
     # GET /checkout/relay/:order_id
     def relay
-    
+      
       # Check to see that the order has a valid total and was authorized
       if @order.total > 0 and PaymentProcessor.authorize(@order, params)
-      
+        
         # Update order
         @order.date_authorized  = DateTime.now
         @order.auth_amount      = @order.total
@@ -137,7 +137,7 @@ module CabooseStore
         session[:cart_id] = nil
         
         # Emit order event
-        Caboose.plugin_hook('order_authorized', @order)
+        # Caboose.plugin_hook('order_authorized', @order)
         
         # Decrement quantities of variants
         @order.decrement_quantities
