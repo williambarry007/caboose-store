@@ -1,5 +1,4 @@
 require 'caboose'
-require 'utils/bootstrapper'
 
 module CabooseStore
   class Engine < ::Rails::Engine
