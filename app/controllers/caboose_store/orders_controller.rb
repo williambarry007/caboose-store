@@ -252,7 +252,7 @@ module CabooseStore
         end
       end
       
-      render :json => resp
+      render :json => response
     end
 
     # GET /admin/orders/:id/void
