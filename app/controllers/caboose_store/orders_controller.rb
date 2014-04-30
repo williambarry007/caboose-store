@@ -242,7 +242,13 @@ module CabooseStore
           order.save
           
           if order.discounts.any?
-            order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
+            
+            if order.total > order.discounts.first.amount_current
+              order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
+            else
+              order.update_attribute(:amount_discounted, order.total)
+            end
+            
             order.update_gift_cards
           end
           
