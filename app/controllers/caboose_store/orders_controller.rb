@@ -237,7 +237,7 @@ module CabooseStore
       elsif order.total > order.auth_amount
         resp.error = "The order total exceeds the authorized amount."
       else
-        if PaymentProcessor.capture(order)
+        if (order.discounts.any? && order.total < order.discounts.first.amount_current) || PaymentProcessor.capture(order)
           order.financial_status = 'captured'
           order.save
           

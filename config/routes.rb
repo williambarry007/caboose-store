@@ -11,18 +11,19 @@ CabooseStore::Engine.routes.draw do
   
   # Checkout
   
-  get  '/checkout'                 => 'checkout#index'
-  put  '/checkout/address'         => 'checkout#update_address'
-  get  '/checkout/shipping'        => 'checkout#shipping'
-  get  '/checkout/shipping-rates'  => 'checkout#shipping_rates'
-  put  '/checkout/shipping-method' => 'checkout#update_shipping_method'
-  get  '/checkout/discount'        => 'checkout#discount'
-  post '/checkout/discount'        => 'checkout#add_discount'
-  get  '/checkout/billing'         => 'checkout#billing'
-  get  '/checkout/relay/:order_id' => 'checkout#relay'
-  get  '/checkout/empty'           => 'checkout#empty'
-  get  '/checkout/error'           => 'checkout#error'
-  get  '/checkout/thanks'          => 'checkout#thanks'
+  get  '/checkout'                        => 'checkout#index'
+  put  '/checkout/address'                => 'checkout#update_address'
+  get  '/checkout/shipping'               => 'checkout#shipping'
+  get  '/checkout/shipping-rates'         => 'checkout#shipping_rates'
+  put  '/checkout/shipping-method'        => 'checkout#update_shipping_method'
+  get  '/checkout/discount'               => 'checkout#discount'
+  post '/checkout/discount'               => 'checkout#add_discount'
+  get  '/checkout/authorize-by-gift-card' => 'checkout#authorize_by_gift_card'
+  get  '/checkout/billing'                => 'checkout#billing'
+  get  '/checkout/relay/:order_id'        => 'checkout#relay'
+  get  '/checkout/empty'                  => 'checkout#empty'
+  get  '/checkout/error'                  => 'checkout#error'
+  get  '/checkout/thanks'                 => 'checkout#thanks'
   
   # Products
   
