@@ -46,6 +46,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :id	                   , :integer  ],
         [ :name	                 , :string   ],
         [ :code	                 , :string   ],
+        [ :amount_current        , :numeric  ],
+        [ :amount_total          , :numeric  ],
         [ :amount_flat	         , :numeric  ],
         [ :amount_percentage	   , :numeric  ],
         [ :no_shipping	         , :boolean  ],

@@ -110,40 +110,59 @@ module CabooseStore
       return requires
     end
     
-    def calculate_total
-      self.calculate_discount
+    def calculate_total(update_gift_card=false)
+      # self.calculate_discount
       
       self.total  = self.subtotal
       self.total += self.tax      if self.tax
       self.total += self.shipping if self.shipping
       self.total += self.handling if self.handling
-      self.total -= self.discount if self.discount
+      
+      if self.discounts.any?
+        discount = self.discounts.first
+        
+        if self.total >= discount.amount_current
+          self.total -= discount.amount_current
+          discount.update_attribute(:amount_current, 0) if update_gift_card
+        else
+          discount.update_attribute(:amount_current, discount.amount_current - self.total) if update_gift_card
+          self.total = 0
+        end
+      end
+      
+      self.save
       
       return self.total.round(2)
     end
     
-    def calculate_discount        
+    def update_gift_cards
+      # TODO the gift card code is awful.. need to take another crack at it when there's more time
       
-      percentage_off = 0.0
-      amount_off     = 0.0
-      no_shipping    = false
-      no_tax         = false
-      
-      self.discounts.each do |discount|
-        percentage_off = percentage_off + discount.amount_percentage
-        amount_off     = amount_off + discount.amount_flat
-        no_shipping    = true if discount.no_shipping
-        no_tax         = true if discount.no_tax
-      end
-      
-      x = 0.0
-      x = x + self.subtotal * percentage_off if percentage_off > 0
-      x = x + amount_off if amount_off > 0
-      x = x + self.shipping if no_shipping
-      x = x + self.tax if no_tax
-  
-      self.discount = x
-      return self.discount / 100 * 100
+      calculate_total(true)
     end
+    
+    # def calculate_discount        
+    #   
+    #   percentage_off = 0.0
+    #   amount_off     = 0.0
+    #   no_shipping    = false
+    #   no_tax         = false
+    #   
+    #   self.discounts.each do |discount|
+    #     percentage_off = percentage_off + discount.amount_percentage
+    #     amount_off     = amount_off + discount.amount_flat
+    #     no_shipping    = true if discount.no_shipping
+    #     no_tax         = true if discount.no_tax
+    #   end
+    #   
+    #   x = 0.0
+    #   x = x + self.subtotal * percentage_off if percentage_off > 0
+    #   x = x + amount_off if amount_off > 0
+    #   x = x + self.shipping if no_shipping
+    #   x = x + self.tax if no_tax
+    #   
+    #   self.discount = x
+    #   return self.discount / 100 * 100
+    # end
   end
 end

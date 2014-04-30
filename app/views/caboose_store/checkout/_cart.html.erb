@@ -26,28 +26,28 @@
 	
 	<% if @order.tax and @order.tax > 0 %>
 		<tr>
-			<td colspan="2" align="right">Tax</td>
+			<td colspan="2" align="right">Tax <span class="float: right">+</span></td>
 			<td align="right"><%= number_to_currency(@order.tax) %></td>
 		</tr>
 	<% end %>
 	
 	<% if @order.shipping and @order.handling %>
 		<tr>
-		  <td colspan="2" align="right">Shipping &amp; Handling</td>
+		  <td colspan="2" align="right">Shipping &amp; Handling <span class="float: right">+</span></td>
 		  <td align="right"><%= number_to_currency(@order.shipping + @order.handling) %></td>
 		</tr>
 	<% end %>
 	
-	<% if @order.discount and @order.discount > 0 %>
+	<% if @order.discounts.any? %>
 		<tr>
-		  <td colspan="2" align="right">Discount</td>
-		  <td align="right"><%= number_to_currency(@order.discount) %></td>
+		  <td colspan="2" align="right">Gift Card <span class="float: right">-</span></td>
+		  <td align="right"><%= number_to_currency(@order.discounts.first.amount_current) %></td>
 		</tr>
 	<% end %>
 	
 	<% if @order.total and @order.total > 0 %>
 		<tr>
-		  <td colspan="2" align="right">Total</td>
+		  <td colspan="2" align="right">Total <span class="float: right">=</span></td>
 		  <td align="right"><%= number_to_currency(@order.total) %></td>
 		</tr>
 	<% end %>

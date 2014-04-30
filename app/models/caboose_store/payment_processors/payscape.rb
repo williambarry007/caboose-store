@@ -80,10 +80,15 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   
   def self.capture(order)
     response = self.api 'capture', { 'transaction-id' => order.transaction_id }, order.test?
+    
+    order.update_gift_cards if order.discounts.any? # TODO change this when discounts are improved
+    
     return response['result-code'].to_i == 100
   end
   
   def self.refund(order)
+    order.calculate_total
+    
     response = self.api 'refund', {
       'transaction-id' => order.transaction_id,
       'amount'         => order.total.to_s

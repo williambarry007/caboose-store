@@ -20,6 +20,10 @@ module CabooseStore
       render :partial => '/caboose_store/checkout/shipping_method'
     end
     
+    def caboose_store_discount
+      render :partial => '/caboose_store/checkout/order_discount'
+    end
+    
     def caboose_store_billing_form
       render :partial => '/caboose_store/checkout/billing_form'
     end

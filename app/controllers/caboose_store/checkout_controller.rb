@@ -2,7 +2,7 @@ module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     before_filter :inject_assets
     before_filter :get_order
-    before_filter :ensure_order, :only => [:index, :shipping, :billing, :finalize]
+    before_filter :ensure_order, :only => [:index, :shipping, :discount, :billing, :finalize]
     
     def inject_assets
       Caboose::javascripts << 'caboose_store/checkout'
@@ -107,16 +107,37 @@ module CabooseStore
       @order.calculate_total
       @order.save
     
-      render :json => { :redirect => '/checkout/billing' }
+      render :json => { :redirect => '/checkout/discount' }
     end
-  
+    
+    # GET /checkout/discount
+    def discount
+      # TODO make it possible to use multiple discounts
+      
+      @gift_card = @order.discounts.first
+    end
+    
+    # POST /checkout/update-discount
+    def add_discount
+      gift_card = Discount.find_by_code(params[:gift_card_number])
+      
+      render :json => { :error => true, :message => 'Gift card not found.' } and return if gift_card.nil?
+      render :json => { :error => true, :message => 'Gift card has no remaining funds.' } and return if gift_card.amount_current <= 0
+      
+      @order.discounts.delete_all if @order.discounts.any?
+      @order.discounts << gift_card
+      @order.calculate_total
+      
+      render :json => { :success => true, :message => 'Gift card added successfully.' }
+    end
+    
     # GET /checkout/billing
     def billing
       redirect_to '/checkout/thanks' if @order.authorized?
       @shipping_address = @order.shipping_address
       @form_url         = PaymentProcessor.form_url(@order)
     end
-  
+    
     # GET /checkout/relay/:order_id
     def relay
       

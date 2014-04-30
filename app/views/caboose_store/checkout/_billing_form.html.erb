@@ -36,4 +36,6 @@
 	<input type="submit" value="Continue >" />
 </form>
 
+<p><a href="/checkout/discount"><%= if @order.discounts.any? then 'Update Gift Card' else 'Add Gift Card' end %></a></p>
+
 <iframe style="display: none" id="payment-request" name="payment-request"></iframe>
