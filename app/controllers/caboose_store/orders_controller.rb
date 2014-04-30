@@ -241,6 +241,11 @@ module CabooseStore
           order.financial_status = 'captured'
           order.save
           
+          if order.discounts.any?
+            order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
+            order.update_gift_cards
+          end
+          
           response.success = "Captured funds successfully"
         else
           response.error = "Error capturing funds."
@@ -298,6 +303,8 @@ module CabooseStore
           order.financial_status = 'refunded'
           order.status = 'refunded'
           order.save
+          
+          order.discounts.first.update_attribute(:amount_current, order.amount_discounted) if order.discounts.any?
         
           response.success = "Order refunded successfully"
         else
