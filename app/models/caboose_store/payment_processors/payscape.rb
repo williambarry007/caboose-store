@@ -80,7 +80,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   
   def self.capture(order)
     response = self.api 'capture', { 'transaction-id' => order.transaction_id }, order.test?
-    
+    # ap order
     if order.discounts.any?
       order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
       order.update_gift_cards
