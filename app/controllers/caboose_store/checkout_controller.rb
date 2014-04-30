@@ -142,7 +142,7 @@ module CabooseStore
     def relay
       
       # Check to see that the order has a valid total and was authorized
-      if PaymentProcessor.authorize(@order, params)
+      if @order.discounts.first.amount_current > @order.total and PaymentProcessor.authorize(@order, params)
         
         # Update order
         @order.date_authorized  = DateTime.now
