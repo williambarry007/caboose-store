@@ -45,10 +45,8 @@
 		</tr>
 	<% end %>
 	
-	<% if @order.total and @order.total > 0 %>
-		<tr>
-		  <td colspan="2" align="right">Total <span class="float: right">=</span></td>
-		  <td align="right"><%= number_to_currency(@order.total) %></td>
-		</tr>
-	<% end %>
+	<tr>
+	  <td colspan="2" align="right">Total <span class="float: right">=</span></td>
+	  <td align="right"><%= number_to_currency(@order.total) %></td>
+	</tr>
 </table>

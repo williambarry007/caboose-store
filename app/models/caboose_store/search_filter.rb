@@ -110,7 +110,7 @@ module CabooseStore
       
       # Set price ranges
       price_ranges = [
-        [    0,    10],
+        [    1,    10],
         [   10,    25],
         [   25,    50],
         [   50,    75],
