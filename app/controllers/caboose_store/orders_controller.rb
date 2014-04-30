@@ -85,13 +85,19 @@ module CabooseStore
       if order.financial_status != 'captured'
         response.error = "This order hasn't been captured yet, you will need to void instead"
       else
-        if PaymentProcessor.refund(order)
+        ap order.total
+        ap order.amount_discounted
+        
+        if order.calculate_net < order.amount_discounted || PaymentProcessor.refund(order)
           order.financial_status = 'refunded'
           order.status = 'refunded'
           order.save
           
-          # Add the variant quantities ordered back
-          order.cancel
+          if order.discounts.any?
+            discount = order.discounts.first
+            amount_to_refund = order.calculate_net < order.amount_discounted ? order.calculate_net : order.amount_discounted
+            discount.update_attribute(:amount_current, amount_to_refund + discount.amount_current)
+          end
           
           response.success = "Order refunded successfully"
         else
@@ -99,7 +105,36 @@ module CabooseStore
         end
       end
     
-      render :json => response
+      render json: response
+      
+      # return if !user_is_allowed('orders', 'edit')
+      #     
+      # response = Caboose::StdClass.new({
+      #   'refresh' => nil,
+      #   'error' => nil,
+      #   'success' => nil
+      # })
+      #     
+      # order = Order.find(params[:id])
+      #     
+      # if order.financial_status != 'captured'
+      #   response.error = "This order hasn't been captured yet, you will need to void instead"
+      # else
+      #   if PaymentProcessor.refund(order)
+      #     order.financial_status = 'refunded'
+      #     order.status = 'refunded'
+      #     order.save
+      #     
+      #     # Add the variant quantities ordered back
+      #     order.cancel
+      #     
+      #     response.success = "Order refunded successfully"
+      #   else
+      #     response.error = "Error refunding order."
+      #   end
+      # end
+      #     
+      # render :json => response
     end
     
     # POST /admin/orders/:id/resend-confirmation
@@ -242,13 +277,7 @@ module CabooseStore
           order.save
           
           if order.discounts.any?
-            
-            if order.total > order.discounts.first.amount_current
-              order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
-            else
-              order.update_attribute(:amount_discounted, order.total)
-            end
-            
+            order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
             order.update_gift_cards
           end
           
@@ -276,7 +305,7 @@ module CabooseStore
       if order.financial_status == 'captured'
         response.error = "This order has already been captured, you will need to refund instead"
       else
-        if PaymentProcessor.void(order)
+        if order.total < order.amount_discounted || PaymentProcessor.void(order)
           order.financial_status = 'cancelled'
           order.status = 'voided'
           order.save
@@ -291,35 +320,42 @@ module CabooseStore
     end
   
     # GET /admin/orders/:id/refund
-    def refund
-      return if !user_is_allowed('orders', 'edit')
-    
-      response = Caboose::StdClass.new({
-        'refresh' => nil,
-        'error' => nil,
-        'success' => nil
-      })
-    
-      order = Order.find(params[:id])
-    
-      if order.financial_status != 'captured'
-        response.error = "This order hasn't been captured yet, you will need to void instead"
-      else
-        if PaymentProcessor.refund(order)
-          order.financial_status = 'refunded'
-          order.status = 'refunded'
-          order.save
-          
-          order.discounts.first.update_attribute(:amount_current, order.amount_discounted) if order.discounts.any?
-        
-          response.success = "Order refunded successfully"
-        else
-          response.error = "Error refunding order."
-        end
-      end
-    
-      render json: response
-    end
+    # def refund
+    #   return if !user_is_allowed('orders', 'edit')
+    # 
+    #   response = Caboose::StdClass.new({
+    #     'refresh' => nil,
+    #     'error' => nil,
+    #     'success' => nil
+    #   })
+    # 
+    #   order = Order.find(params[:id])
+    # 
+    #   if order.financial_status != 'captured'
+    #     response.error = "This order hasn't been captured yet, you will need to void instead"
+    #   else
+    #     ap order.total
+    #     ap order.amount_discounted
+    #     
+    #     if order.total < order.amount_discounted || PaymentProcessor.refund(order)
+    #       order.financial_status = 'refunded'
+    #       order.status = 'refunded'
+    #       order.save
+    #       
+    #       discount = order.discounts.first
+    #       ap '==========================='
+    #       ap order.amount_discounted + discount.amount_current
+    #       ap '==========================='
+    #       discount.update_attribute(:amount_current, order.amount_discounted + discount.amount_current) if order.discounts.any?
+    #       
+    #       response.success = "Order refunded successfully"
+    #     else
+    #       response.error = "Error refunding order."
+    #     end
+    #   end
+    # 
+    #   render json: response
+    # end
 
     # GET /admin/orders/status-options
     def admin_status_options

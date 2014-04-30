@@ -111,6 +111,15 @@ module CabooseStore
       return requires
     end
     
+    def calculate_net
+      total  = self.subtotal
+      total += self.tax      if self.tax
+      total += self.shipping if self.shipping
+      total += self.handling if self.handling
+      
+      return total.round(2)
+    end
+    
     def calculate_total(update_gift_card=false)
       # self.calculate_discount
       

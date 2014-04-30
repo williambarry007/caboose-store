@@ -1,6 +1,7 @@
 <% if @order.discounts.any? && @order.total < @order.discounts.first.amount_current %>
   <p style="margin: 24px 0 0">Gift Card covers purchase.</p>
-  <button onclick="window.location='/checkout/authorize-by-gift-card'" style="margin: 12px 0 0">Continue ></button>
+  <button onclick="window.location='/checkout/discount'" style="margin: 12px 0 0">&lt; Back</button>
+  <button onclick="window.location='/checkout/authorize-by-gift-card'" style="margin: 12px 0 0">Continue &gt;</button>
 <% else %>
   <input id="billing-amount" type="hidden" value="<%= @order.total %>" />
 
@@ -36,7 +37,7 @@
   		</select>
   	</div>
 	
-  	<input type="button" value="< Back" onclick="window.location='/checkout/shipping';" />
+  	<input type="button" value="< Back" onclick="window.location='/checkout/discount';" />
   	<input type="submit" value="Continue >" />
   </form>
 
