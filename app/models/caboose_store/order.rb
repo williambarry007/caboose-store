@@ -23,6 +23,7 @@ module CabooseStore
       :shipping_method_code,
       :shipping,
       :discount,
+      :amount_discounted,
       :total,
       :status,            # The current order status. One of: cart, pending, backordered, fulfilled
       :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'captured', 'voided', 'refunded'

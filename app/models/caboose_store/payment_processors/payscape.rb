@@ -81,8 +81,12 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   def self.capture(order)
     response = self.api 'capture', { 'transaction-id' => order.transaction_id }, order.test?
     
-    order.update_gift_cards if order.discounts.any? # TODO change this when discounts are improved
+    if order.discounts.any?
+      order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
+      order.update_gift_cards
+    end
     
+    order.update_gift_cards if order.discounts.any? # TODO change this when discounts are improved
     return response['result-code'].to_i == 100
   end
   

@@ -70,7 +70,8 @@ captured = @order.financial_status == 'captured'
 <tr><td colspan='5' align='right'>Subtotal                </td><td align='right' id='subtotal'   ><%= number_to_currency(@order.subtotal ) %></td></tr>
 <tr><td colspan='5' align='right'>Tax                     </td><td align='right' id='tax'        ><%= number_to_currency(@order.tax      ) %></td></tr>
 <tr><td colspan='5' align='right'><%= @order.shipping_method %> Shipping &amp; Handling </td><td align='right' id='shipping'   ><%= number_to_currency(@order.shipping + @order.handling) %></td></tr>
-<tr><td colspan='5' align='right'>Discount                </td><td align='right'><% if captured %><%= number_to_currency(@order.discount) %><% else %><div id='order_<%= @order.id %>_discount' ></div><% end %></td></tr>
+<tr><td colspan='5' align='right'>Discount                </td><td align='right'><% if captured %><%= number_to_currency(@order.discounts.first.amount_current) %><% else %><%= number_to_currency(@order.amount_discounted || 0) %><% end %></td></tr>
+
 <tr><td colspan='5' align='right'>Total                   </td><td align='right' id='total'      ><%= number_to_currency(@order.total    ) %></td></tr>
 </table>
 <div id='message'></div>
@@ -227,8 +228,16 @@ $(document).ready(function() {
     update_url: '/admin/orders/<%= @order.id %>',
     authenticity_token: '<%= form_authenticity_token %>',
     attributes: [
-      { name: 'status'   , nice_name: 'Status'   , type: 'select', value: <%= raw Caboose.json(@order.status) %>, text: <%= raw Caboose.json(@order.status) %>, width: 100, options_url: '/admin/orders/status-options', fixed_placeholder: false },
-      { name: 'discount' , nice_name: 'Discount' , type: 'text', align: 'right', value: <%= raw Caboose.json(sprintf("%.2f", @order.discount )) %>, width: 100, fixed_placeholder: false, after_update: function() { window.location.reload(true); } }
+      { 
+        name: 'status',
+        nice_name: 'Status',
+        type: 'select',
+        value: <%= raw Caboose.json(@order.status) %>,
+        text: <%= raw Caboose.json(@order.status) %>,
+        width: 100,
+        options_url: '/admin/orders/status-options',
+        fixed_placeholder: false
+      }
     ]
   });
 });

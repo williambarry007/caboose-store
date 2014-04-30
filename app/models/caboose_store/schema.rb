@@ -105,7 +105,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :auth_amount	         , :numeric  ],
         [ :date_shipped	         , :datetime ],
         [ :transaction_id	       , :string   ],
-        [ :transaction_service   , :string   ]
+        [ :transaction_service   , :string   ],
+        [ :amount_discounted     , :numeric  ]
       ],
       
       CabooseStore::ProductImage => [
