@@ -28,7 +28,7 @@ module CabooseStore
     end
     
     def subtotal
-      self.price * self.quantity / 100 * 100
+      (self.price || 0) * (self.quantity || 0) / 100 * 100
     end
     
     def cart_info

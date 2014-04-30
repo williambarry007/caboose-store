@@ -102,6 +102,8 @@ module CabooseStore
       line_item = OrderLineItem.find(params[:id])
       quantity  = params[:attributes][:quantity].to_i
       
+      render :json => { :error => true, :message => 'Quantity must be greater than 0' } and return if quantity <= 0
+      
       if quantity > line_item.variant.quantity_in_stock
         render :json => { :error => true, :message => "There are only #{line_item.variant.quantity_in_stock} left in stock" }
       else
