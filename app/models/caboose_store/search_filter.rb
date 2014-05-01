@@ -152,8 +152,8 @@ module CabooseStore
             min = price_range.first
             max = price_range.last
             
-            # Skip to next variant if the price isnt defined
-            next if variant.price < 1
+            # Skip to next variant if the price isnt defined or is less than $1
+            next if variant.price.nil? || variant.price < 1
             
             # Increment price count at index if the varaint is within the price range
             if variant.price > min and variant.price < max
