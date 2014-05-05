@@ -66,7 +66,7 @@ module CabooseStore
     end
     
     def most_popular_variant
-    	self.variants.order('price DESC').first
+      self.variants.order('price DESC').first
     end
     
     def featured_image

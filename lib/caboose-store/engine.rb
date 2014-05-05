@@ -69,6 +69,7 @@ module CabooseStore::BootStrapper
       order.referring_site   = request.env['HTTP_REFERER']
       order.landing_page     = request.fullpath
       order.landing_page_ref = params[:ref] if params[:ref]
+      ap order
       order.save
       
       # Define the cart ID

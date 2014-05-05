@@ -188,7 +188,7 @@ module CabooseStore
         'use_url_params' => false,
         
         'abbreviations' => {
-          'search_like' => 'title_concat_vendor_name_like'
+          'search_like' => 'store_products.title_concat_vendor_name_like'
         },
         
         'includes' => {
