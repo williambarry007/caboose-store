@@ -74,6 +74,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       ],
       
       CabooseStore::Order => [
+        [ :id                    , :integer  ],
         [ :email	               , :string   ],
         [ :order_number	         , :string   ],
         [ :subtotal	             , :numeric  ],
