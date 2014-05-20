@@ -66,7 +66,7 @@ module CabooseStore
     end
     
     def most_popular_variant
-      self.variants.where('price > 0').order('price ASC').first
+      self.variants.where('price > ? AND status != ?', 0, 'Deleted').order('price ASC').first
     end
     
     def featured_image
