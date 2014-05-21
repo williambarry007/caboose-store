@@ -3,6 +3,19 @@ p = @product
 %>
 <%= render :partial => 'caboose_store/products/admin_header' %>
 
+<p>
+  <strong>Vendor:</strong>
+  
+  <select id="vendor" data-product-id="<%= @product.id %>">
+    <option>-- Select a Vendor --</option>
+    
+    <% CabooseStore::Vendor.all.each do |vendor| %>
+      <option value="<%= vendor.id %>" <%= 'selected' if p.vendor.id && p.vendor.id == vendor.id %>><%= vendor.name%></option>
+    <% end %>
+  </select>
+</p>
+
+
 <% if p.vendor %>
 	<p>
 		<strong>Vendor Status (<%= p.vendor.name %>):</strong>
@@ -32,6 +45,25 @@ p = @product
 date_available = p.date_available ? p.date_available.strftime('%F') : ''
 %>
 $(document).ready(function() {
+  $('#vendor').on('change', function(event) {
+    event.preventDefault();
+    
+    var $target    = $(event.target)
+      , vendor_id  = $target.val()
+      , product_id = $target.data('product-id');
+    
+    console.log(vendor_id, product_id);
+    
+    $.ajax({
+      type: 'put',
+      url: '/admin/products/' + product_id + '/update-vendor',
+      data: { vendor_id: vendor_id },
+      success: function(response) {
+        console.log(response);
+      }
+    })
+  });
+  
 	$('#vendor-status').on('change', function(e) {
 		$select = $(e.target)
 		
@@ -57,18 +89,6 @@ $(document).ready(function() {
       { name: 'date_available'  , nice_name: 'Date Available'       , type: 'text'      , value: <%= raw Caboose.json(date_available    ) %>, width: 500 }
     ]
   });
-	
-	$(document).on('change', 'select', function() {
-		$select = $(this);
-		value   = $('option:selected', $select).val();
-		
-		// console.log($('option[selected]', $select).val());
-		// console.log($('option:selected', $select).val());
-		
-		// $('option[selected]', $select).attr('selected', false);
-		conosle.log(value)
-		$select.parent().find('input').val(value);
-	});
 });
 
 var modal = false;

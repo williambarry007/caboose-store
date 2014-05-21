@@ -587,5 +587,9 @@ module CabooseStore
       
     end
     
+    # PUT /admin/products/:id/update-vendor
+    def admin_update_vendor
+      render :json => { :success => Product.find(params[:id]).update_attribute(:vendor_id, params[:vendor_id]) }
+    end
   end
 end

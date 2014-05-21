@@ -73,6 +73,7 @@ CabooseStore::Engine.routes.draw do
   put     "/admin/products/:id"                         => "products#admin_update"
   post    "/admin/products"                             => "products#admin_add"
   delete  "/admin/products/:id"                         => "products#admin_delete"
+  put     "/admin/products/:id/update-vendor"           => "products#admin_update_vendor"
   
   get     "/admin/products/:product_id/variants/:variant_id/edit"   => "variants#admin_edit"
   get     "/admin/variants/status-options"            => "variants#admin_status_options"
