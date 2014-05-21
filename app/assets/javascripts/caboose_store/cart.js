@@ -186,7 +186,7 @@ var CabooseCart = function() {
 		var id   = _.isNumber(something) ? something : ''
 			, data = _.isObject(something) ? something : {};
       
-		$.ajax({
+    $.ajax({
 			url: '/cart/item/' + id,
 			type: 'post',
 			data: data,
@@ -194,9 +194,9 @@ var CabooseCart = function() {
 				if (response.error) {
 					alert(response.error);
 				} else {
-					
+          
 					// If this is mobile then redirect to mobile cart page
-					if ($.browser.mobile) Caboose.redirect('/cart/mobile');
+          if ($.browser.mobile) Caboose.redirect('/cart/mobile');
 					
 					// If item exists increment quantity, otherwise add to cart
 					if ( _.contains(_.pluck(self.items, 'id'), response.id) ) {
