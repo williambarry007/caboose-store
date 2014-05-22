@@ -10,7 +10,7 @@ p = @product
     <option>-- Select a Vendor --</option>
     
     <% CabooseStore::Vendor.all.each do |vendor| %>
-      <option value="<%= vendor.id %>" <%= 'selected' if p.vendor.id && p.vendor.id == vendor.id %>><%= vendor.name%></option>
+      <option value="<%= vendor.id %>" <%= 'selected' if p.vendor_id && p.vendor_id == vendor.id %>><%= vendor.name%></option>
     <% end %>
   </select>
 </p>
