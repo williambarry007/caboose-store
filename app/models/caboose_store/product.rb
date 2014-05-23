@@ -33,7 +33,8 @@ module CabooseStore
       :default3,
       :status,
       :alternate_id,
-      :custom_input
+      :custom_input,
+      :sort_order
       
     #
     # Class Methods
@@ -44,7 +45,7 @@ module CabooseStore
     end
     
     def self.active
-      where(status: 'Active')
+      where(:status => 'Active')
     end
     
     def self.by_title

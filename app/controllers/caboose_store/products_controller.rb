@@ -591,5 +591,18 @@ module CabooseStore
     def admin_update_vendor
       render :json => { :success => Product.find(params[:id]).update_attribute(:vendor_id, params[:vendor_id]) }
     end
+    
+    # GET /admin/products/sort
+    def admin_sort
+      @products   = Product.active
+      @vendors    = Vendor.active
+      @categories = Category.all
+      
+      render :layout => 'caboose/admin'
+    end
+    
+    # PUT /admin/products/update-sort-order
+    def admin_update_sort_order
+    end
   end
 end

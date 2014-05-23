@@ -144,7 +144,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :seo_description	     , :string    ],
         [ :alternate_id	         , :string    ],
         [ :date_available	       , :datetime  ],
-        [ :custom_input          , :text      ]
+        [ :custom_input          , :text      ],
+        [ :sort_order            , :integer   ]
       ],
       
       CabooseStore::Review => [

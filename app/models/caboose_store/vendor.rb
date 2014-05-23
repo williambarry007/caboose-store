@@ -7,6 +7,10 @@ module CabooseStore
     attr_accessible :id, :name, :status
     after_save :clear_filters
     
+    def self.active
+      where(:status => 'Active')
+    end
+    
     def update_products
       self.products.each { |product| product.update_attribute(:vendor_status, self.status) }
     end

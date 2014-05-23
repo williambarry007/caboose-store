@@ -1,0 +1,163 @@
+<h1>Sort Products</h1>
+
+<section>
+  <aside>
+    <ul id="source" class="sortable">
+      <li id="1">Foo</li>
+      <li id="2">Bar</li>
+      <li id="3">Baz</li>
+    </ul>
+    
+    <input data-id="source" class="filter" name="search" type="search" placeholder="Search for Products" />
+    
+    <select data-id="source" class="filter" name="vendor">
+      <option value="">-- Filter by Vendor --</option>
+      
+      <% @vendors.each do |vendor| %>
+        <option value="<%= vendor.id %>"><%= vendor.name %></option>
+      <% end %>
+    </select>
+    
+    <select data-id="source" class="filter" name="category">
+      <option value="">-- Filter by Category --</option>
+      
+      <% @categories.each do |category| %>
+        <option value="<%= category.id %>"><%= category.name %></option>
+      <% end %>
+    </select>
+  </aside>
+  
+  <article>
+    <ul id="destination" class="sortable">
+      <li id="1">Foo</li>
+      <li id="2">Bar</li>
+      <li id="3">Baz</li>
+    </ul>
+    
+    <input id="sort" type="button" value="Ascending" data-direction="ASC" />
+    <input id="submit" type="button" value="Submit" /><br />
+    
+    <input data-id="destination" class="filter" name="search" type="search" placeholder="Search for Products" />
+    
+    <select data-id="destination" class="filter" name="vendor">
+      <option value="">-- Filter by Vendor --</option>
+      
+      <% @vendors.each do |vendor| %>
+        <option value="<%= vendor.id %>"><%= vendor.name %></option>
+      <% end %>
+    </select>
+    
+    <select data-id="destination" class="filter" name="category">
+      <option value="">-- Filter by Category --</option>
+      
+      <% @categories.each do |category| %>
+        <option value="<%= category.id %>"><%= category.name %></option>
+      <% end %>
+    </select>
+  </article>
+</section>
+
+<% content_for :caboose_js do %>
+  <%= javascript_include_tag('caboose_store/jquery-ui-sortable') %>
+  <%= javascript_include_tag('caboose_store/jquery-ui-multisortable') %>
+  
+  <script>
+    
+    // Delay method
+    var delay = (function(){
+      var timer = 0;
+      return function(callback, ms){
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+      };
+    })();
+    
+    // Filter
+    function filter(event) {
+      var $target = $(event.target);
+      console.log($target);
+    }
+    
+    $(document).ready(function() {
+      
+      // Define lists
+      var $lists = $('ul.sortable')
+        , $source = $('ul#source')
+        , $destination = $('ul#destination');
+      
+      // Setup sortable lists
+      $('ul.sortable').multisortable({
+        stop: function(event) {
+          var $items = $source.find('.selected');
+          console.log($items);
+          // call filter
+        }
+      });
+      
+      // Configure sortable lists
+      $source.sortable('option', 'connectWith', $destination);
+      $destination.sortable('disable');
+      
+      // Filter events
+      $('select.filter').on('change', filter);
+      
+      $('input[type=search].filter').on('keyup', function(event) {
+        delay(function() { filter(event) }, 1000);
+      });
+    });
+  </script>
+<% end %>
+
+<% content_for :caboose_css do %>
+  <style>
+  
+    /* Layout */
+    
+    section,
+    section article { overflow: hidden; }
+    
+    section aside {
+      float: left;
+      margin-right: 12px;
+    }
+    
+    /* Filters */
+    
+    input[type=search], select {
+      box-sizing: border-box;
+      margin: 6px 0;
+      width: 250px;
+    }
+    input[type=search] { height: 42px; }
+    select { display: block; }
+    
+    input[type=button] {
+      background: #ccc;
+      margin: 12px 0;
+      padding: 6px;
+    }
+    
+    /* Lists */
+    
+    ul.sortable {
+      border: 1px solid #000;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      width: 250px;
+      height: 250px;
+    }
+    ul.sortable li {
+      padding: 6px;
+      cursor: pointer;
+    }
+    ul.sortable li.selected {
+      background: #3e9aff;
+      color: #fff;
+    }
+    
+    ul#source {
+      margin: 0 0 58px;
+    }
+  </style>
+<% end %>
