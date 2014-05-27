@@ -41,6 +41,13 @@ CabooseStore::Engine.routes.draw do
   
   get '/admin/products/add-upcs' => 'products#admin_add_upcs'
   
+  get  '/admin/vendors'                => 'vendors#admin_index'
+  get  '/admin/vendors/status-options' => 'vendors#status_options'
+  get  '/admin/vendors/new'            => 'vendors#admin_new'
+  get  '/admin/vendors/:id/edit'       => 'vendors#admin_edit'
+  post '/admin/vendors/create'         => 'vendors#admin_create'
+  put  '/admin/vendors/:id/update'     => 'vendors#admin_update'
+  
   # Orders
   
   get  '/admin/orders/:id/void'                => 'orders#admin_void'

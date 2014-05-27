@@ -594,10 +594,8 @@ module CabooseStore
     
     # GET /admin/products/sort
     def admin_sort
-      @products   = Product.active
-      @vendors    = Vendor.active
-      @categories = Category.all
-      
+      @products = Product.active
+      @vendors  = Vendor.active
       render :layout => 'caboose/admin'
     end
     
