@@ -1,6 +1,7 @@
 module CabooseStore
   class Discount < ActiveRecord::Base
-    self.table_name = 'store_discounts'
+    self.table_name  = 'store_discounts'
+    self.primary_key = 'id'
     
     attr_accessible :id,
       :name,              # The name of this discount

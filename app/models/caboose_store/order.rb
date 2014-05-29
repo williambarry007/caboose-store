@@ -6,7 +6,8 @@
 
 module CabooseStore        
   class Order < ActiveRecord::Base
-    self.table_name = 'store_orders'
+    self.table_name  = 'store_orders'
+    self.primary_key = 'id'
     
     belongs_to :customer, :class_name => 'Caboose::User'
     belongs_to :shipping_address, :class_name => 'Address'
