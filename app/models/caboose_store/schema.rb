@@ -4,7 +4,6 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
   def self.schema
     {  
       CabooseStore::Address => [
-        [ :id            , :integer ],
         [ :name          , :string  ],
         [ :first_name    , :string  ],
         [ :last_name     , :string  ],
@@ -43,7 +42,6 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       ],
       
       CabooseStore::Discount => [
-        [ :id	                   , :integer  ],
         [ :name	                 , :string   ],
         [ :code	                 , :string   ],
         [ :amount_current        , :numeric  ],
@@ -74,7 +72,6 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       ],
       
       CabooseStore::Order => [
-        [ :id                    , :integer  ],
         [ :email	               , :string   ],
         [ :order_number	         , :string   ],
         [ :subtotal	             , :numeric  ],

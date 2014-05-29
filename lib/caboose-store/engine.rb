@@ -63,7 +63,7 @@ module CabooseStore::BootStrapper
     
     # Check if the cart ID is defined and that it exists in the database
     unless session[:cart_id] and CabooseStore::Order.exists?(session[:cart_id])
-      
+      ap "FOO"
       # Create an order to associate with the session
       # order                  = CabooseStore::Order.new(:status => 'cart', :date_created => DateTime.now)
       order                  = CabooseStore::Order.new
@@ -73,7 +73,7 @@ module CabooseStore::BootStrapper
       order.landing_page     = request.fullpath
       order.landing_page_ref = params[:ref] if params[:ref]
       order.save
-      
+      ap "BAR"
       # Define the cart ID
       session[:cart_id] = order.id
     end
