@@ -4,12 +4,12 @@
   <aside>
     <ul id="source" class="sortable">
       <% @products.each do |product| %>
-        <li id="<%= product.id %>"><%= product.title %></li>
+        <li data-id="<%= product.id %>"><%= product.title %></li>
       <% end %>
     </ul>
     
-    <!-- <input name="filter" type="button" value="Filter" /> -->
-    <input name="clear" type="button" value="Clear" /><br />
+    <!-- <input name="filter" type="button" value="Filter" />
+    <input name="clear" type="button" value="Clear" /><br /> -->
     <input name="search" type="search" placeholder="Search for Products" />
     
     <select class="filter" name="vendor">
@@ -22,9 +22,9 @@
   </aside>
   
   <article>
-    <ul id="destination" class="sortable">
+    <ul id="target" class="sortable">
       <% @products.each do |product| %>
-        <li id="<%= product.id %>"><%= product.title %></li>
+        <li data-id="<%= product.id %>"><%= product.title %></li>
       <% end %>
     </ul>
     
@@ -35,7 +35,6 @@
 <% content_for :caboose_js do %>
   <%= javascript_include_tag('underscore') %>
   <%= javascript_include_tag('caboose_store/jquery-ui') %>
-  <%= javascript_include_tag('caboose_store/jquery-ui-multisortable') %>
   
   <script>
     
@@ -53,42 +52,133 @@
     
     // Filter
     function filter(event) {
-      var search_string = $('input[name=search]').val()
+      var $source       = $('ul#source')
+        , $search       = $('input[name=search]')
+        , search_string = $search.val() === $search.attr('placeholder') ? undefined : $search.val().trim().toUpperCase()
         , vendor_id     = $('select[name=vendor]').val();
-        
-      window.results = _.filter(window.products, function(product) {
-        return search_string && product.title.toUpperCase().indexOf(search_string.toUpperCase()) > -1 || vendor_id && product.vendor_id == vendor_id
-      });
       
-      console.log(window.results);
+      $source.empty();
+      
+      _.each(window.products, function(product) {
+        if (!search_string && !vendor_id
+        || search_string && product.title.toUpperCase().indexOf(search_string) > -1
+        || vendor_id && product.vendor_id == vendor_id) {
+          $source.append( $('<li/>').attr('data-id', product.id).text(product.title) );
+        }
+      });
+    }
+    
+    function update(event) {
+      
+      // Send the ordered array to the server to make it official
+      $.ajax({
+        type: 'put',
+        url: '/admin/products/update-sort-order',
+        data: { product_ids: $('ul#target').sortable('toArray', { attribute: 'data-id' }) },
+        success: function(response) {
+          console.log(response);
+        }
+      });
     }
     
     $(document).ready(function() {
+      var selected_class = 'selected';
       
-      // Define lists
-      var $lists = $('ul.sortable')
-        , $source = $('ul#source')
-        , $destination = $('ul#destination');
-      
-      $source.multisortable({
-        start: function(event, ui) {
-          
-        },
+      // Selection rules
+      $('ul.sortable').on('click', 'li', function(event) {
+        $element = $(this);
         
-        connectWith: $destination
+        if (event.shiftKey && $last_element) {
+          if ($element.index() < $last_element.index()) {
+            $element.nextUntil($last_element).addClass(selected_class);
+          } else {
+            $element.prevUntil($last_element).addClass(selected_class);
+          }
+          
+          $element.toggleClass(selected_class);
+        } else if (event.ctrlKey || event.metaKey) {
+          if ($element.hasClass(selected_class)) {
+            $element.removeClass(selected_class);
+          } else {
+            $element.addClass(selected_class);
+          }
+        } else {
+          $element.addClass(selected_class).siblings().removeClass(selected_class);
+        }
+        
+        $last_element = $element;
       });
       
-      $destination.multisortable({
-        receive: function(event, ui) {
-          console.log(ui);
+      // Setup sortable lists
+      $('ul#source').sortable({
+        delay: 150,
+        revert: 0,
+        connectWith: 'ul#target',
+        
+        helper: function(event, item) {
+          
+          // If the user just clicked and immediately drug an element
+          if ( !item.hasClass(selected_class) ) item.addClass(selected_class).siblings().removeClass(selected_class);
+          
+          // Grab the selected elements and create the helper
+          var elements = item.parent().children('.' + selected_class).clone()
+            , helper   = $('<li/>');
+            
+          // Add the elements to the item multidrag data attribute
+          item.data('multidrag', elements).siblings('.' + selected_class);
+          
+          // Pass back the helper
+          return helper.append(elements);
+        },
+        
+        start: function(event, ui) {
+          
+          // Make sure the item stays visible on #source
+          $(ui.item).show();
+          
+          // Clone the original item and note the previous one, to reappend after jquery ui takes it away
+          item_clone = $(ui.item).clone();
+          previous_item = $(ui.item).prev();
+          
+          // Remove selected status from ul#target
+          $('ul#target li.selected').removeClass('selected');
+        },
+        
+        beforeStop: function(event, ui) {
+          
+          // Remove duplicate items from old positions
+          ui.item.data('multidrag').each(function(index, element) {
+            var $element = $(element);
+            $('ul#target li[data-id=' + $element.attr('data-id') + ']').not('.selected').remove()
+          });
+        },
+        
+        stop: function(event, ui) {
+          
+          // Clear multidrag data
+          ui.item.after( ui.item.data('multidrag') ).remove();
+          
+          // If the previous item is defined append the clone just after, otherwise prepend to #source
+          if (previous_item.length) {
+            previous_item.after(item_clone);
+          } else {
+            $('ul#source').prepend(item_clone);
+          }
+          
+          // Update sort order
+          update(event, ui);
         }
       });
       
-      // Filter events
+      // Update sort order when done sorting
+      $('ul#target').sortable({ stop: update });
+      
+      // Filter when the vendor select box change
       $('select').on('change', filter);
       
+      // Filter, after a delay, when there is a keyup event in the search
       $('input[type=search]').on('keyup', function(event) {
-        delay(function() { filter(event) }, 1000);
+        delay(function() { filter(event) }, 600);
       });
     });
   </script>
@@ -133,22 +223,32 @@
       height: 250px;
       list-style: none;
       margin: 0;
-      overflow: scroll;
+      overflow-x: hidden;
+      overflow-y: scroll;
       padding: 0;
       width: 350px;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     ul.sortable li {
       box-sizing: border-box;
+      border-bottom: 1px solid #ccc;
       cursor: pointer;
       cursor: grab;
-      overflow: hidden;
+      display: block;
       padding: 6px;
-      white-space: nowrap;
       width: 100%;
     }
     ul.sortable li.selected {
       background: #3e9aff;
+      border-color: #fff;
       color: #fff;
     }
+    
+    ul#source .ui-sortable-placeholder { display: none; }
   </style>
 <% end %>

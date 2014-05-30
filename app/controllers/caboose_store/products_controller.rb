@@ -583,8 +583,6 @@ module CabooseStore
         p.variants.each do |v|
         end
       end
-        
-      
     end
     
     # PUT /admin/products/:id/update-vendor
@@ -601,6 +599,12 @@ module CabooseStore
     
     # PUT /admin/products/update-sort-order
     def admin_update_sort_order
+      params[:product_ids].each_with_index do |product_id, index|
+        ap "#{product_id} - #{index}"
+        Product.find(product_id.to_i).update_attribute(:sort_order, index)
+      end
+      
+      render :json => { :success => true }
     end
   end
 end

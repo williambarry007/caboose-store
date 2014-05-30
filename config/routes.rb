@@ -59,6 +59,8 @@ CabooseStore::Engine.routes.draw do
   post    "/reviews/add"                                => "reviews#add"  
 
   get     "/admin/products"                             => "products#admin_index"
+  get     '/admin/products/sort'                        => 'products#admin_sort'
+  put     '/admin/products/update-sort-order'           => 'products#admin_update_sort_order'
   put     "/admin/products/update-vendor-status/:id"    => "products#admin_update_vendor_status"
   get     "/admin/products/new"                         => "products#admin_new"
   get     "/admin/products/status-options"              => "products#admin_status_options"  
@@ -81,8 +83,6 @@ CabooseStore::Engine.routes.draw do
   post    "/admin/products"                             => "products#admin_add"
   delete  "/admin/products/:id"                         => "products#admin_delete"
   put     "/admin/products/:id/update-vendor"           => "products#admin_update_vendor"
-  get     '/admin/products/sort'                        => 'products#admin_sort'
-  put     '/admin/products/update-sort-order'           => 'products#admin_update_sort_order'
   
   get     "/admin/products/:product_id/variants/:variant_id/edit"   => "variants#admin_edit"
   get     "/admin/variants/status-options"            => "variants#admin_status_options"
