@@ -26,7 +26,7 @@ module CabooseStore
       
     validates_attachment_content_type :image, :content_type => %w(image/jpeg image/jpg image/png)
     
-    attr_accessible :id, :parent_id, :name, :url, :slug
+    attr_accessible :id, :parent_id, :name, :url, :slug, :sort_order
     
     #
     # Class Methods

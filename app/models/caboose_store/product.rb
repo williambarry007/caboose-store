@@ -1,10 +1,4 @@
-#
-# Product
-#
-# :: Class Methods
-# :: Instance Methods
-
-module CabooseStore        
+module CabooseStore
   class Product < ActiveRecord::Base
     self.table_name = 'store_products'
     
@@ -17,6 +11,8 @@ module CabooseStore
     has_many :product_images, :class_name => 'CabooseStore::ProductImage'
     has_many :proudct_inputs, :class_name => 'CabooseStore::ProductInput'
     has_many :reviews, :class_name => 'CabooseStore::Review'
+    
+    default_scope order('store_products.sort_order')
     
     attr_accessible :id,
       :title,

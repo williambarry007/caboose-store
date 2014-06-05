@@ -46,7 +46,7 @@ module CabooseStore
         'search_like'   => ''
       }, {
         'model'          => 'CabooseStore::Product',
-        'sort'           => 'title',
+        'sort'           => 'store_products.sort_order',
         'base_url'       => url_without_params,
         'items_per_page' => 15,
         'use_url_params' => false,
@@ -576,8 +576,6 @@ module CabooseStore
       p.status      = 'Active'
       p.save
       
-      
-      
       product_ids.each do |pid|
         p = Product.find(pid)
         p.variants.each do |v|
@@ -592,15 +590,16 @@ module CabooseStore
     
     # GET /admin/products/sort
     def admin_sort
-      @products = Product.active
-      @vendors  = Vendor.active
+      @products   = Product.active
+      @vendors    = Vendor.active
+      @categories = Category.all
+      
       render :layout => 'caboose/admin'
     end
     
     # PUT /admin/products/update-sort-order
     def admin_update_sort_order
       params[:product_ids].each_with_index do |product_id, index|
-        ap "#{product_id} - #{index}"
         Product.find(product_id.to_i).update_attribute(:sort_order, index)
       end
       

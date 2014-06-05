@@ -33,7 +33,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :square_offset_x	     , :integer   ],
         [ :square_offset_y	     , :integer   ],
         [ :square_scale_factor	 , :numeric   ],
-        [ :sort	                 , :integer   ]
+        [ :sort_order	           , :integer   ]
       ],
       
       CabooseStore::CategoryMembership => [        

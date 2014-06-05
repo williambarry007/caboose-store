@@ -4,7 +4,7 @@ module CabooseStore
     self.table_name = 'store_vendors'
     
     has_many :products
-    attr_accessible :id, :name, :status
+    attr_accessible :id, :name, :status, :sort_order
     after_save :clear_filters
     
     def self.active

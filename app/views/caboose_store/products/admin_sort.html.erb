@@ -8,8 +8,6 @@
       <% end %>
     </ul>
     
-    <!-- <input name="filter" type="button" value="Filter" />
-    <input name="clear" type="button" value="Clear" /><br /> -->
     <input name="search" type="search" placeholder="Search for Products" />
     
     <select class="filter" name="vendor">
@@ -74,10 +72,7 @@
       $.ajax({
         type: 'put',
         url: '/admin/products/update-sort-order',
-        data: { product_ids: $('ul#target').sortable('toArray', { attribute: 'data-id' }) },
-        success: function(response) {
-          console.log(response);
-        }
+        data: { product_ids: $('ul#target').sortable('toArray', { attribute: 'data-id' }) }
       });
     }
     
@@ -146,14 +141,19 @@
         
         beforeStop: function(event, ui) {
           
-          // Remove duplicate items from old positions
-          ui.item.data('multidrag').each(function(index, element) {
-            var $element = $(element);
-            $('ul#target li[data-id=' + $element.attr('data-id') + ']').not('.selected').remove()
-          });
+          if ($(ui.item).parent().attr('id') != 'source') {
+          
+            // Remove duplicate items from old positions
+            ui.item.data('multidrag').each(function(index, element) {
+              var $element = $(element);
+              $('ul#target li[data-id=' + $element.attr('data-id') + ']').not('.selected').remove()
+            });
+          }
         },
         
         stop: function(event, ui) {
+          
+          if ($(ui.item).parent().attr('id') == 'source') return false;
           
           // Clear multidrag data
           ui.item.after( ui.item.data('multidrag') ).remove();
