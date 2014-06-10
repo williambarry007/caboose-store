@@ -70,7 +70,19 @@ captured = @order.financial_status == 'captured'
 <tr><td colspan='5' align='right'>Subtotal                </td><td align='right' id='subtotal'   ><%= number_to_currency(@order.subtotal ) %></td></tr>
 <tr><td colspan='5' align='right'>Tax                     </td><td align='right' id='tax'        ><%= number_to_currency(@order.tax      ) %></td></tr>
 <tr><td colspan='5' align='right'><%= @order.shipping_method %> Shipping &amp; Handling </td><td align='right' id='shipping'   ><%= number_to_currency(@order.shipping + @order.handling) %></td></tr>
-<tr><td colspan='5' align='right'>Discount                </td><td align='right'><% if captured %><%= number_to_currency(@order.amount_discounted || 0) %><% else %><%= number_to_currency(@order.discounts.first.amount_current) %><% end %></td></tr>
+
+<tr>
+  <td colspan='5' align='right'>Discount</td>
+  <td align='right'>
+    <% if captured && @order.discounts.any? %>
+      <%= number_to_currency(@order.amount_discounted || 0) %>
+    <% elsif @order.discounts.any? %>
+      <%= number_to_currency(@order.discounts.first.amount_current) %>
+    <% else %>
+      $0.00
+    <% end %>
+  </td>
+</tr>
 
 <tr><td colspan='5' align='right'>Total                   </td><td align='right' id='total'      ><%= number_to_currency(@order.total    ) %></td></tr>
 </table>
