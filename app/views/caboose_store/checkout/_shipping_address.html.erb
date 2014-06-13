@@ -3,7 +3,7 @@
 <address>
 	<%= "#{@shipping_address.first_name} #{@shipping_address.last_name}" %><br />
 	<%= @shipping_address.address1 %><br />
-	<%= "#{@shipping_address.address2}<br />" if @shipping_address.address2 and not @shipping_address.address2.empty? %>
+	<%= "#{@shipping_address.address2}" if @shipping_address.address2 and not @shipping_address.address2.empty? %><br />
 	<%= "#{@shipping_address.city}, #{@shipping_address.state} #{@shipping_address.zip}" %>
 </address>
 

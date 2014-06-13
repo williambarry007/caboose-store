@@ -110,6 +110,9 @@ var CabooseCheckout = function() {
 		
 		$('#billing-form').one('submit', function(e) {
 			e.preventDefault();
+      
+      // TODO this is a temporary fix.. for some reason the one submit event is getting registered multiple times
+      if ($('#billing-confirmation').length) return false;
 			
 			$('input[name=billing-cc-exp]').val($('#billing-expiration-month').val() + $('#billing-expiration-year').val());
 			
@@ -119,6 +122,7 @@ var CabooseCheckout = function() {
 				, total    = $('input#billing-amount').val()
 				, $confirm = $(document.createElement('div'));
 			
+      $confirm.attr('id', 'billing-confirmation');
 			$confirm.append( $('</p>').attr('style', 'margin-bottom: 0').html('<strong>Credit Card Number</strong>: xxxx-xxxx-xxxx-' + cc_num.replace(/\-\ /g, '').substr(-4)) );
 			$confirm.append( $('</p>').attr('style', 'margin-bottom: 0').html('<strong>Expiration Date</strong>: ' + cc_exp.substr(0, 2) + '/' + cc_exp.substr(2, 2)) );
 			$confirm.append( $('</p>').html('<strong>Total</strong>: $' + total) );
