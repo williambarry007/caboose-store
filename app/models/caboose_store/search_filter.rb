@@ -69,7 +69,7 @@ module CabooseStore
       filtered_url = self.exclude_params_from_url(url, exclude_params)
       
       # If the search filter already exists pass it back
-      return SearchFilter.where(url: pager.options['base_url']) if SearchFilter.exists?(url: pager.options['base_url'])
+      # return SearchFilter.where(url: pager.options['base_url']) if SearchFilter.exists?(url: pager.options['base_url'])
       
       # Create a new search filter
       search_filter     = SearchFilter.new
@@ -181,10 +181,11 @@ module CabooseStore
       search_filter.prices = price_range_matches.collect.with_index { |matches, index| price_ranges[index] if matches > 0 }.compact
       
       # Inject the search filter into the database
-      search_filter.save
+      # search_filter.save
       
       # Finally, return the filter; NOTE: find out of the database so the hashes get serialized correctly
-      SearchFilter.find(search_filter.id)
+      # SearchFilter.find(search_filter.id)
+      return search_filter
     end
   end
 end
