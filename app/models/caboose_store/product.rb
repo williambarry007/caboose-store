@@ -30,7 +30,15 @@ module CabooseStore
       :status,
       :alternate_id,
       :custom_input,
+      :featured,
       :sort_order
+    
+    
+    #
+    # Scopes
+    #
+    
+    scope :featured, -> { where(:featured => true) }
       
     #
     # Class Methods

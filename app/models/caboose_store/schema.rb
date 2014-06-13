@@ -142,7 +142,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :alternate_id	         , :string    ],
         [ :date_available	       , :datetime  ],
         [ :custom_input          , :text      ],
-        [ :sort_order            , :integer   ]
+        [ :sort_order            , :integer   ],
+        [ :featured              , :boolean    , :default => false ]
       ],
       
       CabooseStore::Review => [

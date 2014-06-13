@@ -29,6 +29,7 @@ p = @product
 
 <p><div id='product_<%= p.id %>_title'></div></p>
 <p><div id='product_<%= p.id %>_handle'></div></p>
+<p><div id='product_<%= p.id %>_featured'></div></p>
 <p><div id='product_<%= p.id %>_seo_title'></div></p>
 <p><div id='product_<%= p.id %>_seo_description'></div></p>
 <p><div id='product_<%= p.id %>_status'></div></p>
@@ -86,7 +87,8 @@ $(document).ready(function() {
       { name: 'seo_title'       , nice_name: 'SEO Page Title'       , type: 'text'      , value: <%= raw Caboose.json(p.seo_title       ) %>, width: 500 },
       { name: 'seo_description' , nice_name: 'SEO Meta Description' , type: 'textarea'  , value: <%= raw Caboose.json(p.seo_description ) %>, width: 500, height: 150 },
       { name: 'alternate_id'    , nice_name: 'Alternate ID'         , type: 'text'      , value: <%= raw Caboose.json(p.alternate_id    ) %>, width: 500 },
-      { name: 'date_available'  , nice_name: 'Date Available'       , type: 'text'      , value: <%= raw Caboose.json(date_available    ) %>, width: 500 }
+      { name: 'date_available'  , nice_name: 'Date Available'       , type: 'text'      , value: <%= raw Caboose.json(date_available    ) %>, width: 500 },
+      { name: 'featured'        , nice_name: 'Featured'             , type: 'checkbox'  , value: <%= raw Caboose.json(p.featured        ) %>, width: 500 }
     ]
   });
 });
