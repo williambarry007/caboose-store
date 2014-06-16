@@ -9,6 +9,8 @@ p = @product
 <%= render :partial => 'caboose_store/products/admin_footer' %>
 
 <% content_for :caboose_js do %>
+<%= javascript_include_tag "#{request.protocol}/assets/tinymce/plugins/caboose/plugin.js" %>
+
 <script type='text/javascript'>
 
 $(document).ready(function() {
