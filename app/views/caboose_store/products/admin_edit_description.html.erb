@@ -9,8 +9,6 @@ p = @product
 <%= render :partial => 'caboose_store/products/admin_footer' %>
 
 <% content_for :caboose_js do %>
-<%= javascript_include_tag "#{request.protocol}#{request.host}/assets/tinymce/plugins/caboose/plugin.js" %>
-
 <script type='text/javascript'>
 
 $(document).ready(function() {
@@ -36,8 +34,8 @@ $(window).load(function() {
 
 </script>
 <%= tinymce_assets %>
-<%= tinymce :caboose, 
-  'width'   => '575px', 
+<%= tinymce :caboose,
+  'width'   => '575px',
   'height'  => '240px'
 %>
 <% end %>
