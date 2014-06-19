@@ -36,7 +36,24 @@ module CabooseStore
       :date_created,
       :date_authorized,
       :date_captured,
-      :date_cancelled
+      :date_cancelled,
+      :email,
+      :customer_id,
+      :payment_id,
+      :gateway_id,
+      :financial_status,
+      :shipping_address_id,
+      :billing_address_id,
+      :landing_page,
+      :landing_page_ref,
+      :handling,
+      :transaction_d,
+      :auth_code,
+      :alternate_id,
+      :auth_amount,
+      :date_shipped,
+      :transaction_service,
+      :transaction_id
       
     #
     # Class Methods
@@ -80,9 +97,9 @@ module CabooseStore
       self.order_line_items
     end
     
-    def subtotal
-      self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
-    end
+    # def subtotal
+    #   self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
+    # end
     
     # Array of any Line Items which have been fulfilled (marked as shipped on the order screen).
     def fulfilled_line_items

@@ -30,7 +30,8 @@ CabooseStore::Engine.routes.draw do
   get  '/products/:id'    => 'products#index', constraints: {id: /.*/}
   get  '/products'        => 'products#index'
 
-  post '/variants/find-by-options' => 'variants#find_by_options'
+  post '/variants/find-by-options'   => 'variants#find_by_options'
+  get  '/variants/:id/display-image' => 'variants#display_image'
   
   get '/admin/variants/group' => 'variants#admin_group'
   

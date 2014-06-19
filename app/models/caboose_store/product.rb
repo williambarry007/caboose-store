@@ -19,6 +19,7 @@ module CabooseStore
       :description,
       :vendor_id,
       :handle,
+      :date_available,
       :seo_title,
       :seo_description,
       :option1,

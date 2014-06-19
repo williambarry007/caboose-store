@@ -13,7 +13,11 @@ module CabooseStore
       :quantity,
       :quantity_shipped,
       :custom_input,
-      :notes
+      :notes,
+      :order_id,
+      :status,
+      :tracking_number,
+      :unit_price
     
     def price
       

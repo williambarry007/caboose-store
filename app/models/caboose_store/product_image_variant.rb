@@ -4,5 +4,7 @@ module CabooseStore
     
     belongs_to :product_image
     belongs_to :variant
+    
+    attr_accessible :product_image_id, :variant_id
   end
 end

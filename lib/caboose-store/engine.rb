@@ -36,14 +36,14 @@ module CabooseStore
       app.config.shipping = CabooseStore::shipping
     end
     
-    initializer 'caboose_store.payment_processor', after: :finish_hook do |app|
+    initializer 'caboose_store.payment_processor', :after => :finish_hook do |app|
       case CabooseStore::payment_processor
         when 'authorize.net' then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::AuthorizeNet
         when 'payscape'      then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::Payscape
       end
     end
     
-    initializer 'caboose_store.cart', after: :finish_hook do |app|
+    initializer 'caboose_store.cart', :after => :finish_hook do |app|
       ActiveSupport.on_load(:action_controller) do
         include CabooseStore::BootStrapper
       end
@@ -82,3 +82,11 @@ module CabooseStore::BootStrapper
     ap @order = CabooseStore::Order.find(session[:cart_id])
   end
 end
+
+# module Caboose
+#   PageBarGenerator.class_eval do
+#     def all_records
+#       return model_with_includes.where(where)
+#     end
+#   end
+# end

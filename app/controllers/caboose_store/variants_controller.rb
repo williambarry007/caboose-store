@@ -19,6 +19,12 @@ module CabooseStore
       render :json => { :variant => variant, :customizations => customizations }
     end
     
+    # GET /variants/:id/display-image
+    def display_image
+      ap "File is found"
+      render :json => Variant.find(params[:id]).product_images.first
+    end
+    
     #=============================================================================
     # Admin actions
     #=============================================================================

@@ -29,7 +29,11 @@ module CabooseStore
       :option2,            # If a product has a second option defined, then returns the value of this variant's option2.
       :option3,            # If a product has a third option defined, then returns the value of this variant's option3.  
       :requires_shipping,  # Returns true if the variant is shippable or false if it is a service or a digital good.    
-      :taxable             # Returns true if the variant is taxable or false if it is not.
+      :taxable,            # Returns true if the variant is taxable or false if it is not.
+      :sku,
+      :available,
+      :cylinder,
+      :shipping_unit_value
     
     #
     # Class Methods
