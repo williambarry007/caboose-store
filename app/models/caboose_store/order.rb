@@ -97,9 +97,9 @@ module CabooseStore
       self.order_line_items
     end
     
-    # def subtotal
-    #   self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
-    # end
+    def subtotal
+      self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
+    end
     
     # Array of any Line Items which have been fulfilled (marked as shipped on the order screen).
     def fulfilled_line_items
