@@ -106,7 +106,7 @@ module CabooseStore
     # PUT /cart/item/:id
     def update
       line_item = OrderLineItem.find(params[:id])
-      quantity  = params[:attributes][:quantity].to_i
+      quantity  = params[:attributes][:quantity].to_i || params[:quantity].to_i
       
       render :json => { :error => true, :message => 'Quantity must be greater than 0' } and return if quantity <= 0
       
