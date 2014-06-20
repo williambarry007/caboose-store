@@ -86,6 +86,21 @@ module CabooseStore
     def show
     end
     
+    # GET /api/products
+    def api_list
+      render :json => Product.where(:status => 'Active')
+    end
+    
+    # GET /api/products/:id
+    def api_details
+      render :json => Product.find(params[:id])
+    end
+    
+    # GET /api/products/:id/variants
+    def api_variants
+      render :json => Product.find(params[:id]).variants
+    end
+    
     #=============================================================================
     # Admin actions
     #=============================================================================

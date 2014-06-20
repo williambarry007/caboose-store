@@ -37,15 +37,11 @@ module CabooseStore
           # Huzzah!
           if line_item.variant.id == variant.id
             
-            ap "FOUND EXISTING LINE ITEM"
-            
             # Check if the quantity already requested plus the quantity being requested vs the quantity in stock
             render :json => { :error => "There are only #{variant.quantity_in_stock} in stock" } and return if !variant.ignore_quantity && line_item.quantity + quantity > variant.quantity_in_stock
             
             # If there are any customizations
             if line_item.customizations.any? || params[:customizations]
-              
-              ap "CHECK FOR CUSTOMIZATIONS"
               
               # Ensure that customizations were passed and that there is an equivelant number
               break if line_item.customizations.empty? || params[:customizations].nil? || line_item.customizations.count != params[:customizations].count
