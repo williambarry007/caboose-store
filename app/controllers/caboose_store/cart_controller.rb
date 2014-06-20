@@ -105,8 +105,17 @@ module CabooseStore
     
     # PUT /cart/item/:id
     def update
-      line_item = OrderLineItem.find(params[:id])
-      quantity  = params[:attributes][:quantity].to_i || params[:quantity].to_i
+      line_item = if params[:id]
+        OrderLineItem.find(params[:id])
+      elsif params[:variant_id]
+        OrderLineItem.where('order_id = ? AND variant_id = ?', @order.id, params[:variant_id]).first
+      end
+      
+      quantity = if params[:attributes]
+        params[:attributes][:quantity].to_i
+      elsif params[:quantity]
+        params[:quantity].to_i
+      end
       
       render :json => { :error => true, :message => 'Quantity must be greater than 0' } and return if quantity <= 0
       
@@ -122,7 +131,11 @@ module CabooseStore
     def remove
       
       # Find the line item
-      line_item = OrderLineItem.find(params[:id])
+      line_item = if params[:id]
+        OrderLineItem.find(params[:id])
+      elsif params[:variant_id]
+        OrderLineItem.where('order_id = ? AND variant_id = ?', @order.id, params[:variant_id]).first
+      end
       
       # Delete any and all customizations
       line_item.customizations.each { |customization| customization.delete }
