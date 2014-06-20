@@ -1,6 +1,14 @@
 module CabooseStore
   class CartController < CabooseStore::ApplicationController
     
+    # GET /cart/new || /api/cart/new
+    def new
+      render :json => Order.create(
+        :status       => 'cart',
+        :date_created => DateTime.now
+      )
+    end
+    
     # GET /cart/items
     def list
       render :json => @order.line_items.collect { |line_item| line_item.cart_info }
@@ -120,5 +128,27 @@ module CabooseStore
       # Notify the client if the line item deleted successfully
       render :json => line_item.delete
     end
+    
+    # # GET /api/cart/new'
+    # def api_new
+    #   render :json => Order.create(
+    #     :status => 'cart',
+    #     :date_created => DateTime.now
+    #   )
+    # end
+    #
+    # # GET /api/cart/:id'
+    # def api_list
+    #   @order = Order.find(params[:id])
+    #   list
+    # end
+    #
+    # # POST /api/cart/:id/add/:variant_id'
+    # def api_add
+    #   @order = Order.find(params[:id])
+    # end
+    #
+    # # PUT /api/cart/:id/update/:variant_id'
+    # # DELETE /api/cart/:id/remove/:variant_id'
   end
 end

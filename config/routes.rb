@@ -2,13 +2,14 @@ CabooseStore::Engine.routes.draw do
   
   # API
   
-  get    '/api/products'              => 'products#api_list'
-  get    '/api/products/:id'          => 'products#api_details'
-  get    '/api/products/:id/variants' => 'products#api_variants'
-  get    '/api/cart'                  => 'cart#list'
-  post   '/api/cart/:id'              => 'cart#add'
-  put    '/api/cart/:id'              => 'cart#update'
-  delete '/api/cart/:id'              => 'cart#remove'
+  get    '/api/products'                          => 'products#api_list'
+  get    '/api/products/:id'                      => 'products#api_details'
+  get    '/api/products/:id/variants'             => 'products#api_variants'
+  get    '/api/cart/new'                          => 'cart#new'
+  get    '/api/cart/:order_id'                    => 'cart#list'
+  post   '/api/cart/:order_id/add/:variant_id'    => 'cart#add'
+  put    '/api/cart/:order_id/update/:variant_id' => 'cart#update'
+  delete '/api/cart/:order_id/remove/:variant_id' => 'cart#remove'
   
   # Cart
   
