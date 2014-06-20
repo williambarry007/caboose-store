@@ -3,10 +3,12 @@ module CabooseStore
     
     # GET /cart/new || /api/cart/new
     def new
-      render :json => Order.create(
+      order = Order.create(
         :status       => 'cart',
         :date_created => DateTime.now
       )
+      
+      render :json => order.id
     end
     
     # GET /cart/items
