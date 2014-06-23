@@ -43,18 +43,19 @@ module CabooseStore
       
       # Otherwise looking at a category or search parameters
       @pager = Caboose::Pager.new(params, {
-        'category_id'   => '',
-        'vendor_id'     => '',
-        'vendor_name'   => '',
-        'vendor_status' => 'Active',
-        'status'        => 'Active',
-        'price_gte'     => '',
-        'price_lte'     => '',
-        'alternate_id'  => '',
-        'search_like'   => ''
+        'category_id'    => '',
+        'vendor_id'      => '',
+        'vendor_name'    => '',
+        'vendor_status'  => 'Active',
+        'status'         => 'Active',
+        'variant_status' => 'Active',
+        'price_gte'      => '',
+        'price_lte'      => '',
+        'alternate_id'   => '',
+        'search_like'    => ''
       }, {
         'model'          => 'CabooseStore::Product',
-        'sort'           => 'store_products.sort_order',
+        'sort'           => if params[:sort] then params[:sort] else 'store_products.sort_order' end,
         'base_url'       => url_without_params,
         'items_per_page' => 15,
         'use_url_params' => false,
@@ -64,15 +65,24 @@ module CabooseStore
         },
         
         'includes' => {
-          'category_id'   => [ 'categories' , 'id'     ],
-          'category_name' => [ 'categories' , 'name'   ],
-          'vendor_id'     => [ 'vendor'     , 'id'     ],
-          'vendor_name'   => [ 'vendor'     , 'name'   ],
-          'vendor_status' => [ 'vendor'     , 'status' ],
-          'price_gte'     => [ 'variants'   , 'price'  ],
-          'price_lte'     => [ 'variants'   , 'price'  ]
+          'category_id'    => [ 'categories' , 'id'     ],
+          'category_name'  => [ 'categories' , 'name'   ],
+          'vendor_id'      => [ 'vendor'     , 'id'     ],
+          'vendor_name'    => [ 'vendor'     , 'name'   ],
+          'vendor_status'  => [ 'vendor'     , 'status' ],
+          'price_gte'      => [ 'variants'   , 'price'  ],
+          'price_lte'      => [ 'variants'   , 'price'  ],
+          'variant_status' => [ 'variants'   , 'status' ]
         }
       })
+      
+      @sort_options = [
+        { :name => 'Default',             :value => 'store_products.sort_order' },
+        { :name => 'Price (Low to High)', :value => 'store_variants.price ASC'  },
+        { :name => 'Price (High to Low)', :value => 'store_variants.price DESC' },
+        { :name => 'Alphabetical (A-Z)',  :value => 'store_products.title ASC'  },
+        { :name => 'Alphabetical (Z-A)',  :value => 'store_products.title DESC' },
+      ]
       
       SearchFilter.delete_all
       
