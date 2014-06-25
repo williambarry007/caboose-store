@@ -88,7 +88,7 @@ module CabooseStore
         ap order.total
         ap order.amount_discounted
         
-        if order.calculate_net < order.amount_discounted || PaymentProcessor.refund(order)
+        if order.calculate_net < (order.amount_discounted || 0) || PaymentProcessor.refund(order)
           order.financial_status = 'refunded'
           order.status = 'refunded'
           order.save

@@ -11,8 +11,8 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     end
     
     ap "API key used: #{body['api-key']}"
-    ap "AUTH USERNAME: #{CabooseStore::payscape_username}"
-    ap "AUTH PASSWORD: #{CabooseStore::payscape_password}"
+    # ap "AUTH USERNAME: #{CabooseStore::payscape_username}"
+    # ap "AUTH PASSWORD: #{CabooseStore::payscape_password}"
     
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
