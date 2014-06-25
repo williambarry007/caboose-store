@@ -11,13 +11,14 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     end
     
     ap "API key used: #{body['api-key']}"
+    ap "URL: https://secure.payscapegateway.com/api/query.php?username=#{CabooseStore::payscape_username}&password=#{CabooseStore::payscape_password}&transaction_id=#{order.transaction_id}"
     
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl         = true
     request              = Net::HTTP::Post.new(uri.path)
     request.content_type = 'text/xml'
-    request.body         = body.to_xml({root: root})
+    request.body         = body.to_xml({:root => root})
     xml_response         = http.request(request)
     document             = REXML::Document.new(xml_response.body.to_s)
     response             = Hash.new
@@ -30,6 +31,8 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   end
   
   def self.form_url(order)
+    ap "AUTH URL: https://secure.payscapegateway.com/api/query.php?username=#{CabooseStore::payscape_username}&password=#{CabooseStore::payscape_password}&transaction_id=#{order.transaction_id}"
+    
     response = self.api 'auth', {
       'redirect-url' => "#{CabooseStore::root_url}/checkout/relay/#{order.id}",
       'amount'       => order.total.to_s,
