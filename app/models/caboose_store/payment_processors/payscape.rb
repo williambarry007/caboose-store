@@ -11,7 +11,8 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
     end
     
     ap "API key used: #{body['api-key']}"
-    ap "URL: https://secure.payscapegateway.com/api/query.php?username=#{CabooseStore::payscape_username}&password=#{CabooseStore::payscape_password}&transaction_id=#{order.transaction_id}"
+    ap "AUTH USERNAME: #{CabooseStore::payscape_username}"
+    ap "AUTH PASSWORD: #{CabooseStore::payscape_password}"
     
     uri                  = URI.parse('https://secure.payscapegateway.com/api/v2/three-step')
     http                 = Net::HTTP.new(uri.host, uri.port)
@@ -31,9 +32,6 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   end
   
   def self.form_url(order)
-    ap "AUTH USERNAME: #{CabooseStore::payscape_username}"
-    ap "AUTH PASSWORD: #{CabooseStore::payscape_password}"
-    
     response = self.api 'auth', {
       'redirect-url' => "#{CabooseStore::root_url}/checkout/relay/#{order.id}",
       'amount'       => order.total.to_s,
