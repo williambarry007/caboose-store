@@ -12,8 +12,6 @@ module CabooseStore
     # GET /products || GET /products/:id
     def index
       
-      Caboose.log("--HOOK foobar")
-      
       # If id exists, is an integer and a product exists with the specified id then get the product
       if params[:id] && params[:id].to_i > 0 && Product.exists?(params[:id])
         @product = Product.find(params[:id])
