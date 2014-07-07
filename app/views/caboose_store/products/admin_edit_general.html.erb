@@ -28,6 +28,7 @@ p = @product
 <% end %>
 
 <p><div id='product_<%= p.id %>_title'></div></p>
+<p><div id='product_<%= p.id %>_caption'></div></p>
 <p><div id='product_<%= p.id %>_handle'></div></p>
 <p><div id='product_<%= p.id %>_featured'></div></p>
 <p><div id='product_<%= p.id %>_seo_title'></div></p>
@@ -82,6 +83,7 @@ $(document).ready(function() {
     authenticity_token: '<%= form_authenticity_token %>',
     attributes: [
       { name: 'title'           , nice_name: 'Title'                , type: 'text'      , value: <%= raw Caboose.json(p.title           ) %>, width: 500 },
+      { name: 'caption'         , nice_name: 'Caption'              , type: 'text'      , value: <%= raw Caboose.json(p.caption         ) %>, width: 500 },
       { name: 'status'          , nice_name: 'Status'               , type: 'select'    , value: <%= raw Caboose.json(p.status          ) %>, width: 500, text: <%= raw Caboose.json(p.status) %>, options_url: '/admin/products/status-options' },
       { name: 'handle'          , nice_name: 'URL Handle'           , type: 'text'      , value: <%= raw Caboose.json(p.handle          ) %>, width: 500 },
       { name: 'seo_title'       , nice_name: 'SEO Page Title'       , type: 'text'      , value: <%= raw Caboose.json(p.seo_title       ) %>, width: 500 },

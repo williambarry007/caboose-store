@@ -126,6 +126,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       
       CabooseStore::Product => [
         [ :title	               , :string    ],
+        [ :caption               , :string    ],
         [ :description	         , :text      ],
         [ :handle	               , :string    ],
         [ :vendor_id	           , :integer   ],

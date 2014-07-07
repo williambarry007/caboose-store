@@ -490,6 +490,8 @@ module CabooseStore
             end
           when 'title'
             product.title = value
+          when 'caption'
+            product.caption = value
           when 'featured'
             product.featured = value
           when 'description'
