@@ -108,7 +108,7 @@ var CabooseCart = function() {
   //
   
   self.bindEvents = function() {
-    var $container = $('iframe').contents().find('#modal_content')
+    var $container = $('#cboxLoadedContent iframe').contents().find('#modal_content')
       , content    = JST['caboose_store/cart/index']({items: self.items});
     
     // If container exists inject content into modal
