@@ -1,32 +1,32 @@
 <% if (items.length > 0) { %>
-	<table class="data">
-		<thead>
-			<tr>
-				<th>Item</th>
-				<th>Quantity</th>
-				<th>Price</th>
-			</tr>
-		</thead>
-	
-		<tbody>
-			<% _.each(items, function(item) { %>
-				<tr>
-					<td>
-						<%= item.title %>
-						
-						<% _.each(item.customizations, function(customization) { %>
-							<p><%= '- ' + customization.custom_label + ': ' + customization.custom_input %></p>
-						<% }); %>
-					</td>
-					<td><input class="short" type="text" caboose-cart="update" data-id="<%= item.id %>" name="quantity" value="<%= item.quantity %>" /></td>
-					<td><%= parseInt(item.price).toFixed(Math.max(2, (item.price.toString().split('.')[1] || []).length)) %></td>
-					<td><a caboose-cart="remove" data-id="<%= item.id %>">X</a></td>
-				</tr>
-			<% }); %>
-		</tbody>
-	</table>
-	
-	<a class="button right" style="margin: 12px 0; display: inline-block; float: right" href="/checkout" caboose-cart="redirect" >Checkout</a>
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% _.each(items, function(item) { %>
+        <tr>
+          <td>
+            <%= item.title %>
+            
+            <% _.each(item.customizations, function(customization) { %>
+              <p><%= '- ' + customization.custom_label + ': ' + customization.custom_input %></p>
+            <% }); %>
+          </td>
+          <td><input class="short" type="text" caboose-cart="update" data-id="<%= item.id %>" name="quantity" value="<%= item.quantity %>" /></td>
+          <td><%= parseInt(item.price).toFixed(Math.max(2, (item.price.toString().split('.')[1] || []).length)) %></td>
+          <td><a caboose-cart="remove" data-id="<%= item.id %>">X</a></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  
+  <a class="button right" style="margin: 12px 0; display: inline-block; float: right" href="/checkout" caboose-cart="redirect" >Checkout</a>
 <% } else { %>
-	<p>Your cart is empty <a caboose-cart="close">Continue shopping</a></p>
+  <p>Your cart is empty <a caboose-cart="close">Continue shopping</a></p>
 <% } %>

@@ -35,6 +35,7 @@ CabooseStore::Engine.routes.draw do
   get  '/checkout/empty'                  => 'checkout#empty'
   get  '/checkout/error'                  => 'checkout#error'
   get  '/checkout/thanks'                 => 'checkout#thanks'
+  get  '/checkout/login'                  => 'checkout#login'
   
   # Products
   

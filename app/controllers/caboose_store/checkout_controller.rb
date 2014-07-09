@@ -18,10 +18,14 @@ module CabooseStore
     
     # GET /checkout
     def index
-      if logged_in?
-        @order.customer_id = logged_in_user.id
-        @order.save
-      end
+      redirect_to "/checkout/login" if !logged_in?
+      @order.customer_id = logged_in_user.id
+      @order.save
+      
+      #if logged_in?
+      #  @order.customer_id = logged_in_user.id
+      #  @order.save
+      #end
     end
     
     # PUT /checkout/shipping-address
@@ -210,6 +214,11 @@ module CabooseStore
   
     # GET /checkout/thanks
     def thanks
+    end
+
+    # GET /checkout/login
+    def login
+      redirect_to '/checkout' if logged_in?
     end
   end
 end
