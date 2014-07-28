@@ -1,12 +1,8 @@
 module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
-    before_filter :inject_assets
+    helper :authorize_net
     before_filter :get_order
     before_filter :ensure_order, :only => [:index, :shipping, :discount, :billing, :finalize]
-    
-    def inject_assets
-      Caboose::javascripts << 'caboose_store/checkout'
-    end
     
     def get_order
       ap @order = Order.find(session[:cart_id])
@@ -28,13 +24,21 @@ module CabooseStore
       #end
     end
     
-    # PUT /checkout/shipping-address
+    # GET /checkout/address
+    def address
+      render :json => {
+        :shipping_address => @order.shipping_address,
+        :billing_address => @order.billing_address
+      }
+    end
+    
+    # PUT /checkout/address
     def update_address
       
       # Grab or create addresses
       shipping_address = if @order.shipping_address then @order.shipping_address else Address.new end
       billing_address  = if @order.billing_address  then @order.billing_address  else Address.new end
-        
+      
       # Shipping address
       shipping_address.first_name = params[:shipping][:first_name]
       shipping_address.last_name  = params[:shipping][:last_name]
@@ -46,7 +50,7 @@ module CabooseStore
       shipping_address.zip        = params[:shipping][:zip]
       
       # Billing address
-      if params[:shipping][:use_as_billing]
+      if params[:use_as_billing]
         billing_address.update_attributes(shipping_address.attributes)
       else
         billing_address.first_name = params[:billing][:first_name]
@@ -59,44 +63,21 @@ module CabooseStore
         billing_address.zip        = params[:billing][:zip]
       end
       
-      # Require fields
-      if (
-        shipping_address.first_name.strip.length == 0 or billing_address.first_name.strip.length == 0 ||
-        shipping_address.last_name.strip.length  == 0 or billing_address.last_name.strip.length  == 0
-      )
-        render :json => { :error => 'A name is required.' } and return
-      elsif (shipping_address.address1.strip.length == 0 or billing_address.address1.strip.length == 0)
-        render :json => { :error => 'An address is required.' } and return
-      elsif (shipping_address.city.strip.length == 0 or billing_address.city.strip.length == 0 )
-        render :json => { :error => 'A city is required.' } and return
-      elsif (shipping_address.state.strip.length == 0 or billing_address.state.strip.length == 0)
-        render :json => { :error => 'A state is required.' } and return
-      elsif (shipping_address.zip.strip.length < 5 or billing_address.zip.strip.length < 5)
-        render :json => { :error => 'A valid zip code is required.' } and return
-      end
-      
       # Save address info; generate ids
-      shipping_address.save
-      billing_address.save
+      render :json => { :success => false, :errors => shipping_address.errors.full_messages, :address => 'shipping' } and return if !shipping_address.save
+      render :json => { :success => false, :errors => billing_address.errors.full_messages, :address => 'billing' } and return if !billing_address.save
       
       # Associate address info with order
       @order.shipping_address_id = shipping_address.id
       @order.billing_address_id  = billing_address.id
       
-      # Calculate tax and shipping
-      @order.tax = ( @order.subtotal * TaxCalculator.tax_rate(shipping_address) ).round(2)
-      
-      # Calculate total and save
-      @order.calculate_total
-      @order.save
-      
-      render :json => { :redirect => 'checkout/shipping' }
+      #render :json => { :redirect => 'checkout/shipping' }
+      render :json => { :success => @order.save, :errors => @order.errors.full_messages }
     end
     
     # GET /checkout/shipping
-    def shipping
-      @shipping_address = @order.shipping_address
-      @shipping_rates   = ShippingCalculator.rates(@order)
+    def shipping_methods
+      render :json => { :rates => ShippingCalculator.rates(@order), :fixed_shipping => CabooseStore::fixed_shipping }
     end
     
     # PUT /checkout/shipping-method
@@ -113,6 +94,32 @@ module CabooseStore
     
       render :json => { :redirect => '/checkout/discount' }
     end
+    
+    def payment
+      @sim_transaction = AuthorizeNet::SIM::Transaction.new(
+        CabooseStore::authorizenet_login_id,
+        CabooseStore::authorizenet_transaction_key,
+        @order.total,
+        :relay_url => "#{CabooseStore::root_url}/relay/#{@order.id}",
+        :transaction_type => 'AUTH_ONLY'
+      )
+      
+      render :layout => false
+    end
+    
+    def relay
+    end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     # GET /checkout/discount
     def discount

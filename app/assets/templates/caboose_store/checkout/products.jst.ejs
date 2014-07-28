@@ -1,0 +1,31 @@
+<p class="wrapper">Your Cart:</p>
+
+<ul>
+  <% _.each(order.line_items, function(lineItem) { %>
+    <li data-id="<%= lineItem.id %>">
+      <div class="wrapper">
+        <aside>
+          <figure style="background-image: url(<%= lineItem.variant.images[0].urls.thumb %>)"></figure>
+          <p><%= lineItem.title %><br />Qty: <%= lineItem.quantity %></p>
+        </aside>
+        
+        <section>
+          <p>$<%= lineItem.price %></p>
+        </section>
+      </div>
+    </li>
+  <% }); %>
+</ul>
+
+<% if (order.subtotal) { %>
+  <p><span>Subtotal w/ shipping:</span> <span><%= order.subtotal %><span></p>
+<% } %>
+
+<% if (order.tax && order.tax > 0) { %>
+  <p><span>Tax:</span> <span><%= order.tax %></span></p>
+<% } %>
+
+<% if (order.total) { %>
+  <p><span>Total</span> <span><%= order.total %></span></p>
+<% } %>
+

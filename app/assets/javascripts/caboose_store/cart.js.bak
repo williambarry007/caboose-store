@@ -255,4 +255,4 @@ var CabooseCart = function() {
   return self;
 };
 
-Caboose.Cart = new CabooseCart();
+Caboose.Store.Cart = new CabooseCart();

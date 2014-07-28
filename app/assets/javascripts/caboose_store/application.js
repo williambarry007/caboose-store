@@ -11,5 +11,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require_tree ../../templates
+//= require caboose_store/config
 //= require caboose_store/main
-//= require caboose_store/cart
+//= require_tree ./modules
+

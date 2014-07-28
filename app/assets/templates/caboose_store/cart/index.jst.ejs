@@ -1,4 +1,5 @@
-<% if (items.length > 0) { %>
+
+<% if (order.line_items && order.line_items.length > 0) { %>
   <table class="data">
     <thead>
       <tr>
@@ -9,18 +10,12 @@
     </thead>
   
     <tbody>
-      <% _.each(items, function(item) { %>
+      <% _.each(order.line_items, function(lineItem) { %>
         <tr>
-          <td>
-            <%= item.title %>
-            
-            <% _.each(item.customizations, function(customization) { %>
-              <p><%= '- ' + customization.custom_label + ': ' + customization.custom_input %></p>
-            <% }); %>
-          </td>
-          <td><input class="short" type="text" caboose-cart="update" data-id="<%= item.id %>" name="quantity" value="<%= item.quantity %>" /></td>
-          <td><%= parseInt(item.price).toFixed(Math.max(2, (item.price.toString().split('.')[1] || []).length)) %></td>
-          <td><a caboose-cart="remove" data-id="<%= item.id %>">X</a></td>
+          <td><%= lineItem.title %></td>
+          <td><input class="short" type="text" caboose-cart="update" data-id="<%= lineItem.id %>" name="quantity" value="<%= lineItem.quantity %>" /></td>
+          <td class="price"><%= parseInt(lineItem.price).toFixed(Math.max(2, (lineItem.price.toString().split('.')[1] || []).length)) %></td>
+          <td><a caboose-cart="remove" data-id="<%= lineItem.id %>">X</a></td>
         </tr>
       <% }); %>
     </tbody>
@@ -30,3 +25,4 @@
 <% } else { %>
   <p>Your cart is empty <a caboose-cart="close">Continue shopping</a></p>
 <% } %>
+

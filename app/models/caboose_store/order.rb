@@ -14,7 +14,7 @@ module CabooseStore
     belongs_to :billing_address, :class_name => 'Address'
     has_many :discounts, :through => :order_discounts
     has_many :order_discounts
-    has_many :order_line_items
+    has_many :line_items, :after_add => :calculate_total, :after_remove => :calculate_total
     
     attr_accessible :id,
       :order_number,
@@ -26,13 +26,13 @@ module CabooseStore
       :discount,
       :amount_discounted,
       :total,
-      :status,            # The current order status. One of: cart, pending, backordered, fulfilled
-      :payment_status,    # The current payment status. One of: nil, 'pending', 'authorized', 'captured', 'voided', 'refunded'
-      :notes,             # The note which is attached to the order.
-      :referring_site,    # Contains the url of the referrer that brought the customer to your store
-      :landing_site,      # Contains the path of the landing site the customer used. The first page that the customer saw when he/she reached the store.
-      :landing_site_ref,  # Looks at the landing site and extracts a reference parameter from it.
-      :cancel_reason,     # The reason selected when cancelling the order. One of: 'inventory', 'customer', 'fraud', 'other'
+      :status,
+      :payment_status,
+      :notes,
+      :referring_site,
+      :landing_site,
+      :landing_site_ref,
+      :cancel_reason,
       :date_created,
       :date_authorized,
       :date_captured,
@@ -54,31 +54,41 @@ module CabooseStore
       :date_shipped,
       :transaction_service,
       :transaction_id
-      
-    #
-    # Class Methods
-    #
-    
-    #...
     
     #
-    # Instance Methods
+    # Callbacks
     #
     
-    def decrement_quantities
-      self.line_items.each do |line_item|
-        
-        # Decrement variant quantity
-        line_item.variant.update_attribute(:quantity_in_stock, line_item.variant.quantity_in_stock - line_item.quantity)
-      end
+    before_update :calculate_total
+    
+    #
+    # Methods
+    #
+    
+    def as_json(option={})
+      self.attributes.merge({
+        :line_items => self.line_items
+      })
     end
     
-    def cancel
+    def decrement_quantities
+      return false if self.decremented
+      
       self.line_items.each do |line_item|
-        
-        # Increment variant quantity
-        line_item.variant.update_attribute(:quantity_in_stock, line_item.variant.quantity_in_stock + line_item.quantity)
+        line_item.variant.update_attribute(:quantit, line_item.variant.quantity - line_item.quantity)
       end
+      
+      self.update_attribute(:decremented, true)
+    end
+    
+    def increment_quantities
+      return false if !self.decremented
+      
+      self.line_items.each do |line_item|
+        line_item.variant.update_attribute(:quantity, line_item.variant.quantity - line_item.quantity)
+      end
+      
+      self.update_attribute(:decremented, false)
     end
     
     def resend_confirmation
@@ -90,107 +100,72 @@ module CabooseStore
     end
       
     def test?
-      self.customer_id == 1
+      self.status == 'testing'
     end
     
-    def line_items
-      self.order_line_items
-    end
-    
-    def subtotal
-      self.order_line_items.inject(0.0){ |sum,li| sum + li.subtotal }
-    end
-    
-    # Array of any Line Items which have been fulfilled (marked as shipped on the order screen).
-    def fulfilled_line_items
-      self.order_line_items.where(:status => 'shipped').all
-    end
-    
-    # Array of those Line Items which have not yet been fulfilled (marked as shipped on the order screen).
-    def unfulfilled_line_items
-      self.order_line_items.where('status != ?', 'shipped').all
-    end
-    
-    def cancelled
+    def cancelled?
       self.status == 'cancelled'
     end
     
-    # Returns true if there is at least one item in the order that requires shipping, and returns false otherwise
-    def requires_shipping
-      requires = false
-      
-      self.order_line_items.each do |line_item|
-        if line_item.variant.requires_shipping
-          requires = true
-          break
-        end
-      end
-      
-      return requires
+    def authorize
     end
     
-    def calculate_net
-      total  = self.subtotal
-      total += self.tax      if self.tax
-      total += self.shipping if self.shipping
-      total += self.handling if self.handling
-      
-      return total.round(2)
+    def capture
     end
     
-    def calculate_total(update_gift_card=false)
-      # self.calculate_discount
-      
-      self.total  = self.subtotal
-      self.total += self.tax      if self.tax
-      self.total += self.shipping if self.shipping
-      self.total += self.handling if self.handling
-      
-      if self.discounts.any?
-        discount = self.discounts.first
-        
-        if self.total >= discount.amount_current
-          self.total -= discount.amount_current
-          discount.update_attribute(:amount_current, 0) if update_gift_card
-        else
-          discount.update_attribute(:amount_current, discount.amount_current - self.total) if update_gift_card
-          self.total = 0
-        end
-      end
-      
-      self.save
-      
-      return self.total.round(2)
+    def refuned
     end
     
-    def update_gift_cards
-      # TODO the gift card code is awful.. need to take another crack at it when there's more time
-      
-      calculate_total(true)
+    def void
     end
     
-    # def calculate_discount        
-    #   
-    #   percentage_off = 0.0
-    #   amount_off     = 0.0
-    #   no_shipping    = false
-    #   no_tax         = false
-    #   
-    #   self.discounts.each do |discount|
-    #     percentage_off = percentage_off + discount.amount_percentage
-    #     amount_off     = amount_off + discount.amount_flat
-    #     no_shipping    = true if discount.no_shipping
-    #     no_tax         = true if discount.no_tax
-    #   end
-    #   
-    #   x = 0.0
-    #   x = x + self.subtotal * percentage_off if percentage_off > 0
-    #   x = x + amount_off if amount_off > 0
-    #   x = x + self.shipping if no_shipping
-    #   x = x + self.tax if no_tax
-    #   
-    #   self.discount = x
-    #   return self.discount / 100 * 100
-    # end
+    def fulfilled_line_items
+      self.line_items.where(:status => 'shipped').all
+    end
+    
+    def unfulfilled_line_items
+      self.line_items.where('status != ?', 'shipped').all
+    end
+    
+    def calculate_total(order=self)
+      order.update_column(:subtotal, (order.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price } * 100).ceil / 100.00)
+      order.update_column(:tax, (self.subtotal * TaxCalculator.tax_rate(order.shipping_address) * 100).ceil / 100.00) if order.shipping_address
+      order.update_column(:shipping, (CabooseStore.fixed_shipping * 100).ceil / 100.00) if CabooseStore::fixed_shipping
+      order.update_column(:total, ([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price }))
+    end
+    
+    #def calculate_net
+    #  total  = self.subtotal
+    #  total += self.tax      if self.tax
+    #  total += self.shipping if self.shipping
+    #  total += self.handling if self.handling
+    #  
+    #  return total.round(2)
+    #end
+    
+    #def calculate_total(update_gift_card=false)
+    #  # self.calculate_discount
+    #  
+    #  self.total  = self.subtotal
+    #  self.total += self.tax      if self.tax
+    #  self.total += self.shipping if self.shipping
+    #  self.total += self.handling if self.handling
+    #  
+    #  if self.discounts.any?
+    #    discount = self.discounts.first
+    #    
+    #    if self.total >= discount.amount_current
+    #      self.total -= discount.amount_current
+    #      discount.update_attribute(:amount_current, 0) if update_gift_card
+    #    else
+    #      discount.update_attribute(:amount_current, discount.amount_current - self.total) if update_gift_card
+    #      self.total = 0
+    #    end
+    #  end
+    #  
+    #  self.save
+    #  
+    #  return self.total.round(2)
+    #end
   end
 end

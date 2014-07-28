@@ -18,7 +18,8 @@ module CabooseStore
       :barcode,            # Returns the barcode value of the variant.
       :price,              # Variant’s price.
       :ignore_quantity,
-      :quantity_in_stock,  # How many of this variants are in stock for this shop.
+      #:quantity_in_stock,  # How many of this variants are in stock for this shop.
+      :quantity,
       :allow_backorder,    # Whether to allow items with no inventory to be added to the cart    
       :status,             # Current status: active, inactive, deleted
       :weight,             # The weight of the variant. This will always be in metric grams.
@@ -97,6 +98,15 @@ module CabooseStore
       arr << self.option3 if self.option3 && self.option3.strip.length > 0
       return arr
     end
-          
+    
+    def as_json(option={})
+      self.attributes.merge({
+        :images => if self.product_images.any?
+          self.product_images
+        else
+          self.product.product_images
+        end
+      })
+    end
   end
 end

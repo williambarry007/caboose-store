@@ -10,5 +10,8 @@ module CabooseStore
     :shipping_email,
     :contact_email,
     :payscape_username,
-    :payscape_password
+    :payscape_password,
+    :authorizenet_login_id,
+    :authorizenet_transaction_key,
+    :fixed_shipping
 end

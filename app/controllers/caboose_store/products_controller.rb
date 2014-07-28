@@ -96,6 +96,18 @@ module CabooseStore
     def show
     end
     
+    # GET /product/info
+    def info
+      #product = Product.find(params[:id])
+      render :json => Product.find(params[:id])
+      
+      #render :json => {
+      #  :product => product,
+      #  :variants => product.variants,
+      #  :images => product.product_images
+      #}
+    end
+    
     # GET /api/products
     def api_list
       render :json => Product.where(:status => 'Active')
@@ -340,7 +352,7 @@ module CabooseStore
             'sku'               ,                        
             'barcode'           , 
             'price'             ,
-            'quantity_in_stock' ,
+            'quantity' ,
             'weight'            , 
             'length'            , 
             'width'             , 
@@ -366,7 +378,7 @@ module CabooseStore
         'sku'               => true,                         
         'barcode'           => false, 
         'price'             => true, 
-        'quantity_in_stock' => true, 
+        'quantity' => true, 
         'weight'            => false, 
         'length'            => false, 
         'width'             => false, 

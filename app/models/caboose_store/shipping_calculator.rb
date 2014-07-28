@@ -12,6 +12,8 @@ module CabooseStore
     # box1           , 20 lbs, 90210 => $20.00
     # box2           , 30 lbs, 90210 => $25.00
     def self.rates(order, service_code=nil)
+      return [] if CabooseStore::shipping.nil?
+      
       total  = 0.0
       weight = 0.0
       

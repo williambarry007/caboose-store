@@ -61,6 +61,13 @@ module CabooseStore
     # Instance Methods
     #
     
+    def as_json(options={})
+      self.attributes.merge({
+        :variants => self.variants,
+        :images => self.product_images
+      })
+    end
+    
     def options
       options = []
       
@@ -106,7 +113,7 @@ module CabooseStore
     end
     
     def in_stock
-      Variant.where(:product_id => self.id).where('quantity_in_stock > 0').count > 0
+      Variant.where(:product_id => self.id).where('quantity > 0').count > 0
     end
     
     def input_required?

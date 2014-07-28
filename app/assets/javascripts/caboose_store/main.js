@@ -1,22 +1,23 @@
 //
 // Main
 //
-// :: Initialize
 
-var CabooseStore = function() {
-  var self = this;
-  
-  //
-  // Initialize
-  //
-  
-  self.initialize = function() {
-    //..
+var Caboose = (function() {
+  return {};
+})();
+
+Caboose.Store = (function(caboose) {
+  var self = {
+    Modules: {}
   };
   
-  // Init and return
+  self.initialize = function() {
+    _.each(self.Modules, function(module) {
+      if (module.initialize) module.initialize();
+    });
+  };
+  
   $(document).ready(self.initialize);
   return self;
-};
+}).call(Caboose);
 
-Caboose.Store = new CabooseStore();

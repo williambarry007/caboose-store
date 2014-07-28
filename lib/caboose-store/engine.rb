@@ -38,7 +38,7 @@ module CabooseStore
     
     initializer 'caboose_store.payment_processor', :after => :finish_hook do |app|
       case CabooseStore::payment_processor
-        when 'authorize.net' then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::AuthorizeNet
+        when 'authorize.net' then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::Authorizenet
         when 'payscape'      then CabooseStore::PaymentProcessor = CabooseStore::PaymentProcessors::Payscape
       end
     end
@@ -66,13 +66,20 @@ module CabooseStore::BootStrapper
       
       # Create an order to associate with the session
       # order                  = CabooseStore::Order.new(:status => 'cart', :date_created => DateTime.now)
-      order                  = CabooseStore::Order.new
-      order.status           = 'cart'
-      order.date_created     = DateTime.now
-      order.referring_site   = request.env['HTTP_REFERER']
-      order.landing_page     = request.fullpath
-      order.landing_page_ref = params[:ref] if params[:ref]
-      order.save
+      order = CabooseStore::Order.create(
+        :status => 'cart',
+        :date_created => DateTime.now,
+        :referring_site => request.env['HTTP_REFERER'],
+        :landing_page => request.fullpath,
+        :landing_page_ref => params[:ref] || nil
+      )
+      #order                  = CabooseStore::Order.new
+      #order.status           = 'cart'
+      #order.date_created     = DateTime.now
+      #order.referring_site   = request.env['HTTP_REFERER']
+      #order.landing_page     = request.fullpath
+      #order.landing_page_ref = params[:ref] if params[:ref]
+      #order.save
       
       # Define the cart ID
       session[:cart_id] = order.id

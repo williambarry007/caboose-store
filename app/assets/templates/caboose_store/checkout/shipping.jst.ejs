@@ -1,0 +1,15 @@
+<% if (rates) { %>
+  <section>
+    <div class="wrapper">
+      <h3>Shipping Method</h3>
+      <p>Please select how you would like your products to be delivered</p>
+      
+      <select name="shipping">
+        <% _.each(rates, function(rate) { %>
+          <% price = parseFloat(rate.total_price / 100).toFixed(2) %>
+          <option value="<%= price %>"><%= '$' + price + ' - ' + rate.service_name  %></option>
+        <% }); %>
+      </select>
+    </div>
+  </section>
+<% } %>
