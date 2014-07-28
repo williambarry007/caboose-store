@@ -1,4 +1,4 @@
-<form action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
+<form id="payment" target="relay" action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
   <%= sim_fields(@sim_transaction) %>
   <label>Card Number</label>
   <input id="x_card_num" name="x_card_num" type="text" />
@@ -6,3 +6,6 @@
   <input id="x_exp_date" name="x_exp_date" type="text" />
   <input type="submit" value="Submit" />
 </form>
+
+<iframe id="relay" name="relay"></iframe>
+

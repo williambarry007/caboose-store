@@ -43,6 +43,7 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
+    self.$checkout.on('load', '#checkout-payment iframe', self.relayLoadHandler);
   };
   
   //
@@ -115,6 +116,10 @@ Caboose.Store.Modules.Checkout = (function() {
   
   self.shippingChangeHandler = function(event) {
     console.log('update shipping method');
+  };
+  
+  self.relayLoadHandler = function(event) {
+    console.log(event.target);
   };
   
   //
