@@ -10,6 +10,11 @@
         success: <%= @success %>,
         message: '<%= @message %>'
       });
+      
+      parent.postMessage({
+        success: <%= @success %>,
+        message: '<%= @message %>
+      });
     </script>
   </body>
 </html>
