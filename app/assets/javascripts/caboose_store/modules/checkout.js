@@ -43,7 +43,6 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
-    console.log($('#checkout-payment #relay'));
     self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
   };
   

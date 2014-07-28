@@ -113,6 +113,7 @@ module CabooseStore
       @message = params[:x_response_reason_text]
       @order = CabooseStore::Order.find(params[:order_id])
       @order.update_attribute(:financial_status, @success ? 'authorized' : 'unauthorized')
+      render :layout => false
     end
     
     
