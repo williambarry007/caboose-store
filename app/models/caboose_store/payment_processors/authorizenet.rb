@@ -3,7 +3,8 @@ class CabooseStore::PaymentProcessors::Authorizenet < CabooseStore::PaymentProce
   end
   
   def self.form_url(order)
-    'https://secure.authorize.net/gateway/transact.dll'
+    #'https://secure.authorize.net/gateway/transact.dll'
+    'https://test.authorize.net/gateway/transact.dll'
   end
   
   def self.authorize(order, params)
