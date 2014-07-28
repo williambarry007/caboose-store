@@ -47,7 +47,7 @@ Caboose.Store.Modules.Checkout = (function() {
     window.relay = function(data) {
       console.log(data);
     };
-    window.on('message', function(event) {
+    window.addEventListener('message', function(event) {
       console.log(event);
       console.log(event.data);
     });
