@@ -111,7 +111,7 @@ module CabooseStore
     def relay
       ap '--RELAY'
       ap params
-      CabooseStore::Order.find(params[:order_ud]).update_attribute(:status, 'fuck yeah')
+      CabooseStore::Order.find(params[:order_id]).update_attribute(:status, 'fuck yeah')
     end
     
     
