@@ -108,6 +108,8 @@ module CabooseStore
     end
     
     def relay
+      ap '--RELAY'
+      ap params
     end
     
     
