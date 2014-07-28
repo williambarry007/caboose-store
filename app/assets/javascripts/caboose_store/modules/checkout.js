@@ -119,11 +119,9 @@ Caboose.Store.Modules.Checkout = (function() {
     console.log('update shipping method');
   };
   
-  self.relayHandler = function(data, a, b, c) {
+  self.relayHandler = function(event) {
+    var data = event.orignalEvent.data;
     console.log(data);
-    console.log(a);
-    console.log(b);
-    console.log(c);
   };
   
   //
