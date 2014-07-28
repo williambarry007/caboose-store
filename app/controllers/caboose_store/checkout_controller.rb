@@ -154,35 +154,35 @@ module CabooseStore
     end
     
     # GET /checkout/relay/:order_id
-    def relay
-      
-      # Check to see that the order has a valid total and was authorized
-      if @order.total > 0 && PaymentProcessor.authorize(@order, params)
-        
-        # Update order
-        @order.date_authorized  = DateTime.now
-        @order.auth_amount      = @order.total
-        @order.financial_status = 'authorized'
-        @order.status           = if @order.test? then 'testing' else 'pending' end
-        
-        # Send out notifications
-        OrdersMailer.customer_new_order(@order).deliver
-        OrdersMailer.fulfillment_new_order(@order).deliver
-        
-        # Clear everything
-        session[:cart_id] = nil
-        
-        # Emit order event
-        Caboose.plugin_hook('order_authorized', @order)
-        
-        # Decrement quantities of variants
-        @order.decrement_quantities
-      else
-        @order.financial_status = 'unauthorized'
-      end
-      
-      @order.save
-    end
+    #def relay
+    #  
+    #  # Check to see that the order has a valid total and was authorized
+    #  if @order.total > 0 && PaymentProcessor.authorize(@order, params)
+    #    
+    #    # Update order
+    #    @order.date_authorized  = DateTime.now
+    #    @order.auth_amount      = @order.total
+    #    @order.financial_status = 'authorized'
+    #    @order.status           = if @order.test? then 'testing' else 'pending' end
+    #    
+    #    # Send out notifications
+    #    OrdersMailer.customer_new_order(@order).deliver
+    #    OrdersMailer.fulfillment_new_order(@order).deliver
+    #    
+    #    # Clear everything
+    #    session[:cart_id] = nil
+    #    
+    #    # Emit order event
+    #    Caboose.plugin_hook('order_authorized', @order)
+    #    
+    #    # Decrement quantities of variants
+    #    @order.decrement_quantities
+    #  else
+    #    @order.financial_status = 'unauthorized'
+    #  end
+    #  
+    #  @order.save
+    #end
     
     # GET /checkout/authorize-by-gift-card
     def authorize_by_gift_card
