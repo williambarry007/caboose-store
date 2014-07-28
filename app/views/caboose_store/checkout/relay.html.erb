@@ -7,13 +7,6 @@
       console.log(parent.relay);
       console.log(top.relay);
       
-      if (parent.relay) {
-        parent.relay({
-          success: <%= @success %>,
-          message: '<%= @message %>'
-        });
-      }
-      
       parent.postMessage({
         success: <%= @success %>,
         message: '<%= @message %>'
