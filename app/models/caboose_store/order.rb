@@ -131,7 +131,7 @@ module CabooseStore
       order.update_column(:subtotal, (order.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price } * 100).ceil / 100.00)
       order.update_column(:tax, (self.subtotal * TaxCalculator.tax_rate(order.shipping_address) * 100).ceil / 100.00) if order.shipping_address
       order.update_column(:shipping, (CabooseStore.fixed_shipping * 100).ceil / 100.00) if CabooseStore::fixed_shipping
-      order.update_column(:total, ([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price }))
+      order.update_column(:total, (([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price } * 100).ceil / 100.00))
     end
     
     #def calculate_net

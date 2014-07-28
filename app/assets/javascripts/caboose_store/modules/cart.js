@@ -102,7 +102,7 @@ Caboose.Store.Modules.Cart = (function() {
           $iframe.load(function() {
             var $container = $iframe.contents().find('#modal_content')
               , content = JST['caboose_store/cart/index']({ order: response.order });
-            
+            console.log($container);
             $container.html(content);
             $container.find('[caboose-cart=close]').on('click', self.close);
             $container.find('[caboose-cart=update]').on('change', self.updateHandler);

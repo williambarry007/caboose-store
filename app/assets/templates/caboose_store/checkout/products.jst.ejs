@@ -18,14 +18,14 @@
 </ul>
 
 <% if (order.subtotal) { %>
-  <p><span>Subtotal w/ shipping:</span> <span><%= order.subtotal %><span></p>
+  <p class="wrapper subtotal"><span>Subtotal w/ shipping:</span> <span>$<%= parseFloat(Math.round(order.subtotal * 100) / 100).toFixed(2) %><span></p>
 <% } %>
 
 <% if (order.tax && order.tax > 0) { %>
-  <p><span>Tax:</span> <span><%= order.tax %></span></p>
+  <p class="wrapper tax"><span>Tax <small>(if in Alabama)</small>:</span> <span>$<%= parseFloat(Math.round(order.tax * 100) / 100).toFixed(2) %></span></p>
 <% } %>
 
 <% if (order.total) { %>
-  <p><span>Total</span> <span><%= order.total %></span></p>
+  <p class="wrapper total"><span>Total</span> <span>$<%= parseFloat(Math.round(order.total * 100) / 100).toFixed(2) %></span></p>
 <% } %>
 

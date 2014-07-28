@@ -19,9 +19,11 @@ captured = @order.financial_status == 'captured'
 </tr>
 <tr>
   <td valign='top'>
-    <%= "#{@order.customer.first_name} #{@order.customer.last_name}" %><br />
-    <a href='mailto:<%= "#{@order.customer.email}" %>'><%= "#{@order.customer.email}" %></a><br />
-    <%= @order.customer.phone %>
+    <%= "#{@order.shipping_address.first_name} #{@order.shipping_address.last_name}" %><br />
+    <% if @order.customer %>
+      <a href='mailto:<%= "#{@order.customer.email}" %>'><%= "#{@order.customer.email}" %></a><br />
+    <% end %>
+    <%= @order.customer ? @order.customer.phone : @order.shipping_address.phone %>
   </td>
   <td valign='top'>
     <%= "#{@order.shipping_address.name}" %><br />
@@ -69,7 +71,9 @@ captured = @order.financial_status == 'captured'
 <% end %>
 <tr><td colspan='5' align='right'>Subtotal                </td><td align='right' id='subtotal'   ><%= number_to_currency(@order.subtotal ) %></td></tr>
 <tr><td colspan='5' align='right'>Tax                     </td><td align='right' id='tax'        ><%= number_to_currency(@order.tax      ) %></td></tr>
+<% if @order.shipping_method %>
 <tr><td colspan='5' align='right'><%= @order.shipping_method %> Shipping &amp; Handling </td><td align='right' id='shipping'   ><%= number_to_currency(@order.shipping + @order.handling) %></td></tr>
+<% end %>
 
 <tr>
   <td colspan='5' align='right'>Discount</td>

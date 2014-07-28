@@ -1,9 +1,37 @@
 <form id="payment" target="relay" action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
   <%= sim_fields(@sim_transaction) %>
   <label>Card Number</label>
-  <input id="x_card_num" name="x_card_num" type="text" />
+  <input name="x_card_num" type="text" />
   <label>Expiration</label>
-  <input id="x_exp_date" name="x_exp_date" type="text" />
+  <input id="expiration" name="x_exp_date" type="hidden" />
+  
+  <br />
+  
+  <select id="month" name="month">
+    <option value="01">01 - Jan</option>
+    <option value="02">02 - Feb</option>
+    <option value="03">03 - Mar</option>
+    <option value="04">04 - Apr</option>
+    <option value="05">05 - May</option>
+    <option value="06">06 - Jun</option>
+    <option value="07">07 - Jul</option>
+    <option value="08">08 - Aug</option>
+    <option value="09">09 - Sep</option>
+    <option value="10">10 - Oct</option>
+    <option value="11">11 - Nov</option>
+    <option value="12">12 - Dec</option>
+  </select>
+  /
+  <select id="year" name="year">
+    <% (DateTime.now.year...DateTime.now.year + 20).each do |i| %>
+      <option value="<%= i-2000 %>"><%= i %></option>
+    <% end %>
+  </select>
+  
+  <br />
+  
+  <label>Security Code</label>
+  <input id="cvv" name="cvv" type="text" />
   <input type="submit" value="Submit" />
 </form>
 

@@ -44,6 +44,7 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
     self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
+    self.$checkout.on('change', '#checkout-payment select', self.expirationChangeHandler);
     $(window).on('message', self.relayHandler);
   };
   
@@ -119,10 +120,27 @@ Caboose.Store.Modules.Checkout = (function() {
     console.log('update shipping method');
   };
   
+  self.expirationChangeHandler = function(event) {
+    var $form = $('#checkout-payment #payment')
+      , month = $form.find('select[name=month]').val()
+      , year = $form.find('select[name=year]').val();
+    
+    $form.find('#expiration').val(month + year);
+  };
+  
   self.relayHandler = function(event) {
-    console.log(event);
-    //var data = event.orignalEvent.data;
-    //console.log(data);
+    var data = event.originalEvent.data
+      , $form = $('#checkout #checkout-payment #payment');
+      
+    if (data.success == true) {
+      window.location = '/checkout/thanks';
+    } else {
+      if ($form.find('.message').length) {
+        $form.find('.message').empty().text(data.message);
+      } else {
+        $form.append($('<span/>').addClass('message error').text(data.message));
+      }
+    }
   };
   
   //
@@ -188,7 +206,8 @@ Caboose.Store.Modules.Checkout = (function() {
     
     $.get('/checkout/payment', function(response) {
       self.$payment.empty().html(self.templates.payment({ form: response }));
-      //self.relayHandler({ originalEvent: { data: { success: true, message: 'foobar' } } });
+      self.expirationChangeHandler();
+      //self.relayHandler({ originalEvent: { data: { success: false, message: 'foobar' } } });
     });
   };
   
