@@ -120,7 +120,8 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   self.relayLoadHandler = function(event) {
-    console.log(event.target);
+    response = JSON.parse($(event.target).contents().find('#response'));
+    console.log(response);
   };
   
   //

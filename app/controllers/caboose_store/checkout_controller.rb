@@ -109,8 +109,8 @@ module CabooseStore
     end
     
     def relay
-      ap '--RELAY'
-      ap params
+      @success = params[:x_response_code] == '1'
+      @message = params[:x_response_reason_text]
       CabooseStore::Order.find(params[:order_id]).update_attribute(:status, 'fuck yeah')
     end
     
