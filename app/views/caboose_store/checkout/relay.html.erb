@@ -2,6 +2,10 @@
 <html>
   <body>
     <script id="response">
+      console.log(parent);
+      console.log(top);
+      console.log(parent.relay);
+      console.log(top.relay);
       parent.relay({
         success: <%= @success %>,
         message: '<%= @message %>'
