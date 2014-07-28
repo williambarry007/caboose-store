@@ -100,7 +100,7 @@ module CabooseStore
         CabooseStore::authorizenet_login_id,
         CabooseStore::authorizenet_transaction_key,
         @order.total,
-        :relay_url => "#{CabooseStore::root_url}/relay/#{@order.id}",
+        :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
         :transaction_type => 'AUTH_ONLY'
       )
       
