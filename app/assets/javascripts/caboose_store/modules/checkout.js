@@ -44,6 +44,11 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
     self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
+    
+    window.addEventListener('message', function(event) {
+      console.log(event);
+      console.log(event.data);
+    };
   };
   
   //

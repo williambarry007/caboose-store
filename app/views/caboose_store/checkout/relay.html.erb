@@ -1,14 +1,17 @@
 <!DOCTYPE>
 <html>
-<body>
-<script>
-console.log(window);
-</script>
-<script id="response" type="application/json">
-  {
-    success: <%= @success %>,
-    message: '<%= @message %>'
-  }
-</script>
-</body>
+  <body>
+    <script>
+      console.log(parent);
+      console.log(top);
+    </script>
+    
+    <script id="response" type="application/json">
+      parent.postMessage({
+        success: <%= @success %>,
+        message: '<%= @message %>'
+      });
+    </script>
+  </body>
 </html>
+
