@@ -111,7 +111,8 @@ module CabooseStore
     def relay
       @success = params[:x_response_code] == '1'
       @message = params[:x_response_reason_text]
-      CabooseStore::Order.find(params[:order_id]).update_attribute(:status, 'fuck yeah')
+      @order = CabooseStore::Order.find(params[:order_id])
+      @order.update_attribute(:financial_status, @success ? 'authorized' : 'unauthorized')
     end
     
     
