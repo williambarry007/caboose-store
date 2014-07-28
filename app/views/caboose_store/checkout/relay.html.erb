@@ -2,15 +2,10 @@
 <html>
   <body>
     <script id="response">
-      console.log(parent);
-      console.log(top);
-      console.log(parent.relay);
-      console.log(top.relay);
-      
       parent.postMessage({
         success: <%= @success %>,
         message: '<%= @message %>'
-      }, 'https://bphifer.herokuapp.com');
+      }, '<%= CabooseStore::root_url %>');
     </script>
   </body>
 </html>

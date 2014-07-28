@@ -44,13 +44,7 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
     self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
-    window.relay = function(data) {
-      console.log(data);
-    };
-    window.addEventListener('message', function(event) {
-      console.log(event);
-      console.log(event.data);
-    });
+    $(window).on('message', self.relayHandler);
   };
   
   //
@@ -125,10 +119,8 @@ Caboose.Store.Modules.Checkout = (function() {
     console.log('update shipping method');
   };
   
-  self.relayLoadHandler = function(event) {
-    console.log('RELAY');
-    //response = JSON.parse($(event.target).contents().find('#response').html());
-    //console.log(response);
+  self.relayHandler = function(data) {
+    console.log(data);
   };
   
   //
