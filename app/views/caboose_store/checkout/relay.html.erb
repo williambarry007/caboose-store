@@ -1,13 +1,8 @@
 <!DOCTYPE>
 <html>
   <body>
-    <script>
-      console.log(parent);
-      console.log(top);
-    </script>
-    
     <script id="response" type="application/json">
-      parent.postMessage({
+      window.relay({
         success: <%= @success %>,
         message: '<%= @message %>'
       });
