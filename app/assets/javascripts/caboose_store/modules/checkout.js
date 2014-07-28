@@ -39,7 +39,7 @@ Caboose.Store.Modules.Checkout = (function() {
     
     // Bind events
     self.$checkout.on('click', '[data-login-action]', self.loginClickHandler);
-    self.$checkout.on('submit', 'form', self.formSubmitHandler);
+    self.$checkout.on('submit', '#checkout-login form', self.loginSubmitHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
@@ -65,7 +65,7 @@ Caboose.Store.Modules.Checkout = (function() {
     };
   };
   
-  self.formSubmitHandler = function(event) {
+  self.loginSubmitHandler = function(event) {
     event.preventDefault();
     var $form = $(event.target);
     
