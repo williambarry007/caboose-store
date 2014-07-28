@@ -120,8 +120,9 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   self.relayHandler = function(event) {
-    var data = event.orignalEvent.data;
-    console.log(data);
+    console.log(event);
+    //var data = event.orignalEvent.data;
+    //console.log(data);
   };
   
   //
@@ -187,6 +188,7 @@ Caboose.Store.Modules.Checkout = (function() {
     
     $.get('/checkout/payment', function(response) {
       self.$payment.empty().html(self.templates.payment({ form: response }));
+      //self.relayHandler({ originalEvent: { data: { success: true, message: 'foobar' } } });
     });
   };
   
