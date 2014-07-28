@@ -1,6 +1,5 @@
 <form action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
   <%= sim_fields(@sim_transaction) %>
-  <input id="x_method" name="x_method" type="hidden" value="CC" />
   <label>Card Number</label>
   <input id="x_card_num" name="x_card_num" type="text" />
   <label>Expiration</label>
