@@ -32,6 +32,8 @@ CabooseStore::Engine.routes.draw do
   get '/checkout/payment'  => 'checkout#payment'
   get '/checkout/relay/:order_id' => 'checkout#relay'
   post '/checkout/relay/:order_id' => 'checkout#relay'
+  get '/checkout/thanks' => 'checkout#thanks'
+  get '/checkout/empty' => 'checkout#empty'
   
   
   #put  '/checkout/address'                => 'checkout#update_address'

@@ -36,7 +36,7 @@ module CabooseStore
     #
     
     before_save :update_price
-    after_save { |line_item| line_item.order.calculate_total(line_item.order) }
+    after_save { |line_item| line_item.order.calculate_total }
     
     #
     # Methods

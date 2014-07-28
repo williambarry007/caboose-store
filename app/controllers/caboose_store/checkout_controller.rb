@@ -1,28 +1,39 @@
 module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     helper :authorize_net
-    before_filter :get_order
-    before_filter :ensure_order, :only => [:index, :shipping, :discount, :billing, :finalize]
+    #before_filter :get_order
+    before_filter :ensure_order, :only => [:step_one, :step_two]
     
-    def get_order
-      ap @order = Order.find(session[:cart_id])
-    end
+    #def get_order
+    #  ap @order = Order.find(session[:cart_id])
+    #end
     
     def ensure_order
       redirect_to '/checkout/empty' if @order.line_items.empty?
     end
     
-    # GET /checkout
-    def index
-      redirect_to "/checkout/login" if !logged_in?
-      @order.customer_id = logged_in_user.id
-      @order.save
-      
-      #if logged_in?
-      #  @order.customer_id = logged_in_user.id
-      #  @order.save
-      #end
+    # GET /checkout || GET /checkout/step-one
+    def step_one
     end
+    
+    # GET /checkout/step-two
+    def step_two
+      ap '--HOOK'
+      ap !@order.shipping_address || !@order.billing_address
+      redirect_to '/checkout/step-one' if !@order.shipping_address# || !@order.billing_address
+    end
+    
+    # GET /checkout
+    #def index
+    #  redirect_to "/checkout/login" if !logged_in?
+    #  @order.customer_id = logged_in_user.id
+    #  @order.save
+    #  
+    #  #if logged_in?
+    #  #  @order.customer_id = logged_in_user.id
+    #  #  @order.save
+    #  #end
+    #end
     
     # GET /checkout/address
     def address
@@ -116,46 +127,27 @@ module CabooseStore
       render :layout => false
     end
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     # GET /checkout/discount
-    def discount
-      # TODO make it possible to use multiple discounts
-      
-      @gift_card = @order.discounts.first
-    end
+    #def discount
+    #  # TODO make it possible to use multiple discounts
+    #  
+    #  @gift_card = @order.discounts.first
+    #end
     
     # POST /checkout/update-discount
-    def add_discount
-      gift_card = Discount.find_by_code(params[:gift_card_number])
-      
-      render :json => { :error => true, :message => 'Gift card not found.' } and return if gift_card.nil?
-      render :json => { :error => true, :message => 'Gift card has no remaining funds.' } and return if gift_card.amount_current <= 0
-      
-      @order.discounts.delete_all if @order.discounts.any?
-      @order.discounts << gift_card
-      @order.calculate_total
-      
-      render :json => { :success => true, :message => 'Gift card added successfully.' }
-    end
+    #def add_discount
+    #  gift_card = Discount.find_by_code(params[:gift_card_number])
+    #  
+    #  render :json => { :error => true, :message => 'Gift card not found.' } and return if gift_card.nil?
+    #  render :json => { :error => true, :message => 'Gift card has no remaining funds.' } and return if gift_card.amount_current <= 0
+    #  
+    #  @order.discounts.delete_all if @order.discounts.any?
+    #  @order.discounts << gift_card
+    #  @order.calculate_total
+    #  
+    #  render :json => { :success => true, :message => 'Gift card added successfully.' }
+    #end
     
-    # GET /checkout/billing
-    def billing
-      redirect_to '/checkout/thanks' if @order.authorized?
-      @shipping_address = @order.shipping_address
-      @form_url         = PaymentProcessor.form_url(@order)
-    end
-    
-    # GET /checkout/relay/:order_id
     #def relay
     #  
     #  # Check to see that the order has a valid total and was authorized
@@ -187,51 +179,42 @@ module CabooseStore
     #end
     
     # GET /checkout/authorize-by-gift-card
-    def authorize_by_gift_card
-      if @order.total < @order.discounts.first.amount_current
-        
-        # Update order
-        @order.date_authorized  = DateTime.now
-        @order.auth_amount      = @order.total
-        @order.financial_status = 'authorized'
-        @order.status           = if @order.test? then 'testing' else 'pending' end
-        
-        # Send out notifications
-        OrdersMailer.customer_new_order(@order).deliver
-        OrdersMailer.fulfillment_new_order(@order).deliver
-        
-        # Clear everything
-        session[:cart_id] = nil
-        
-        # Emit order event
-        Caboose.plugin_hook('order_authorized', @order)
-        
-        # Decrement quantities of variants
-        @order.decrement_quantities
-        
-        @order.save
-        
-        redirect_to '/checkout/thanks'
-      else
-        redirect_to '/checkout/error'
-      end
-    end
+    #def authorize_by_gift_card
+    #  if @order.total < @order.discounts.first.amount_current
+    #    
+    #    # Update order
+    #    @order.date_authorized  = DateTime.now
+    #    @order.auth_amount      = @order.total
+    #    @order.financial_status = 'authorized'
+    #    @order.status           = if @order.test? then 'testing' else 'pending' end
+    #    
+    #    # Send out notifications
+    #    OrdersMailer.customer_new_order(@order).deliver
+    #    OrdersMailer.fulfillment_new_order(@order).deliver
+    #    
+    #    # Clear everything
+    #    session[:cart_id] = nil
+    #    
+    #    # Emit order event
+    #    Caboose.plugin_hook('order_authorized', @order)
+    #    
+    #    # Decrement quantities of variants
+    #    @order.decrement_quantities
+    #    
+    #    @order.save
+    #    
+    #    redirect_to '/checkout/thanks'
+    #  else
+    #    redirect_to '/checkout/error'
+    #  end
+    #end
     
     # GET /checkout/empty
     def empty
     end
-  
-    # GET /checkout/error
-    def error
-    end
-  
+    
     # GET /checkout/thanks
     def thanks
-    end
-
-    # GET /checkout/login
-    def login
-      redirect_to '/checkout' if logged_in?
     end
   end
 end

@@ -6,7 +6,7 @@
       <div class="wrapper">
         <aside>
           <figure style="background-image: url(<%= lineItem.variant.images[0].urls.thumb %>)"></figure>
-          <p><%= lineItem.title %><br />Qty: <%= lineItem.quantity %></p>
+          <p><%= lineItem.title %><br />Qty: <%= lineItem.quantity %><br /><span class="price">$<%= lineItem.price %></span></p>
         </aside>
         
         <section>
@@ -18,7 +18,7 @@
 </ul>
 
 <% if (order.subtotal) { %>
-  <p class="wrapper subtotal"><span>Subtotal w/ shipping:</span> <span>$<%= parseFloat(Math.round(order.subtotal * 100) / 100).toFixed(2) %><span></p>
+  <p class="wrapper subtotal"><span>Subtotal w/ shipping:</span> <span>$<%= parseFloat(Math.round(order.subtotal * 100) / 100).toFixed(2) %></span></p>
 <% } %>
 
 <% if (order.tax && order.tax > 0) { %>
@@ -26,6 +26,6 @@
 <% } %>
 
 <% if (order.total) { %>
-  <p class="wrapper total"><span>Total</span> <span>$<%= parseFloat(Math.round(order.total * 100) / 100).toFixed(2) %></span></p>
+  <p class="wrapper total"><span>Total:</span> <span>$<%= parseFloat(Math.round(order.total * 100) / 100).toFixed(2) %></span></p>
 <% } %>
 

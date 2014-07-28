@@ -26,7 +26,13 @@ module CabooseStore
       )
       
       @line_item.quantity += params[:quantity] ? params[:quantity].to_i : 1
-      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages }
+      
+      if @line_item.save
+        @order.calculate_total
+        render :json => { :success => true }
+      else
+        render :json => { :success => false, :errors => @line_item.errors.full_messages }
+      end
     end
     
     # PUT cart/update
@@ -37,8 +43,12 @@ module CabooseStore
     
     # DELETE cart/delete
     def remove
-      @order.line_items.delete(@line_item)
-      render :json => { :success => !!@line_item.destroy }
+      if !!LineItem.find(params[:id]).delete
+        @order.calculate_total
+        render :json => { :success => true }
+      else
+        render :json => { :success => false }
+      end
     end
   end
 end

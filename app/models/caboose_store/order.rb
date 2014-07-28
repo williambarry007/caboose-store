@@ -14,7 +14,7 @@ module CabooseStore
     belongs_to :billing_address, :class_name => 'Address'
     has_many :discounts, :through => :order_discounts
     has_many :order_discounts
-    has_many :line_items, :after_add => :calculate_total, :after_remove => :calculate_total
+    has_many :line_items#, :after_add => :calculate_total, :after_remove => :calculate_total
     
     attr_accessible :id,
       :order_number,
@@ -65,9 +65,11 @@ module CabooseStore
     # Methods
     #
     
-    def as_json(option={})
+    def as_json(options={})
       self.attributes.merge({
-        :line_items => self.line_items
+        :line_items => self.line_items,
+        :shipping_address => self.shipping_address,
+        :billing_address => self.billing_address
       })
     end
     
@@ -127,45 +129,12 @@ module CabooseStore
       self.line_items.where('status != ?', 'shipped').all
     end
     
-    def calculate_total(order=self)
-      order.update_column(:subtotal, (order.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price } * 100).ceil / 100.00)
-      order.update_column(:tax, (self.subtotal * TaxCalculator.tax_rate(order.shipping_address) * 100).ceil / 100.00) if order.shipping_address
-      order.update_column(:shipping, (CabooseStore.fixed_shipping * 100).ceil / 100.00) if CabooseStore::fixed_shipping
-      order.update_column(:total, (([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price } * 100).ceil / 100.00))
+    def calculate_total
+      subtotal = self.line_items.any? ? self.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price } : 0
+      self.update_column(:subtotal, (subtotal * 100).ceil / 100.00)
+      self.update_column(:tax, (self.subtotal * TaxCalculator.tax_rate(self.shipping_address) * 100).ceil / 100.00) if self.shipping_address
+      self.update_column(:shipping, (CabooseStore.fixed_shipping * 100).ceil / 100.00) if CabooseStore::fixed_shipping
+      self.update_column(:total, (([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price } * 100).ceil / 100.00))
     end
-    
-    #def calculate_net
-    #  total  = self.subtotal
-    #  total += self.tax      if self.tax
-    #  total += self.shipping if self.shipping
-    #  total += self.handling if self.handling
-    #  
-    #  return total.round(2)
-    #end
-    
-    #def calculate_total(update_gift_card=false)
-    #  # self.calculate_discount
-    #  
-    #  self.total  = self.subtotal
-    #  self.total += self.tax      if self.tax
-    #  self.total += self.shipping if self.shipping
-    #  self.total += self.handling if self.handling
-    #  
-    #  if self.discounts.any?
-    #    discount = self.discounts.first
-    #    
-    #    if self.total >= discount.amount_current
-    #      self.total -= discount.amount_current
-    #      discount.update_attribute(:amount_current, 0) if update_gift_card
-    #    else
-    #      discount.update_attribute(:amount_current, discount.amount_current - self.total) if update_gift_card
-    #      self.total = 0
-    #    end
-    #  end
-    #  
-    #  self.save
-    #  
-    #  return self.total.round(2)
-    #end
   end
 end
