@@ -22,8 +22,6 @@ Caboose.Store.Modules.Checkout = (function() {
   //
   
   self.initialize = function() {
-    self.$checkout = $('#checkout');
-    
     switch (window.location.pathname.replace(/\/$/, "")) {
       case '/checkout':
       case '/checkout/step-one':
@@ -34,23 +32,48 @@ Caboose.Store.Modules.Checkout = (function() {
         break;
     }
     
+    self.$checkout = $('#checkout')
+    if (!self.$checkout) return false;
     self.loggedIn = $('body').data('logged-in');
-    self.render();
-    
-    // Bind events
+    self.fetch(self.render);
+    self.bindEventHandlers();
+  };
+  
+  //
+  // Fetch
+  //
+  
+  self.fetch = function(callback) {
+    $.get('/cart/items.json', function(response) {
+      self.order = response.order
+      
+      if (self.step == 2) {
+        $.get('/checkout/shipping', function(response) {
+          self.shippingRates = response.rates;
+          self.selectedRate = response.selected_rate;
+          callback();
+        });
+      } else {
+        callback();
+      }
+    });
+  };
+  
+  //
+  // Events
+  //
+  
+  self.bindEventHandlers = function() {
     self.$checkout.on('click', '[data-login-action]', self.loginClickHandler);
     self.$checkout.on('submit', '#checkout-login form', self.loginSubmitHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
     self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
-    self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
-    self.$checkout.on('change', '#checkout-payment select', self.expirationChangeHandler);
+    self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
+    self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
+    self.$checkout.on('load', '#checkout-payment iframe#relay', self.relayLoadHandler);
     $(window).on('message', self.relayHandler);
   };
-  
-  //
-  // Event Handlers
-  //
   
   self.loginClickHandler = function(event) {
     $section = self.$login.children('section');
@@ -106,7 +129,6 @@ Caboose.Store.Modules.Checkout = (function() {
       url: $form.attr('action'),
       data: $form.serialize(),
       success: function(response) {
-        console.log(response);
         if (response.success) {
           window.location = '/checkout/step-two';
         } else {
@@ -125,7 +147,11 @@ Caboose.Store.Modules.Checkout = (function() {
       type: 'put',
       data: { shipping_code: event.target.value },
       success: function(response) {
-        if (response.success) self.renderProducts();
+        if (response.success) {
+          self.order = response.order;
+          self.renderProducts();
+          self.renderPayment();
+        }
       }
     });
   };
@@ -138,7 +164,19 @@ Caboose.Store.Modules.Checkout = (function() {
     $form.find('#expiration').val(month + year);
   };
   
+  self.paymentSubmitHandler = function(event) {
+    event.preventDefault();
+    
+    if (!self.order.shipping_code) {
+      alert('Please choose a shipping method');
+    } else {
+      self.$checkout.off('submit', '#checkout-payment form#payment');
+      $(event.target).submit();
+    }
+  };
+  
   self.relayHandler = function(event) {
+    console.log(data);
     var data = event.originalEvent.data
       , $form = $('#checkout #checkout-payment #payment');
       
@@ -172,10 +210,7 @@ Caboose.Store.Modules.Checkout = (function() {
   self.renderProducts = function() {
     self.$products = self.$checkout.find('#checkout-products');
     if (!self.$products.length) return false;
-    
-    $.get('/cart/items.json', function(response) {
-      self.$products.empty().html(self.templates.products({ order: response.order }));
-    });
+    self.$products.empty().html(self.templates.products({ order: self.order }));
   };
   
   self.renderLogin = function() {
@@ -189,23 +224,21 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$address = self.$checkout.find('#checkout-address');
     if (!self.$address.length) return false;
     
-    $.get('/checkout/address', function(response) {
-      self.$address.empty().html(self.templates.address({
-        shippingAddress: response.shipping_address,
-        billingAddress: response.billing_address,
-        states: window.States
-      }));
-    });
+    self.$address.empty().html(self.templates.address({
+      shippingAddress: self.order.shipping_address,
+      billingAddress: self.order.billing_address,
+      states: window.States
+    }));
   };
   
   self.renderShipping = function() {
     self.$shipping = self.$checkout.find('#checkout-shipping');
     if (!self.$shipping.length) return false;
     
-    $.get('/checkout/shipping', function(response) {
-      if (response.fixed_shipping) return false;
-      self.$shipping.empty().html(self.templates.shipping({ rates: response.rates, selectedRate: response.selected_rate }));
-    });
+    self.$shipping.empty().html(self.templates.shipping({
+      rates: self.shippingRates,
+      selectedRate: self.selectedRate
+    }));
   };
   
   self.renderPayment = function() {
@@ -215,7 +248,6 @@ Caboose.Store.Modules.Checkout = (function() {
     $.get('/checkout/payment', function(response) {
       self.$payment.empty().html(self.templates.payment({ form: response }));
       self.expirationChangeHandler();
-      //self.relayHandler({ originalEvent: { data: { success: false, message: 'foobar' } } });
     });
   };
   

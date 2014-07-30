@@ -75,7 +75,7 @@ module CabooseStore
     # PUT /checkout/shipping
     def update_shipping
       @order.shipping_code = params[:shipping_code]
-      render :json => { :success => @order.save, :errors => @order.errors.full_messages }
+      render :json => { :success => @order.save, :errors => @order.errors.full_messages, :order => @order }
     end
     
     # GET /checkout/payment
@@ -94,6 +94,7 @@ module CabooseStore
     
     # POST /checkout/relay/:order_id
     def relay
+      ap 'IN RELAY FUNCTION'
       @order = CabooseStore::Order.find(params[:order_id])
       @success = params[:x_response_code] == '1'
       @message = params[:x_response_reason_text]

@@ -131,12 +131,15 @@ module CabooseStore
     end
     
     def capture
+      PaymentProcessor.capture(self)
     end
     
     def refuned
+      PaymentProcessor.refund(self)
     end
     
     def void
+      PaymentProcessor.void(self)
     end
     
     def line_item_added(line_item)
