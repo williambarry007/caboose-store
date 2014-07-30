@@ -1,14 +1,9 @@
 module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     helper :authorize_net
-    #before_filter :get_order
-    before_filter :ensure_order, :only => [:step_one, :step_two]
+    before_filter :ensure_line_items, :only => [:step_one, :step_two]
     
-    #def get_order
-    #  ap @order = Order.find(session[:cart_id])
-    #end
-    
-    def ensure_order
+    def ensure_line_items
       redirect_to '/checkout/empty' if @order.line_items.empty?
     end
     
@@ -18,22 +13,8 @@ module CabooseStore
     
     # GET /checkout/step-two
     def step_two
-      ap '--HOOK'
-      ap !@order.shipping_address || !@order.billing_address
-      redirect_to '/checkout/step-one' if !@order.shipping_address# || !@order.billing_address
+      redirect_to '/checkout/step-one' if !@order.shipping_address || !@order.billing_address
     end
-    
-    # GET /checkout
-    #def index
-    #  redirect_to "/checkout/login" if !logged_in?
-    #  @order.customer_id = logged_in_user.id
-    #  @order.save
-    #  
-    #  #if logged_in?
-    #  #  @order.customer_id = logged_in_user.id
-    #  #  @order.save
-    #  #end
-    #end
     
     # GET /checkout/address
     def address
@@ -87,29 +68,21 @@ module CabooseStore
     end
     
     # GET /checkout/shipping
-    def shipping_methods
-      render :json => { :rates => ShippingCalculator.rates(@order), :fixed_shipping => CabooseStore::fixed_shipping }
+    def shipping
+      render :json => { :rates => ShippingCalculator.rates(@order), :selected_rate => ShippingCalculator.rate(@order) }
     end
     
-    # PUT /checkout/shipping-method
-    def update_shipping_method
-      render :json => { :error => 'You must select a shipping method.' } and return if params[:shipping_method].nil? or params[:shipping_method][:code].empty?
-    
-      # Update order
-      @order.shipping             = params[:shipping_method][:price].to_f / 100
-      @order.shipping_method      = params[:shipping_method][:name]
-      @order.shipping_method_code = params[:shipping_method][:code]
-      @order.handling             = (@order.shipping * 0.05).round(2)
-      @order.calculate_total
-      @order.save
-    
-      render :json => { :redirect => '/checkout/discount' }
+    # PUT /checkout/shipping
+    def update_shipping
+      @order.shipping_code = params[:shipping_code]
+      render :json => { :success => @order.save, :errors => @order.errors.full_messages }
     end
     
+    # GET /checkout/payment
     def payment
       @sim_transaction = AuthorizeNet::SIM::Transaction.new(
-        CabooseStore::authorizenet_login_id,
-        CabooseStore::authorizenet_transaction_key,
+        CabooseStore::authorize_net_login_id,
+        CabooseStore::authorize_net_transaction_key,
         @order.total,
         :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
         :transaction_type => 'AUTH_ONLY',
@@ -119,12 +92,33 @@ module CabooseStore
       render :layout => false
     end
     
+    # POST /checkout/relay/:order_id
     def relay
+      @order = CabooseStore::Order.find(params[:order_id])
       @success = params[:x_response_code] == '1'
       @message = params[:x_response_reason_text]
-      @order = CabooseStore::Order.find(params[:order_id])
-      @order.update_attribute(:financial_status, @success ? 'authorized' : 'unauthorized')
+      
+      if @success
+        @order.update_attributes(
+          :financial_status => 'authorized',
+          :status => 'pending',
+          :date_authorized => DateTime.now,
+          :auth_amount => @order.total,
+          :transaction_id => params[:x_trans_id]
+        )
+      else
+        @order.update_attribute(:financial_status, 'unauthorized')
+      end
+      
       render :layout => false
+    end
+    
+    # GET /checkout/empty
+    def empty
+    end
+    
+    # GET /checkout/thanks
+    def thanks
     end
     
     # GET /checkout/discount
@@ -209,12 +203,5 @@ module CabooseStore
     #  end
     #end
     
-    # GET /checkout/empty
-    def empty
-    end
-    
-    # GET /checkout/thanks
-    def thanks
-    end
   end
 end

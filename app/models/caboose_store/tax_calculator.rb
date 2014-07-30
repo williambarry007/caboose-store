@@ -1,8 +1,5 @@
 module CabooseStore
   class TaxCalculator
-    
-    # Calculates the total cost of shipping
-    # Providers can be ups, fedex, or usps
     def self.tax_rate(address)
       return 0 if address.state.downcase != 'al'
       city = address.city.downcase
@@ -21,6 +18,5 @@ module CabooseStore
       rate = rate + 0.04 if address.state.downcase == 'al' || address.state.downcase == 'alabama'        
       return rate.round(2)
     end
-  
   end
 end

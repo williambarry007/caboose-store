@@ -1,8 +1,6 @@
 #
 # Order
 #
-# :: Class Methods
-# :: Instance Methods
 
 module CabooseStore        
   class Order < ActiveRecord::Base
@@ -14,15 +12,15 @@ module CabooseStore
     belongs_to :billing_address, :class_name => 'Address'
     has_many :discounts, :through => :order_discounts
     has_many :order_discounts
-    has_many :line_items#, :after_add => :calculate_total, :after_remove => :calculate_total
+    has_many :line_items, :after_add => :line_item_added, :after_remove => :line_item_removed
     
     attr_accessible :id,
       :order_number,
       :subtotal,
       :tax,
-      :shipping_method,
-      :shipping_method_code,
+      :shipping_code,
       :shipping,
+      :handling,
       :discount,
       :amount_discounted,
       :total,
@@ -46,7 +44,6 @@ module CabooseStore
       :billing_address_id,
       :landing_page,
       :landing_page_ref,
-      :handling,
       :transaction_d,
       :auth_code,
       :alternate_id,
@@ -56,10 +53,38 @@ module CabooseStore
       :transaction_id
     
     #
+    # Scopes
+    #
+    
+    scope :test, where('status = ?', 'testing')
+    scope :cancelled, where('status = ?', 'cancelled')
+    scope :pending, where('status = ?', 'pending')
+    #TODO scope :fulfilled
+    #TODO scope :unfulfilled
+    scope :authorized, where('financial_status = ?', 'authorized')
+    scope :captured, where('financial_status = ?', 'captured')
+    scope :refunded, where('financial_status = ?', 'refunded')
+    scope :voided, where('financial_status = ?', 'voided')
+    
+    #
+    # Validations
+    #
+    
+    validates :status, :inclusion => {
+      :in      => ['cart', 'pending', 'cancelled', 'shipped', 'testing'],
+      :message => "%{value} is not a valid status. Must be either 'pending' or 'shipped'"
+    }
+    
+    validates :financial_status, :inclusion => {
+      :in      => ['pending', 'authorized', 'captured', 'refunded', 'voided'],
+      :message => "%{value} is not a valid financial status. Must be 'authorized', 'captured', 'refunded' or 'voided'"
+    }
+    
+    #
     # Callbacks
     #
     
-    before_update :calculate_total
+    after_update :calculate
     
     #
     # Methods
@@ -97,19 +122,12 @@ module CabooseStore
       OrdersMailer.customer_new_order(self).deliver
     end
     
-    def authorized?
-      self.financial_status == 'authorized' or PaymentProcessor.authorized?(self)
-    end
-      
     def test?
       self.status == 'testing'
     end
     
-    def cancelled?
-      self.status == 'cancelled'
-    end
-    
-    def authorize
+    def authorized?
+      self.financial_status == 'authorized'
     end
     
     def capture
@@ -121,20 +139,44 @@ module CabooseStore
     def void
     end
     
-    def fulfilled_line_items
-      self.line_items.where(:status => 'shipped').all
+    def line_item_added(line_item)
+      self.calculate
     end
     
-    def unfulfilled_line_items
-      self.line_items.where('status != ?', 'shipped').all
+    def line_item_removed(line_item)
+      self.calculate
+    end
+    
+    def calculate
+      self.update_column(:subtotal, (self.calculate_subtotal * 100).ceil / 100.00)
+      self.update_column(:tax, (self.calculate_tax * 100).ceil / 100.00)
+      self.update_column(:shipping, (self.calculate_shipping * 100).ceil / 100.00)
+      self.update_column(:handling, (self.calculate_handling * 100).ceil / 100.00)
+      self.update_column(:total, (self.calculate_total * 100).ceil / 100.00)
+    end
+    
+    def calculate_subtotal
+      return 0 if self.line_items.empty?
+      self.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price }
+    end
+    
+    def calculate_tax
+      return 0 if !self.shipping_address
+      TaxCalculator.tax_rate(self.shipping_address)
+    end
+    
+    def calculate_shipping
+      return 0 if !self.shipping_address || !self.shipping_code
+      ShippingCalculator.rate(self)[:total_price]
+    end
+    
+    def calculate_handling
+      self.shipping * CabooseStore::handling_percentage
     end
     
     def calculate_total
-      subtotal = self.line_items.any? ? self.line_items.collect { |line_item| line_item.price }.inject { |sum, price| sum + price } : 0
-      self.update_column(:subtotal, (subtotal * 100).ceil / 100.00)
-      self.update_column(:tax, (self.subtotal * TaxCalculator.tax_rate(self.shipping_address) * 100).ceil / 100.00) if self.shipping_address
-      self.update_column(:shipping, (CabooseStore.fixed_shipping * 100).ceil / 100.00) if CabooseStore::fixed_shipping
-      self.update_column(:total, (([self.subtotal, self.tax, self.shipping].compact.inject { |sum, price| sum + price } * 100).ceil / 100.00))
+      [self.subtotal, self.tax, self.shipping, self.handling].compact.inject { |sum, price| sum + price }
     end
   end
 end
+

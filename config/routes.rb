@@ -2,53 +2,36 @@ CabooseStore::Engine.routes.draw do
   
   # API
   
-  get    '/api/products'                          => 'products#api_list'
-  get    '/api/products/:id'                      => 'products#api_details'
-  get    '/api/products/:id/variants'             => 'products#api_variants'
-  get    '/api/cart/new'                          => 'cart#new'
-  get    '/api/cart/:order_id'                    => 'cart#list'
-  post   '/api/cart/:order_id/add/:variant_id'    => 'cart#add'
-  put    '/api/cart/:order_id/update/:variant_id' => 'cart#update'
-  delete '/api/cart/:order_id/remove/:variant_id' => 'cart#remove'
+  #get    '/api/products'                          => 'products#api_list'
+  #get    '/api/products/:id'                      => 'products#api_details'
+  #get    '/api/products/:id/variants'             => 'products#api_variants'
+  #get    '/api/cart/new'                          => 'cart#new'
+  #get    '/api/cart/:order_id'                    => 'cart#list'
+  #post   '/api/cart/:order_id/add/:variant_id'    => 'cart#add'
+  #put    '/api/cart/:order_id/update/:variant_id' => 'cart#update'
+  #delete '/api/cart/:order_id/remove/:variant_id' => 'cart#remove'
   
   # Cart
   
   get    '/cart/mobile'    => 'cart#mobile'
   get    '/cart/items'     => 'cart#index'
   post   '/cart/items'     => 'cart#add'
-  post   '/cart/items'     => 'cart#add'
   put    '/cart/items/:id' => 'cart#update'
   delete '/cart/items/:id' => 'cart#remove'
   
   # Checkout
   
-  get '/checkout'          => 'checkout#step_one'
-  get '/checkout/step-one' => 'checkout#step_one'
-  get '/checkout/step-two' => 'checkout#step_two'
-  get '/checkout/address'  => 'checkout#address'
-  put '/checkout/address'  => 'checkout#update_address'
-  get '/checkout/shipping' => 'checkout#shipping_methods'
-  put '/checkout/shipping' => 'checkout#update_shipping'
-  get '/checkout/payment'  => 'checkout#payment'
-  get '/checkout/relay/:order_id' => 'checkout#relay'
+  get  '/checkout'                 => 'checkout#step_one'
+  get  '/checkout/step-one'        => 'checkout#step_one'
+  get  '/checkout/step-two'        => 'checkout#step_two'
+  get  '/checkout/address'         => 'checkout#address'
+  put  '/checkout/address'         => 'checkout#update_address'
+  get  '/checkout/shipping'        => 'checkout#shipping'
+  put  '/checkout/shipping'        => 'checkout#update_shipping'
+  get  '/checkout/payment'         => 'checkout#payment'
   post '/checkout/relay/:order_id' => 'checkout#relay'
-  get '/checkout/thanks' => 'checkout#thanks'
-  get '/checkout/empty' => 'checkout#empty'
-  
-  
-  #put  '/checkout/address'                => 'checkout#update_address'
-  #get  '/checkout/shipping'               => 'checkout#shipping'
-  #get  '/checkout/shipping-rates'         => 'checkout#shipping_rates'
-  #put  '/checkout/shipping-method'        => 'checkout#update_shipping_method'
-  #get  '/checkout/discount'               => 'checkout#discount'
-  #post '/checkout/discount'               => 'checkout#add_discount'
-  #get  '/checkout/authorize-by-gift-card' => 'checkout#authorize_by_gift_card'
-  #get  '/checkout/billing'                => 'checkout#billing'
-  #get  '/checkout/relay/:order_id'        => 'checkout#relay'
-  #get  '/checkout/empty'                  => 'checkout#empty'
-  #get  '/checkout/error'                  => 'checkout#error'
-  #get  '/checkout/thanks'                 => 'checkout#thanks'
-  #get  '/checkout/login'                  => 'checkout#login'
+  get  '/checkout/thanks'          => 'checkout#thanks'
+  get  '/checkout/empty'           => 'checkout#empty'
   
   # Products
   

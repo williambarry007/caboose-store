@@ -9,7 +9,6 @@ module CabooseStore
     
     attr_accessible :id,
       :variant_id,
-      :parent_id,
       :quantity,
       :price,
       :notes,
@@ -21,12 +20,24 @@ module CabooseStore
       :custom3
     
     #
+    # Scopes
+    #
+    
+    scope :pending, where('status = ?', 'pending')
+    scope :fulfilled, where('status = ?', 'shipped')
+    scope :unfulfilled, where('status != ?', 'shipped')
+    #
     # Validations
     #
     
-    validates :quantity, :numericality => { :greater_than_or_equal_to => 0 }
-    validate :quantity_in_stock
+    validates :status, :inclusion => {
+      :in      => ['pending', 'shipped'],
+      :message => "%{value} is not a valid status. Must be either 'pending' or 'shipped'"
+    }
     
+    validates :quantity, :numericality => { :greater_than_or_equal_to => 0 }
+    
+    validate :quantity_in_stock
     def quantity_in_stock
       errors.add(:base, "There #{self.variant.quantity > 1 ? 'are' : 'is'} only #{self.variant.quantity} left in stock.") if self.variant.quantity - self.quantity < 0
     end
@@ -36,18 +47,14 @@ module CabooseStore
     #
     
     before_save :update_price
-    after_save { |line_item| line_item.order.calculate_total }
+    after_update { self.order.calculate }
     
     #
     # Methods
     #
     
-    def update_price(line_item=self)
-      line_item.price = line_item.variant.price * line_item.quantity
-    end
-    
-    def subtotal
-      (self.price || 0) * (self.quantity || 0) / 100 * 100
+    def update_price
+      self.price = self.variant.price * self.quantity
     end
     
     def as_json(options={})
@@ -62,3 +69,4 @@ module CabooseStore
     end
   end
 end
+

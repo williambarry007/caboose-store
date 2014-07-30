@@ -11,7 +11,9 @@ module CabooseStore
     :contact_email,
     :payscape_username,
     :payscape_password,
-    :authorizenet_login_id,
-    :authorizenet_transaction_key,
-    :fixed_shipping
+    :authorize_net_login_id,
+    :authorize_net_transaction_key,
+    :handling_percentage,
+    :allowed_shipping_codes
 end
+

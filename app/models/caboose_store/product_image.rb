@@ -20,6 +20,7 @@ module CabooseStore
     has_attached_file :image,
       :path        => "products/:product_id_:id_:style.:extension",
       :default_url => '/products/:id_:style.:extension',
+      :s3_protocol => :https,
       :styles      => {
         tiny:   '100x100>',
         thumb:  '250x250>',

@@ -24,7 +24,7 @@ Caboose.Store.Modules.Checkout = (function() {
   self.initialize = function() {
     self.$checkout = $('#checkout');
     
-    switch (window.location.pathname) {
+    switch (window.location.pathname.replace(/\/$/, "")) {
       case '/checkout':
       case '/checkout/step-one':
         self.step = 1;
@@ -42,7 +42,7 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('submit', '#checkout-login form', self.loginSubmitHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
-    self.$checkout.on('change', 'input[type=checkbox][name=shipping]', self.shippingChangeHandler);
+    self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
     self.$checkout.on('load', '#checkout-payment #relay', self.relayLoadHandler);
     self.$checkout.on('change', '#checkout-payment select', self.expirationChangeHandler);
     $(window).on('message', self.relayHandler);
@@ -106,6 +106,7 @@ Caboose.Store.Modules.Checkout = (function() {
       url: $form.attr('action'),
       data: $form.serialize(),
       success: function(response) {
+        console.log(response);
         if (response.success) {
           window.location = '/checkout/step-two';
         } else {
@@ -117,7 +118,16 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   self.shippingChangeHandler = function(event) {
-    console.log('update shipping method');
+    if (event.target.value == "") return false;
+    
+    $.ajax({
+      url: '/checkout/shipping',
+      type: 'put',
+      data: { shipping_code: event.target.value },
+      success: function(response) {
+        if (response.success) self.renderProducts();
+      }
+    });
   };
   
   self.expirationChangeHandler = function(event) {
@@ -148,31 +158,19 @@ Caboose.Store.Modules.Checkout = (function() {
   //
   
   self.render = function() {
-    self.$products = self.$checkout.find('#checkout-products');
     self.renderProducts();
     
     if (self.step == 1) {
-      self.$login = self.$checkout.find('#checkout-login');
-      self.$address = self.$checkout.find('#checkout-address');
-      
-      if (!loggedIn) {
-        self.$login.html(self.templates.login());
-      } else {
-        self.$login.remove();
-      }
-      
-      //self.$address.html(self.templates.address({  states: window.States }));
+      self.renderLogin();
       self.renderAddress();
     } else {
-      self.$shipping = self.$checkout.find('#checkout-shipping');
-      self.$payment = self.$checkout.find('#checkout-payment');
-      
       self.renderShipping();
       self.renderPayment();
     }
   };
   
   self.renderProducts = function() {
+    self.$products = self.$checkout.find('#checkout-products');
     if (!self.$products.length) return false;
     
     $.get('/cart/items.json', function(response) {
@@ -180,7 +178,15 @@ Caboose.Store.Modules.Checkout = (function() {
     });
   };
   
+  self.renderLogin = function() {
+    self.$login = self.$checkout.find('#checkout-login');
+    if (self.loggedIn) self.$login.remove();
+    if (self.loggedIn || !self.$login.length) return false;
+    self.$login.html(self.templates.login());
+  };
+  
   self.renderAddress = function() {
+    self.$address = self.$checkout.find('#checkout-address');
     if (!self.$address.length) return false;
     
     $.get('/checkout/address', function(response) {
@@ -193,15 +199,17 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   self.renderShipping = function() {
+    self.$shipping = self.$checkout.find('#checkout-shipping');
     if (!self.$shipping.length) return false;
     
     $.get('/checkout/shipping', function(response) {
       if (response.fixed_shipping) return false;
-      self.$shipping.empty().html(self.templates.shipping({ rates: response.rates }));
+      self.$shipping.empty().html(self.templates.shipping({ rates: response.rates, selectedRate: response.selected_rate }));
     });
   };
   
   self.renderPayment = function() {
+    self.$payment = self.$checkout.find('#checkout-payment');
     if (!self.$payment.length) return false;
     
     $.get('/checkout/payment', function(response) {

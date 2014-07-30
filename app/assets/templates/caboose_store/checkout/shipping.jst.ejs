@@ -5,9 +5,12 @@
       <p>Please select how you would like your products to be delivered</p>
       
       <select name="shipping">
+        <option value="">Choose a shipping method</option>
+        
         <% _.each(rates, function(rate) { %>
-          <% price = parseFloat(rate.total_price / 100).toFixed(2) %>
-          <option value="<%= price %>"><%= '$' + price + ' - ' + rate.service_name  %></option>
+          <option value="<%= rate.service_code %>" <% if (selectedRate && selectedRate.service_code == rate.service_code) { %>selected<% } %>>
+            <%= '$' + parseFloat(rate.total_price).toFixed(2) + ' - ' + rate.service_name  %>
+          </option>
         <% }); %>
       </select>
     </div>
