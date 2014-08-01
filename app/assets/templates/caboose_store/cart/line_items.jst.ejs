@@ -1,0 +1,41 @@
+<h3>Shopping Cart</h3>
+
+<% if (!order.line_items.length) { %>
+  <p>Your cart is currently empty. <a href="/products">Continue shopping</a></p>
+<% } else { %>
+  <ul>
+    <li>
+      <header>Quantity</header>
+      <header>Price</header>
+    </li>
+    
+    <% _.each(order.line_items, function(lineItem) { %>
+      <li data-id="<%= lineItem.id %>">
+        <section>
+          <% if (lineItem.variant.images.length > 0) { %>
+            <figure style="background-image: url(<%= lineItem.variant.images[0].urls.thumb %>)"></figure>
+          <% } else { %>
+            <figure style="background-image: url(<%= lineItem.product.images[0].urls.thumb %>)"></figure>
+          <% } %>
+          
+          <p><%= lineItem.title %><br /><a caboose-cart="remove">Remove</a><a href="/products/<%= lineItem.variant.product_id %>">View</a></p>
+        </section>
+        
+        <section>
+          <input name="quantity" type="text" value="<%= lineItem.quantity %>" />
+        </section>
+        
+        <section>
+          <p class="price">$<%= lineItem.price %></p>
+        </section>
+      </li>
+    <% }); %>
+    
+    <li>
+      <footer>
+        <a href="/checkout" class="btn blue">Proceed to Checkout</a>
+        <h4>Subtotal: <span>$<%= order.subtotal %></span></h4>
+      </footer>
+    </li>
+  </ul>
+<% } %>

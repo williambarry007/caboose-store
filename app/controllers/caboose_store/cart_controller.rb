@@ -1,33 +1,36 @@
 module CabooseStore
   class CartController < CabooseStore::ApplicationController
-    before_filter :get_line_item, :except => [:index, :add]
+    before_filter :get_line_item, :only => [:update, :remove]
     
     def get_line_item
       @line_item = @order.line_items.find(params[:id])
     end
     
-    # GET /cart/items
+    # GET /cart
     def index
-      respond_to do |format|
-        format.html
-        format.json { render :json => { :order => @order } }
-      end
+      session[:new_cart_items].clear
+    end
+    
+    # GET /cart/items
+    def list
+      render :json => { :order => @order }
     end
     
     # POST /cart/add
     def add
-      @line_item = if @order.line_items.exists?(:variant_id => params[:variant_id])
-        @order.line_items.find_by_variant_id(params[:variant_id])
+      if @order.line_items.exists?(:variant_id => params[:variant_id])
+        @line_item = @order.line_items.find_by_variant_id(params[:variant_id])
+        @line_item.quantity += params[:quantity] ? params[:quantity].to_i : 1
       else
-        LineItem.create(
-          :variant_id => params[:variant_id],
-          :order_id => @order.id,
-          :status => 'pending'
-        )
+        @line_item = LineItem.new
+        @line_item.variant_id = params[:variant_id]
+        @line_item.order_id = @order.id
+        @line_item.status = 'pending'
+        @line_item.quantity = params[:quantity] ? params[:quantity].to_i : 1
+        session[:new_cart_items] << @line_item if @line_item.valid? && !session[:new_cart_items].map(&:id).include?(@line_item.id)
       end
       
-      @line_item.quantity += params[:quantity] ? params[:quantity].to_i : 1
-      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages }
+      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages, :new_cart_items => session[:new_cart_items] }
     end
     
     # PUT cart/update

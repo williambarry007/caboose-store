@@ -76,12 +76,15 @@ module CabooseStore::BootStrapper
         :landing_page_ref => params[:ref] || nil
       )
       
+      order.update_attribute(:shipping_code, CabooseStore::default_shipping_code) if CabooseStore::default_shipping_code
+      
       # Define the cart ID
       session[:cart_id] = order.id
     end
     
     # Log the order and set an instance variable up
     ap @order = CabooseStore::Order.find(session[:cart_id])
+    session[:new_cart_items] ||= Array.new
   end
 end
 

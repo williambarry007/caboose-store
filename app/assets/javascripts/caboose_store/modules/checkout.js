@@ -8,7 +8,7 @@ Caboose.Store.Modules.Checkout = (function() {
       address: JST['caboose_store/checkout/address'],
       login: JST['caboose_store/checkout/login'],
       payment: JST['caboose_store/checkout/payment'],
-      products: JST['caboose_store/checkout/products'],
+      lineItems: JST['caboose_store/checkout/line_items'],
       shipping: JST['caboose_store/checkout/shipping'],
       forms: {
         signin: JST['caboose_store/checkout/forms/signin'],
@@ -44,7 +44,7 @@ Caboose.Store.Modules.Checkout = (function() {
   //
   
   self.fetch = function(callback) {
-    $.get('/cart/items.json', function(response) {
+    $.get('/cart/items', function(response) {
       self.order = response.order
       
       if (self.step == 2) {
@@ -129,6 +129,7 @@ Caboose.Store.Modules.Checkout = (function() {
       url: $form.attr('action'),
       data: $form.serialize(),
       success: function(response) {
+        console.log(response);
         if (response.success) {
           window.location = '/checkout/step-two';
         } else {
@@ -149,7 +150,7 @@ Caboose.Store.Modules.Checkout = (function() {
       success: function(response) {
         if (response.success) {
           self.order = response.order;
-          self.renderProducts();
+          self.renderLineItems();
           self.renderPayment();
         }
       }
@@ -196,7 +197,8 @@ Caboose.Store.Modules.Checkout = (function() {
   //
   
   self.render = function() {
-    self.renderProducts();
+    self.$checkout.find('.loading').remove();
+    self.renderLineItems();
     
     if (self.step == 1) {
       self.renderLogin();
@@ -207,10 +209,10 @@ Caboose.Store.Modules.Checkout = (function() {
     }
   };
   
-  self.renderProducts = function() {
-    self.$products = self.$checkout.find('#checkout-products');
-    if (!self.$products.length) return false;
-    self.$products.empty().html(self.templates.products({ order: self.order }));
+  self.renderLineItems = function() {
+    self.$lineItems = self.$checkout.find('#checkout-line-items');
+    if (!self.$lineItems.length) return false;
+    self.$lineItems.empty().html(self.templates.lineItems({ order: self.order }));
   };
   
   self.renderLogin = function() {

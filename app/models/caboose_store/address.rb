@@ -23,3 +23,4 @@ module CabooseStore
     validates :zip, :format => { :with => /^\d{5}(-\d{4})?$/, :message => 'Invalid zip code' }
   end
 end
+

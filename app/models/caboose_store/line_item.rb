@@ -47,7 +47,7 @@ module CabooseStore
     #
     
     before_save :update_price
-    after_update { self.order.calculate }
+    after_save { self.order.calculate }
     
     #
     # Methods
@@ -57,14 +57,19 @@ module CabooseStore
       self.price = self.variant.price * self.quantity
     end
     
+    def title
+      if self.variant.product.variants.count > 1
+        "#{selt.variant.product.title} - #{self.variant.title}"
+      else
+        self.variant.product.title
+      end
+    end
+    
     def as_json(options={})
       self.attributes.merge({
         :variant => self.variant,
-        :title => if self.variant.product.variants.count > 1
-          "#{self.variant.product.title} - #{self.variant.title}"
-        else
-          self.variant.product.title
-        end
+        :title => self.title,
+        :product => { :images => self.variant.product.product_images }
       })
     end
   end
