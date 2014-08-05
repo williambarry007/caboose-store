@@ -69,6 +69,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   
   def self.authorize(order, params)
     response = self.api 'complete-action', { 'token-id' => params['token-id'] }, order.test?
+    ap response
     return response['result-code'].to_i == 100
   end
   
