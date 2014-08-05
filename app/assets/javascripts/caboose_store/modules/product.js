@@ -15,7 +15,16 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.initialize = function() {
-    self.render();
+    self.$product = $('#product');
+    if (!self.$product.length) return false;
+    
+    $.get('/products/' + self.$product.data('id') + '/info', function(response) {
+      self.product = response.product;
+      self.render();
+      self.bindEvents();
+      self.setVariant(self.getInitialVariant());
+      self.setOptionsFromVariant(self.variant);
+    });
   };
   
   //
@@ -23,30 +32,21 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.render = function() {
-    self.$product = $('#product');
+    self.$price = self.$product.find('#product-price');
+    self.renderImages();
+    self.renderOptions();
+  };
+  
+  self.renderImages = function() {
     self.$images = $('#product-images', self.$product);
-    self.$options = $('#product-options', self.$product);
-    self.$form = $('form[caboose-cart=add]');
-    
-    // Do nothing if the product container doesn't exist
-    if (!self.$product.length) return false;
-    
-    $.get('/products/' + self.$product.data('id') + '/info', function(product) {
-      self.product = product;
-      
-      // Render options and images html
-      self.$images.html(self.templates.images({ images: self.product.images }));
-      self.$options.html(self.templates.options({ options: self.getOptionsWithAllValues() }));
-      
-      // Set initial variant
-      self.variant = self.getInitialVariant();
-      self.setOptionsFromVariant(self.variant);
-      
-      // Bind option events
-      self.$options.find('select').on('change', self.selectChangeHandler);
-      self.$images.find('ul > li > figure').on('click', self.thumbClickHandler);
-      self.$images.children('figure').on('click', self.imageClickHandler);
-    });
+    if (!self.$images.length) return false;
+    self.$images.empty().html(self.templates.images({ images: self.product.images }));
+  };
+  
+  self.renderOptions = function() {
+    self.$options = $('#product-options', self.$options);
+    if (!self.$options.length) return false;
+    self.$options.empty().html(self.templates.options({ options: self.getOptionsWithAllValues() }));
   };
   
   //
@@ -58,30 +58,13 @@ Caboose.Store.Modules.Product = (function() {
   };
   
   //
-  // Event Handlers
+  // Events
   //
   
-  self.selectChangeHandler = function(event) {
-    var $targetSelect = $(event.target)
-      , $targetOption = $targetSelect.find('option:selected');
-    
-    self.$options.find('select').not($targetSelect).each(function(index, element) {
-      var $otherSelect = $(element);
-      
-      $otherSelect.find('option').each(function(index, element) {
-        var $otherOption = $(element);
-        if (!$otherOption.val()) return true;
-        
-        variant = self.getVariantFromOptions([
-          { name: $targetSelect.attr('name'), value: $targetOption.val() },
-          { name: $otherSelect.attr('name'), value: $otherOption.val() }
-        ]);
-        
-        self.toggleOption($otherOption, variant && variant.quantity > 0);
-      });
-    });
-    
-    self.setVariantFromOptions();
+  self.bindEvents = function() {
+    self.$images.find('ul > li > figure').on('click', self.thumbClickHandler);
+    self.$images.children('figure').on('click', self.imageClickHandler);
+    self.$options.find('ul').on('click', 'li', self.optionClickHandler);
   };
   
   self.thumbClickHandler = function(event) {
@@ -90,6 +73,71 @@ Caboose.Store.Modules.Product = (function() {
   
   self.imageClickHandler = function(event) {
     window.location = $(event.target).css('background-image').match(/^url\("(.*)"\)$/)[1];
+  };
+  
+  self.optionClickHandler = function(event) {
+    var $targetOption = $(event.delegateTarget)
+      , $targetValue = $(event.target);
+    
+    if ($targetValue.hasClass('selected')) {
+      $targetValue.removeClass('selected');
+      $targetValue = $();
+    } else {
+      $targetValue.addClass('selected').siblings().removeClass('selected');
+      
+      self.$options.find('ul').not($targetOption).each(function(index, element) {
+        var $currentOption = $(element)
+          , $currentValue = $currentOption.children('.selected')
+          , $otherOption = self.$options.find('ul').not($targetOption.add($currentOption))
+          , $otherValue = $otherOption.children('.selected')
+          , options = [];
+        
+        if (!$currentValue.length) return true;
+        
+        options.push({ name: $currentOption.data('name'), value: $currentValue.data('value') });
+        options.push({ name: $targetOption.data('name'), value: $targetValue.data('value') });
+        
+        if (!!!self.getVariantFromOptions(options)) {
+          $currentValue.removeClass('selected');
+        } else if ($otherOption.length && $otherValue.length) {
+          options.push({ name: $otherOption.data('name'), value: $otherValue.data('value') });
+          if (!!!self.getVariantFromOptions(options)) $otherValue.removeClass('selected');
+        }
+      });
+      
+      $targetOption.children().each(function(index, element) {
+        var $currentOption = $targetOption
+          , $currentValue = $(element)
+          , $otherOption = self.$options.find('ul').not($targetOption).first()
+          , $otherValue = $otherOption.children('.selected')
+          , $otherOtherOption = self.$options.find('ul').not($targetOption.add($otherOption))
+          , $otherOtherValue = $otherOtherOption.children('.selected')
+          , options = [];
+        
+        options.push({ name: $currentOption.data('name'), value: $currentValue.data('value') });
+        if ($otherOption.length && $otherValue.length) options.push({ name: $otherOption.data('name'), value: $otherValue.data('value') });
+        if ($otherOtherOption.length && $otherOtherValue.length) options.push({ name: $otherOtherOption.data('name'), value: $otherOtherValue.data('value') });
+        self.toggleOptionValue($currentValue, !!self.getVariantFromOptions(options));
+      });
+    }
+    
+    self.$options.find('ul').not($targetOption).each(function(index, element) {
+      var $currentOption = $(element);
+      
+      $currentOption.children().each(function(index, element) {
+        var $currentValue = $(element)
+          , $otherOption = self.$options.find('ul').not($targetOption.add($currentOption))
+          , $otherValue = $otherOption.children('.selected')
+          , options = [];
+        
+        options.push({ name: $currentOption.data('name'), value: $currentValue.data('value') });
+        if ($targetOption.length && $targetValue.length) options.push({ name: $targetOption.data('name'), value: $targetValue.data('value') });
+        if ($otherOption.length && $otherValue.length) options.push({ name: $otherOption.data('name'), value: $otherValue.data('value') });
+        self.toggleOptionValue($currentValue, !!self.getVariantFromOptions(options));
+      });
+    });
+    
+    self.setVariant(self.getVariantFromOptions(self.getCurrentOptions()));
   };
   
   //
@@ -139,30 +187,23 @@ Caboose.Store.Modules.Product = (function() {
   self.getCurrentOptions = function() {
     var options = [];
     
-    self.$options.find('select').each(function(index, element) {
-      var $select = $(element);
+    self.$options.children('ul').each(function(index, element) {
+      var $option = $(element);
       
       options.push({
-        name: $select.attr('name'),
-        value: element.value
+        name: $option.data('name'),
+        value: $option.children('.selected').first().data('value')
       });
     });
     
     return options;
   };
   
-  self.toggleOption = function($option, on) {
+  self.toggleOptionValue = function($value, on) {
     if (on) {
-      $option.removeClass('unavailable');
-      
-      if ($option.prop('tagName') == 'OPTION') $option.prop('selected', true);
+      $value.addClass('available').removeClass('unavailable');
     } else {
-      $option.addClass('unavailable');
-      
-      if ($option.prop('selected')) {
-        $option.prop('selected', false);
-        $option.siblings('[value=""]').first().prop('selected', true);
-      }
+      $value.addClass('unavailable').removeClass('available selected');
     }
   };
   
@@ -182,44 +223,26 @@ Caboose.Store.Modules.Product = (function() {
     
     return variant;
   };
- 
   
   self.getVariantFromOptions = function(options) {
-    var attributes = _.object(_.map(options || self.getCurrentOptions(), function(option) {
+    var attributes = _.object(_.map(options, function(option) {
       return [self.getOptionAttribute(option.name), option.value]
     }));
     
-    return _.first(_.where(self.product.variants, attributes));
-  };
-  
-  self.setVariantFromOptions = function(options) {
-    var options = self.getCurrentOptions();
-    
-    // Clear the variant if there is a blank option value
-    if (_.contains(_.pluck(options, 'value'), "")) {
-      self.variant = undefined;
-      self.setVariantId();
-    } else {
-      self.variant = self.getVariantFromOptions(options);
-      self.setImageFromVariant(self.variant);
-      self.setVariantId(self.variant.id);
-    }
+    return _.find(_.where(self.product.variants, attributes), function(variant) { return variant.quantity > 0 });
   };
   
   self.setOptionsFromVariant = function(variant) {
-    self.$options.find('select').each(function(index, element) {
-      var $select = $(element)
-        , $option = $select.find('option[value=' + variant[$select.attr('id')] + ']');
-      
-      self.toggleOption($option, true);
-    });
-    
-    self.setImageFromVariant(variant);
-    self.setVariantId(variant.id);
+    $('#option1 li[data-value="' + variant.option1 + '"]', self.$options).click();
+    $('#option2 li[data-value="' + variant.option2 + '"]', self.$options).click();
+    $('#option3 li[data-value="' + variant.option3 + '"]', self.$options).click();
   };
   
-  self.setVariantId = function(variantId) {
-    if (self.$form.length) self.$form.find('input[name=variant_id]').val(variantId || "");
+  self.setVariant = function(variant) {
+    self.variant = variant;
+    Caboose.Store.Modules.Cart.setVariant(variant);
+    if (variant) self.setImageFromVariant(variant);
+    if (variant && self.$price.length) self.$price.empty().text('$' + parseFloat((variant.price * 100) / 100).toFixed(2));
   };
   
   //
@@ -229,7 +252,7 @@ Caboose.Store.Modules.Product = (function() {
   self.setImageFromVariant = function(variant) {
     var $figure = self.$images.children('figure');
     
-    if (variant.images.length > 0) {
+    if (variant.images && variant.images.length > 0) {
       $figure.css('background-image', 'url(' + variant.images[0].urls.large + ')');
     } else if ($figure.css('background-image').toLowerCase() == 'none') {
       $figure.css('background-image', 'url(' + _.first(self.product.images).urls.large + ')');

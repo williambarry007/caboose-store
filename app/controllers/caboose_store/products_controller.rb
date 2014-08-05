@@ -27,7 +27,6 @@ module CabooseStore
       
       # Filter params from url
       url_without_params = request.fullpath.split('?').first
-      ap url_without_params
       
       # Find the category
       category = Category.where(:url => url_without_params).first
@@ -98,14 +97,7 @@ module CabooseStore
     
     # GET /product/info
     def info
-      #product = Product.find(params[:id])
-      render :json => Product.find(params[:id])
-      
-      #render :json => {
-      #  :product => product,
-      #  :variants => product.variants,
-      #  :images => product.product_images
-      #}
+      render :json => { :product => Product.find(params[:id]) }
     end
     
     # GET /api/products
@@ -171,8 +163,6 @@ module CabooseStore
     
     # POST /admin/products/:id/variants/add
     def admin_add_variants
-      ap params
-      
       params[:variant_ids].each do |variant_id|
         variant = Variant.find(variant_id)
         
@@ -191,11 +181,8 @@ module CabooseStore
     
     # POST /admin//products/:id/variants/remove
     def admin_remove_variants
-      ap params
-      
       params[:variant_ids].each do |variant_id|
         variant = Variant.find(variant_id)
-        ap variant
         # variant.update_attribute(:status, 'deleted')
         # variant.product.update_attribute(:status, 'deleted') if variant.product.variants.where('status != ?', 'deleted').count == 0
       end
@@ -254,7 +241,6 @@ module CabooseStore
       # Get the correct page of the results
       @products = @all_products.limit(@gen.limit).offset(@gen.offset)
       
-      # ap @products.all_items.joins(:product_images)
       render :layout => 'caboose/admin'
     end
     

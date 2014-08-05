@@ -11,6 +11,11 @@ module CabooseStore
       session[:new_cart_items].clear
     end
     
+    # GET /cart/new-items
+    def new_items
+      render :json => { :new_items => session[:new_cart_items] }
+    end
+    
     # GET /cart/items
     def list
       render :json => { :order => @order }
@@ -30,13 +35,13 @@ module CabooseStore
         session[:new_cart_items] << @line_item if @line_item.valid? && !session[:new_cart_items].map(&:id).include?(@line_item.id)
       end
       
-      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages, :new_cart_items => session[:new_cart_items] }
+      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages }
     end
     
     # PUT cart/update
     def update
       @line_item.quantity = params[:quantity].to_i
-      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages, :line_item => @line_item  }
+      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages, :line_item => @line_item, :order_subtotal => @order.calculate_subtotal }
     end
     
     # DELETE cart/delete

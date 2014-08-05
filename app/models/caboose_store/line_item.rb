@@ -59,7 +59,7 @@ module CabooseStore
     
     def title
       if self.variant.product.variants.count > 1
-        "#{selt.variant.product.title} - #{self.variant.title}"
+        "#{self.variant.product.title} - #{self.variant.title}"
       else
         self.variant.product.title
       end

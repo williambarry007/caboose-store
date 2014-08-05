@@ -33,7 +33,7 @@ Caboose.Store.Modules.Checkout = (function() {
     }
     
     self.$checkout = $('#checkout')
-    if (!self.$checkout) return false;
+    if (!self.$checkout.length) return false;
     self.loggedIn = $('body').data('logged-in');
     self.fetch(self.render);
     self.bindEventHandlers();
@@ -108,6 +108,9 @@ Caboose.Store.Modules.Checkout = (function() {
           }
         } else {
           self.$login.after($('<p/>').addClass('alert').text('You are now signed in').css('text-align', 'center')).remove();
+          $.post('/checkout/attach-user', function(response) {
+            console.log(response);
+          });
         }
       }
     });
@@ -129,7 +132,6 @@ Caboose.Store.Modules.Checkout = (function() {
       url: $form.attr('action'),
       data: $form.serialize(),
       success: function(response) {
-        console.log(response);
         if (response.success) {
           window.location = '/checkout/step-two';
         } else {
@@ -161,7 +163,7 @@ Caboose.Store.Modules.Checkout = (function() {
     var $form = $('#checkout-payment #payment')
       , month = $form.find('select[name=month]').val()
       , year = $form.find('select[name=year]').val();
-    
+    console.log(month, year);
     $form.find('#expiration').val(month + year);
   };
   
@@ -177,10 +179,11 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   self.relayHandler = function(event) {
-    console.log(data);
     var data = event.originalEvent.data
       , $form = $('#checkout #checkout-payment #payment');
-      
+    
+    if (!$form.length) return false;
+    
     if (data.success == true) {
       window.location = '/checkout/thanks';
     } else {

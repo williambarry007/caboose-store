@@ -5,7 +5,8 @@
 Caboose.Store.Modules.Cart = (function() {
   var self = {
     templates: {
-      lineItems: JST['caboose_store/cart/line_items']
+      lineItems: JST['caboose_store/cart/line_items'],
+      addToCart: JST['caboose_store/cart/add_to_cart']
     }
   };
   
@@ -14,12 +15,20 @@ Caboose.Store.Modules.Cart = (function() {
   //
   
   self.initialize = function() {
-    $('[caboose-cart=add]').on('submit', self.addHandler);
+    self.renderAddToCart();
     self.$cart = $('#cart');
     if (!self.$cart.length) return false;
     self.$cart.on('click', '[caboose-cart=remove]', self.removeHandler);
     self.$cart.on('keyup', 'input', self.updateHandler);
     self.render();
+  };
+  
+  //
+  // Set Variant
+  //
+  
+  self.setVariant = function(variant) {
+    if (self.$addToCart) self.$addToCart.find('input[name=variant_id]').val(variant ? variant.id : "");
   };
   
   //
@@ -32,38 +41,36 @@ Caboose.Store.Modules.Cart = (function() {
     });
   };
   
+  self.renderAddToCart = function() {
+    self.$addToCart = $('#add-to-cart');
+    if (!self.$addToCart.length) return false;
+    self.$addToCart.empty().html(self.templates.addToCart());
+    $('input[name=quantity]', self.$addToCart).on('keyup', self.quantityKeyupHandler);
+    $('form', self.$addToCart).on('submit', self.addHandler);
+  };
+  
   //
   // Event Handlers
   //
   
+  self.quantityKeyupHandler = function(event) {
+    var $quantity = $(event.target);
+    $quantity.val($quantity.val().match(/\d*\.?\d+/));
+  };
+  
   self.addHandler = function(event) {
     event.preventDefault();
-    
     var $form = $(event.target);
     
     if ($form.find('input[name=variant_id]').val().trim() == "") {
       alert('Must select all options');
-    } else if (parseInt($form.find('input[name=quantity]').val()) <= 0) {
-      alert('Quantity must be 1 or more');
     } else {
       $.ajax({
         type: $form.attr('method'),
         url: $form.attr('action'),
         data: $form.serialize(),
         success: function(response) {
-          if (response.success) {
-            console.log(response);
-            if (response.new_cart_items.length == 0) return false;
-            var $link = $('[caboose-cart=link]');
-            
-            if ($link.children('i').length) {
-              $link.children('i').empty().text(response.new_cart_items.length);
-            } else {
-              $link.append($('<i/>').text(response.new_cart_items.length));
-            }
-          } else {
-            alert(response.errors[0]);
-          }
+          if (!response.success) alert(response.errors[0]);
         }
       });
     }
@@ -72,8 +79,9 @@ Caboose.Store.Modules.Cart = (function() {
   self.updateHandler = function(event) {
     var $quantity = $(event.target)
       , $lineItem = $quantity.parents('li').first();
-      
+    
     $quantity.val($quantity.val().match(/\d*\.?\d+/));
+    if ($quantity.val() == "") return false;
     
     delay(function() {
       $.ajax({
@@ -83,6 +91,7 @@ Caboose.Store.Modules.Cart = (function() {
         success: function(response) {
           if (response.success) {
             $lineItem.find('.price').empty().text('$' + response.line_item.price);
+            if (self.$cart.find('.subtotal').length) self.$cart.find('.subtotal').empty().text('$' + response.order_subtotal);
           } else {
             alert(response.errors[0]);
           }

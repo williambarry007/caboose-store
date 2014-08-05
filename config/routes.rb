@@ -3,6 +3,7 @@ CabooseStore::Engine.routes.draw do
   # Cart
   
   get    '/cart'           => 'cart#index'
+  get    '/cart/new-items' => 'cart#new_items'
   get    '/cart/items'     => 'cart#list'
   post   '/cart/items'     => 'cart#add'
   put    '/cart/items/:id' => 'cart#update'
@@ -15,6 +16,7 @@ CabooseStore::Engine.routes.draw do
   get  '/checkout/step-two'        => 'checkout#step_two'
   get  '/checkout/address'         => 'checkout#address'
   put  '/checkout/address'         => 'checkout#update_address'
+  post '/checkout/attach-user'     => 'checkout#attach_user'
   get  '/checkout/shipping'        => 'checkout#shipping'
   put  '/checkout/shipping'        => 'checkout#update_shipping'
   get  '/checkout/payment'         => 'checkout#payment'

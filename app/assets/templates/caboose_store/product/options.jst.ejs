@@ -1,4 +1,4 @@
-<% _.each(options, function(option, index) { %>
+<!--<% _.each(options, function(option, index) { %>
   <select id="<%= 'option' + (index + 1) %>" name="<%= option.name %>">
     <option value="">Choose an Option</option>
     
@@ -6,5 +6,14 @@
       <option value="<%= value %>"><%= value %></option>
     <% }); %>
   </select>
+<% }); %>-->
+
+<% _.each(options, function(option, index) { %>
+  <h3><%= option.name %></h3>
+  <ul id="<%= 'option' + (index + 1) %>" data-name="<%= option.name %>">
+    <% _.each(option.values, function(value) { %>
+      <li data-value="<%= value %>"><%= value %></li>
+    <% }); %>
+  </ul>
 <% }); %>
 

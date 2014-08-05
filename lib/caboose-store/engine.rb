@@ -61,10 +61,10 @@ module CabooseStore::BootStrapper
   def init_cart
     
     # Primarily for the relay, check for Order ID coming back
-    session[:cart_id] = params[:order_id] if params[:order_id]
+    #session[:cart_id] = params[:order_id] if params[:order_id]
     
     # Check if the cart ID is defined and that it exists in the database
-    unless session[:cart_id] and CabooseStore::Order.exists?(session[:cart_id])
+    if !session[:cart_id] || !CabooseStore::Order.exists?(session[:cart_id])
       
       # Create an order to associate with the session
       order = CabooseStore::Order.create(
