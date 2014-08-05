@@ -9,11 +9,11 @@ module CabooseStore
     
     # GET /checkout || GET /checkout/step-one
     def step_one
-      ap logged_in_user
     end
     
     # GET /checkout/step-two
     def step_two
+      ap "--HOOK THIS IS THE UPDATED CABOOSE STORE GEM"
       redirect_to '/checkout/step-one' if !@order.shipping_address || !@order.billing_address
     end
     
