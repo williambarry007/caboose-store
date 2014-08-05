@@ -4,7 +4,7 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   def self.api(root, body, test=false)
     
     # Determine if transaction should be a test
-    body['api-key'] = if true #test or Rails.env == 'development'
+    body['api-key'] = if test or Rails.env == 'development'
       '2F822Rw39fx762MaV7Yy86jXGTC7sCDy'
     else
       CabooseStore::api_key
@@ -69,7 +69,6 @@ class CabooseStore::PaymentProcessors::Payscape < CabooseStore::PaymentProcessor
   
   def self.authorize(order, params)
     response = self.api 'complete-action', { 'token-id' => params['token-id'] }, order.test?
-    ap response
     return response['result-code'].to_i == 100
   end
   

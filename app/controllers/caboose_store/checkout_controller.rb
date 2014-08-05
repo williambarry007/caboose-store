@@ -106,30 +106,29 @@ module CabooseStore
     
     # POST /checkout/relay/:order_id
     def relay
-      ap "--HOOK in relay method"
       @order = CabooseStore::Order.find(params[:order_id])
       
       case CabooseStore::payment_processor
       when 'authorize.net'
         @success = params[:x_response_code] == '1'
         @message = params[:x_response_reason_text]
-        @order.update_attribute(:transaction_id, params[:x_trans_id])
+        @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
       when 'payscape'
         @success = CabooseStore::PaymentProcessor.authorize(@order, params)
         @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
+        @order.transaction_id = params['transaction-id'] if params['transaction-id']
       end
       
       if @success
-        @order.update_attributes(
-          :financial_status => 'authorized',
-          :status => 'pending',
-          :date_authorized => DateTime.now,
-          :auth_amount => @order.total
-        )
+        @order.financial_status = 'authorized'
+        @order.status = 'pending'
+        @order.date_authorized = DateTime.now
+        @order.auth_amount = @order.total
       else
-        @order.update_attribute(:financial_status, 'unauthorized')
+        @order.financial_status = 'unauthorized'
       end
       
+      @order.save
       render :layout => false
     end
     
