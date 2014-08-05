@@ -113,6 +113,7 @@ module CabooseStore
       when 'authorize.net'
         @success = params[:x_response_code] == '1'
         @message = params[:x_response_reason_text]
+        @order.update_attribute(:transaction_id, params[:x_trans_id])
       when 'payscape'
         @success = CabooseStore::PaymentProcessor.authorize(@order, params)
         @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
@@ -123,8 +124,7 @@ module CabooseStore
           :financial_status => 'authorized',
           :status => 'pending',
           :date_authorized => DateTime.now,
-          :auth_amount => @order.total,
-          :transaction_id => params[:x_trans_id]
+          :auth_amount => @order.total
         )
       else
         @order.update_attribute(:financial_status, 'unauthorized')
