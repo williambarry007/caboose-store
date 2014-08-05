@@ -114,7 +114,7 @@ module CabooseStore
         @success = params[:x_response_code] == '1'
         @message = params[:x_response_reason_text]
       when 'payscape'
-        @success = CabooseStore::PaymentProcessor.authorized(@order, params)
+        @success = CabooseStore::PaymentProcessor.authorize(@order, params)
         @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
       end
       
