@@ -106,6 +106,7 @@ module CabooseStore
     
     # POST /checkout/relay/:order_id
     def relay
+      ap "--HOOK in relay method"
       @order = CabooseStore::Order.find(params[:order_id])
       
       case CabooseStore::payment_processsor
