@@ -109,7 +109,7 @@ module CabooseStore
       ap "--HOOK in relay method"
       @order = CabooseStore::Order.find(params[:order_id])
       
-      case CabooseStore::payment_processsor
+      case CabooseStore::payment_processor
       when 'authorize.net'
         @success = params[:x_response_code] == '1'
         @message = params[:x_response_reason_text]
