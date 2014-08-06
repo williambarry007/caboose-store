@@ -13,7 +13,6 @@ module CabooseStore
     
     # GET /checkout/step-two
     def step_two
-      ap "--HOOK THIS IS THE UPDATED CABOOSE STORE GEM"
       redirect_to '/checkout/step-one' if !@order.shipping_address || !@order.billing_address
     end
     
@@ -124,6 +123,16 @@ module CabooseStore
         @order.status = 'pending'
         @order.date_authorized = DateTime.now
         @order.auth_amount = @order.total
+        
+        # Clear cart
+        session[:cart_id] = nil
+        
+        # Send out emails
+        OrdersMailer.customer_new_order(@order).deliver
+        OrdersMailer.fulfillment_new_order(@order).deliver
+        
+        # Emit order event
+        Caboose.plugin_hook('order_authorized', @order)
       else
         @order.financial_status = 'unauthorized'
       end
