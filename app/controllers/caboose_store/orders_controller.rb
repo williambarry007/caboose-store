@@ -41,15 +41,15 @@ module CabooseStore
     # GET /admin/orders/:id/void
     def admin_void
       return if !user_is_allowed('orders', 'edit')
-    
+      
       response = Caboose::StdClass.new({
         'refresh' => nil,
         'error' => nil,
         'success' => nil
       })
-    
+      
       order = Order.find(params[:id])
-    
+      
       if order.financial_status == 'captured'
         response.error = "This order has already been captured, you will need to refund instead"
       else
@@ -59,7 +59,7 @@ module CabooseStore
           order.save
           
           # Add the variant quantities ordered back
-          order.cancel
+          #order.cancel
           
           response.success = "Order voided successfully"
         else
