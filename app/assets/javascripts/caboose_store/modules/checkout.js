@@ -82,7 +82,11 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
     self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
     self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
-    self.$checkout.on('load', '#checkout-payment iframe#relay', self.relayLoadHandler);
+    //self.$checkout.on('load', '#checkout-payment iframe#relay', self.relayLoadHandler);
+    
+    self.$checkout.on('load', 'iframe#relay', function(event) {
+      console.log(event);
+    });
     $(window).on('message', self.relayHandler);
   };
   
@@ -204,10 +208,12 @@ Caboose.Store.Modules.Checkout = (function() {
   
   self.relayHandler = function(event) {
     var data = event.originalEvent.data
-      , $form = $('#checkout #checkout-payment #payment');
+      , $form = $('form#payment');
     
     console.log('Relay: ', data);
     console.log('Relay Form: ', $form);
+    console.log(self.$payment, self.$payment.find('form'));
+    console.log('------');
     if (!$form.length) return false;
     console.log('still in relay');
     console.log('------------');
