@@ -54,9 +54,14 @@ module CabooseStore
         response.error = "This order has already been captured, you will need to refund instead"
       else
         if PaymentProcessor.void(order)
-          order.financial_status = 'cancelled'
-          order.status = 'voided'
-          order.save
+          #order.financial_status = 'cancelled'
+          #order.status = 'voided'
+          #order.save
+          
+          order.update_attributes(
+            :financial_status = 'voided',
+            :status => 'canclled'
+          )
           
           # Add the variant quantities ordered back
           #order.cancel
