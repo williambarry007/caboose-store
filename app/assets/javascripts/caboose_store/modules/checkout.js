@@ -83,11 +83,6 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
     self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
     //self.$checkout.on('load', '#checkout-payment iframe#relay', self.relayLoadHandler);
-    
-    self.$checkout.on('load', 'iframe#relay', function(event) {
-      console.log(event);
-      console.log($(event.target).contents());
-    });
     //$(window).on('message', self.relayHandler);
   };
   
@@ -312,16 +307,19 @@ Caboose.Store.Modules.Checkout = (function() {
       //self.test();
       self.$payment.find('iframe').on('load', function(event) {
         var $iframe = $(event.target)
-          , $form = self.$payment.find('form');
-        console.log($iframe.contents().find('#response'), $form);
-        if (!$iframe.contents().find('#response').length || $form.length) return false;
+          , $form = self.$payment.find('form')
+          , $response = $iframe.contents().find('#response');
+        
+        console.log($iframe);
+        console.log($form);
+        console.log($response);
+        console.log('-------');
+        if (!$iframe.contents().find('#response').length || !$form.length) return false;
         var response = JSON.parse($iframe.contents().find('#response').html());
-        console.log(response);
-        console.log('------');
+        
         if (response.success == true) {
           window.location = '/checkout/thanks';
         } else {
-          console.log($form);
           if ($form.find('.message').length) {
             $form.find('.message').empty().text(response.message);
           } else {
