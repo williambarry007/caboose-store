@@ -296,11 +296,12 @@ Caboose.Store.Modules.Checkout = (function() {
       console.log(self.$payment.find('iframe'));
       
       self.$payment.find('iframe').on('load', function(event) {
+        console.log('--------');
         console.log(event);
         console.log($(event.target).contents());
         var $iframe = $(event.target);
         if (!$iframe.contents().find('#response').length) return false;
-        var response = JSON.parse($iframe.contents().find('#response'));
+        var response = JSON.parse($iframe.contents().find('#response').html());
         console.log(response);
         if (response.success == true) {
           window.location = '/checkout/thanks';
