@@ -299,8 +299,9 @@ Caboose.Store.Modules.Checkout = (function() {
         console.log('--------');
         console.log(event);
         console.log($(event.target).contents());
-        var $iframe = $(event.target);
-        if (!$iframe.contents().find('#response').length) return false;
+        var $iframe = $(event.target)
+          , $form = self.$payment.find($form);
+        if (!$iframe.contents().find('#response').length || $form.length) return false;
         var response = JSON.parse($iframe.contents().find('#response').html());
         console.log(response);
         if (response.success == true) {
