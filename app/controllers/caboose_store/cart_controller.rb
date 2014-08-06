@@ -8,17 +8,16 @@ module CabooseStore
     
     # GET /cart
     def index
-      session[:new_cart_items].clear
-    end
-    
-    # GET /cart/new-items
-    def new_items
-      render :json => { :new_items => session[:new_cart_items] }
     end
     
     # GET /cart/items
     def list
       render :json => { :order => @order }
+    end
+    
+    # GET /cart/item-count
+    def item_count
+      render :json => { :item_count => @order.line_items.count }
     end
     
     # POST /cart/add
@@ -32,10 +31,9 @@ module CabooseStore
         @line_item.order_id = @order.id
         @line_item.status = 'pending'
         @line_item.quantity = params[:quantity] ? params[:quantity].to_i : 1
-        session[:new_cart_items] << @line_item if @line_item.valid? && !session[:new_cart_items].map(&:id).include?(@line_item.id)
       end
       
-      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages }
+      render :json => { :success => @line_item.save, :errors => @line_item.errors.full_messages, :item_count => @order.line_items.count }
     end
     
     # PUT cart/update
@@ -46,7 +44,7 @@ module CabooseStore
     
     # DELETE cart/delete
     def remove
-      render :json => { :success => !!@order.line_items.delete(@line_item) }
+      render :json => { :success => !!@order.line_items.delete(@line_item), :item_count => @order.line_items.count }
     end
   end
 end

@@ -68,6 +68,7 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('submit', '#checkout-login form', self.loginSubmitHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
     self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
+    self.$checkout.on('click', '#checkout-complete button', self.completeHandler);
     self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
     self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
     self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
@@ -163,8 +164,12 @@ Caboose.Store.Modules.Checkout = (function() {
     var $form = $('#checkout-payment #payment')
       , month = $form.find('select[name=month]').val()
       , year = $form.find('select[name=year]').val();
-    console.log(month, year);
+    
     $form.find('#expiration').val(month + year);
+  };
+  
+  self.completeHandler = function(event) {
+    if (self.$payment.length) self.$payment.find('form').submit();
   };
   
   self.paymentSubmitHandler = function(event) {
