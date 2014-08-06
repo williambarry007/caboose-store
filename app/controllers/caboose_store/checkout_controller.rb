@@ -69,8 +69,16 @@ module CabooseStore
     
     # POST /checkout/attach-user
     def attach_user
+      render :json => { :success => false, :errors => ['User is not logged in'] } and return if !logged_in?
       @order.customer_id = logged_in_user.id
-      render :json => { :success => @order.save, :errors => @order.errors.full_messages }
+      render :json => { :success => @order.save, :errors => @order.errors.full_messages, :logged_in => logged_in? }
+    end
+    
+    # POST /checkout/guest
+    def attach_guest
+      render :json => { :success => false, :errors => ['Emails do not match'] } and return if params[:email] != params[:confirm_email]
+      @order.email = params[:email]
+      render :json => { :succes => @order.save, :errors => @order.errors.full_messages, :logged_in => logged_in? }
     end
     
     # GET /checkout/shipping

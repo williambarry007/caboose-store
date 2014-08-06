@@ -17,6 +17,7 @@ CabooseStore::Engine.routes.draw do
   get  '/checkout/address'         => 'checkout#address'
   put  '/checkout/address'         => 'checkout#update_address'
   post '/checkout/attach-user'     => 'checkout#attach_user'
+  post '/checkout/attach-guest'    => 'checkout#attach_guest'
   get  '/checkout/shipping'        => 'checkout#shipping'
   put  '/checkout/shipping'        => 'checkout#update_shipping'
   get  '/checkout/payment'         => 'checkout#payment'
