@@ -36,8 +36,16 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout = $('#checkout')
     if (!self.$checkout.length) return false;
     self.loggedIn = $('body').data('logged-in');
-    if (self.loggedIn) $.post('/checkout/attach-user');
-    self.fetch(self.render);
+    
+    // TODO refactor this
+    if (self.loggedIn) {
+      $.post('/checkout/attach-user', function(response) {
+        self.fetch(self.render);
+      });
+    } else {
+      self.fetch(self.render);
+    }
+    
     self.bindEventHandlers();
   };
   
@@ -199,7 +207,10 @@ Caboose.Store.Modules.Checkout = (function() {
       , $form = $('#checkout #checkout-payment #payment');
     
     console.log('Relay: ', data);
+    console.log('Relay Form: ', $form);
     if (!$form.length) return false;
+    console.log('still in relay');
+    console.log('------------');
     
     if (data.success == true) {
       window.location = '/checkout/thanks';
