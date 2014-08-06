@@ -49,6 +49,10 @@ module CabooseStore
       ActiveSupport.on_load(:action_controller) do
         include CabooseStore::BootStrapper
       end
+      
+      Caboose::User.class_eval do
+        self.primary_key = :id
+      end
     end
   end
 end
@@ -88,11 +92,11 @@ module CabooseStore::BootStrapper
   end
 end
 
-module Caboose
-  User.class_eval do
-    self.primary_key = :id
-  end
-end
+#module Caboose
+#  User.class_eval do
+#    self.primary_key = :id
+#  end
+#end
 # module Caboose
 #   PageBarGenerator.class_eval do
 #     def all_records
