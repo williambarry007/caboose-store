@@ -95,6 +95,14 @@ Caboose.Store.Modules.Cart = (function() {
         success: function(response) {
           if (response.success) {
             self.renderItemCount(response.item_count);
+            if (!self.$addToCart.find('.message').length) {
+              self.$addToCart.append($('<p/>').hide().addClass('message').text('Successfully added to cart'));
+              self.$addToCart.find('.message').fadeIn();
+              
+              setTimeout(function() {
+                self.$addToCart.find('.message').fadeOut(function() { $(this).remove() });
+              }, 1000);
+            }
           } else {
             alert(response.errors[0]);
           }

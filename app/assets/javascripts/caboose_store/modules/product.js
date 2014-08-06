@@ -16,6 +16,7 @@ Caboose.Store.Modules.Product = (function() {
   
   self.initialize = function() {
     self.$product = $('#product');
+    self.$price = self.$product.find('#product-price');
     if (!self.$product.length) return false;
     
     $.get('/products/' + self.$product.data('id') + '/info', function(response) {
@@ -32,21 +33,31 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.render = function() {
-    self.$price = self.$product.find('#product-price');
-    self.renderImages();
-    self.renderOptions();
+    var renderFunctions = [];
+    renderFunctions.push(self.renderImages);
+    renderFunctions.push(self.renderOptions);
+    
+    _.each(renderFunctions, function(renderFunction, index) {
+      var finished = index == (renderFunctions.length - 1);
+      
+      renderFunction(function() {
+        if (finished) self.$product.removeClass('loading');
+      });
+    });
   };
   
-  self.renderImages = function() {
+  self.renderImages = function(callback) {
     self.$images = $('#product-images', self.$product);
     if (!self.$images.length) return false;
     self.$images.empty().html(self.templates.images({ images: self.product.images }));
+    if (callback) callback();
   };
   
-  self.renderOptions = function() {
+  self.renderOptions = function(callback) {
     self.$options = $('#product-options', self.$options);
     if (!self.$options.length) return false;
     self.$options.empty().html(self.templates.options({ options: self.getOptionsWithAllValues() }));
+    if (callback) callback();
   };
   
   //
