@@ -88,21 +88,32 @@ module CabooseStore
         ap order.total
         ap order.amount_discounted
         
-        if order.calculate_net < (order.amount_discounted || 0) || PaymentProcessor.refund(order)
-          order.financial_status = 'refunded'
-          order.status = 'refunded'
-          order.save
+        if PaymentProcessor.refund(order)
+          order.update_attributes(
+            :financial_status => 'refunded',
+            :status => 'cancelled'
+          )
           
-          if order.discounts.any?
-            discount = order.discounts.first
-            amount_to_refund = order.calculate_net < order.amount_discounted ? order.calculate_net : order.amount_discounted
-            discount.update_attribute(:amount_current, amount_to_refund + discount.amount_current)
-          end
-          
-          response.success = "Order refunded successfully"
+          response.success = 'Order refunded successfully'
         else
-          response.error = "Error refunding order."
+          response.error = 'Error refunding order'
         end
+        
+        #if order.calculate_net < (order.amount_discounted || 0) || PaymentProcessor.refund(order)
+        #  order.financial_status = 'refunded'
+        #  order.status = 'refunded'
+        #  order.save
+        #  
+        #  if order.discounts.any?
+        #    discount = order.discounts.first
+        #    amount_to_refund = order.calculate_net < order.amount_discounted ? order.calculate_net : order.amount_discounted
+        #    discount.update_attribute(:amount_current, amount_to_refund + discount.amount_current)
+        #  end
+        #  
+        #  response.success = "Order refunded successfully"
+        #else
+        #  response.error = "Error refunding order."
+        #end
       end
     
       render json: response
@@ -272,19 +283,26 @@ module CabooseStore
       elsif order.total > order.auth_amount
         resp.error = "The order total exceeds the authorized amount."
       else
-        if (order.discounts.any? && order.total < order.discounts.first.amount_current) || PaymentProcessor.capture(order)
-          order.financial_status = 'captured'
-          order.save
-          
-          if order.discounts.any?
-            order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
-            order.update_gift_cards
-          end
-          
-          response.success = "Captured funds successfully"
+        if PaymentProcessor.capture(order)
+          order.update_attribute(:financial_status, 'captured')
+          response.success = 'Captured funds successfully'
         else
-          response.error = "Error capturing funds."
+          response.error = 'Error capturing funds'
         end
+          
+        #if (order.discounts.any? && order.total < order.discounts.first.amount_current) || PaymentProcessor.capture(order)
+        #  order.financial_status = 'captured'
+        #  order.save
+        #  
+        #  if order.discounts.any?
+        #    order.update_attribute(:amount_discounted, order.discounts.first.amount_current)
+        #    order.update_gift_cards
+        #  end
+        #  
+        #  response.success = "Captured funds successfully"
+        #else
+        #  response.error = "Error capturing funds."
+        #end
       end
       
       render :json => response
