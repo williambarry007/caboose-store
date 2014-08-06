@@ -298,6 +298,21 @@ Caboose.Store.Modules.Checkout = (function() {
       self.$payment.find('iframe').on('load', function(event) {
         console.log(event);
         console.log($(event.target).contents());
+        var $iframe = $(event.target);
+        if (!$iframe.contents().find('#response').length) return false;
+        var response = JSON.parse($iframe.contents().find('#response'));
+        console.log(response);
+        if (response.success == true) {
+          window.location = '/checkout/thanks';
+        } else {
+          if ($form.find('.message').length) {
+            $form.find('.message').empty().text(response.message);
+          } else {
+            $form.append($('<span/>').addClass('message error').text(response.message));
+          }
+          
+          $form.removeClass('loading');
+        }
       });
     });
   };
