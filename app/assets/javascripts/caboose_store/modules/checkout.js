@@ -179,14 +179,15 @@ Caboose.Store.Modules.Checkout = (function() {
       alert('Please choose a shipping method');
     } else {
       self.$checkout.off('submit', '#checkout-payment form#payment');
-      $(event.target).submit();
+      $(event.target).addClass('loading').submit();
     }
   };
   
   self.relayHandler = function(event) {
+    console.log('RELAY');
     var data = event.originalEvent.data
       , $form = $('#checkout #checkout-payment #payment');
-    
+    console.log(data);
     if (!$form.length) return false;
     
     if (data.success == true) {
@@ -197,6 +198,8 @@ Caboose.Store.Modules.Checkout = (function() {
       } else {
         $form.append($('<span/>').addClass('message error').text(data.message));
       }
+      
+      $form.removeClass('loading');
     }
   };
   
@@ -254,10 +257,12 @@ Caboose.Store.Modules.Checkout = (function() {
   self.renderPayment = function() {
     self.$payment = self.$checkout.find('#checkout-payment');
     if (!self.$payment.length) return false;
+    self.$checkout.addClass('loading');
     
     $.get('/checkout/payment', function(response) {
       self.$payment.empty().html(self.templates.payment({ form: response }));
       self.expirationChangeHandler();
+      self.$checkout.removeClass('loading');
     });
   };
   

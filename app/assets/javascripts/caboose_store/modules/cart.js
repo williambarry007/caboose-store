@@ -55,6 +55,7 @@ Caboose.Store.Modules.Cart = (function() {
     if (!$link.length) return false;
     
     function setCount(count) {
+      if (count < 1) return false;
       if ($link.children('i').length) {
         $link.children('i').empty().text(count);
       } else {
