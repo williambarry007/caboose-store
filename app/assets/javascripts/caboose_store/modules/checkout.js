@@ -309,9 +309,7 @@ Caboose.Store.Modules.Checkout = (function() {
       self.$payment.empty().html(self.templates.payment({ form: response }));
       self.expirationChangeHandler();
       self.$checkout.removeClass('loading');
-      self.test();
-      console.log(self.$payment.find('iframe'));
-      
+      //self.test();
       self.$payment.find('iframe').on('load', function(event) {
         var $iframe = $(event.target)
           , $form = self.$payment.find($form);
