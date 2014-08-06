@@ -284,6 +284,22 @@ Caboose.Store.Modules.Checkout = (function() {
     }));
   };
   
+  //self.test = function() {
+  //  var response = JSON.parse($('#response-embed').html())
+  //    , $form = self.$payment.find('form');
+  //  if (response.success == true) {
+  //      window.location = '/checkout/thanks';
+  //    } else {
+  //      if ($form.find('.message').length) {
+  //        $form.find('.message').empty().text(response.message);
+  //      } else {
+  //        $form.append($('<span/>').addClass('message error').text(response.message));
+  //      }
+  //      
+  //      $form.removeClass('loading');
+  //    }
+  //};
+  
   self.renderPayment = function() {
     self.$payment = self.$checkout.find('#checkout-payment');
     if (!self.$payment.length) return false;
@@ -293,26 +309,27 @@ Caboose.Store.Modules.Checkout = (function() {
       self.$payment.empty().html(self.templates.payment({ form: response }));
       self.expirationChangeHandler();
       self.$checkout.removeClass('loading');
+      self.test();
       console.log(self.$payment.find('iframe'));
       
       self.$payment.find('iframe').on('load', function(event) {
-        console.log('--------');
-        console.log(event);
-        console.log($(event.target).contents());
         var $iframe = $(event.target)
           , $form = self.$payment.find($form);
         if (!$iframe.contents().find('#response').length || $form.length) return false;
         var response = JSON.parse($iframe.contents().find('#response').html());
         console.log(response);
+        console.log('------');
         if (response.success == true) {
           window.location = '/checkout/thanks';
         } else {
+          console.log($form);
           if ($form.find('.message').length) {
             $form.find('.message').empty().text(response.message);
           } else {
             $form.append($('<span/>').addClass('message error').text(response.message));
           }
           
+          $form.find('.message');
           $form.removeClass('loading');
         }
       });
