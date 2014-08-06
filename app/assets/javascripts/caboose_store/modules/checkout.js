@@ -313,7 +313,7 @@ Caboose.Store.Modules.Checkout = (function() {
       self.$payment.find('iframe').on('load', function(event) {
         var $iframe = $(event.target)
           , $form = self.$payment.find('form');
-        console.log($iframe.contents().find('#response'), $form');
+        console.log($iframe.contents().find('#response'), $form);
         if (!$iframe.contents().find('#response').length || $form.length) return false;
         var response = JSON.parse($iframe.contents().find('#response').html());
         console.log(response);
