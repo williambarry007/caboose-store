@@ -314,7 +314,7 @@ Caboose.Store.Modules.Checkout = (function() {
         console.log($form);
         console.log($response);
         console.log('-------');
-        if (!$iframe.contents().find('#response').length || !$form.length) return false;
+        if (!$response.length || !$form.length) return false;
         var response = JSON.parse($iframe.contents().find('#response').html());
         
         if (response.success == true) {
