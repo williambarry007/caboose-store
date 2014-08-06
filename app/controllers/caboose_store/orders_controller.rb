@@ -59,7 +59,7 @@ module CabooseStore
           #order.save
           
           order.update_attributes(
-            :financial_status = 'voided',
+            :financial_status => 'voided',
             :status => 'canclled'
           )
           
@@ -314,33 +314,33 @@ module CabooseStore
     end
 
     # GET /admin/orders/:id/void
-    def void
-      return if !user_is_allowed('orders', 'edit')
-    
-      response = Caboose::StdClass.new({
-        'refresh' => nil,
-        'error' => nil,
-        'success' => nil
-      })
-    
-      order = Order.find(params[:id])
-    
-      if order.financial_status == 'captured'
-        response.error = "This order has already been captured, you will need to refund instead"
-      else
-        if order.total < order.amount_discounted || PaymentProcessor.void(order)
-          order.financial_status = 'cancelled'
-          order.status = 'voided'
-          order.save
-        
-          response.success = "Order voided successfully"
-        else
-          response.error = "Error voiding order."
-        end
-      end
-    
-      render json: response
-    end
+    #def void
+    #  return if !user_is_allowed('orders', 'edit')
+    #
+    #  response = Caboose::StdClass.new({
+    #    'refresh' => nil,
+    #    'error' => nil,
+    #    'success' => nil
+    #  })
+    #
+    #  order = Order.find(params[:id])
+    #
+    #  if order.financial_status == 'captured'
+    #    response.error = "This order has already been captured, you will need to refund instead"
+    #  else
+    #    if order.total < order.amount_discounted || PaymentProcessor.void(order)
+    #      order.financial_status = 'cancelled'
+    #      order.status = 'voided'
+    #      order.save
+    #    
+    #      response.success = "Order voided successfully"
+    #    else
+    #      response.error = "Error voiding order."
+    #    end
+    #  end
+    #
+    #  render json: response
+    #end
   
     # GET /admin/orders/:id/refund
     # def refund
