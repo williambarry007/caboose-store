@@ -117,6 +117,8 @@ Caboose.Store.Modules.Checkout = (function() {
             self.$login.after($('<p/>').addClass('alert').text('Email successfully saved').css('text-align', 'center')).remove();
           }
         }
+        
+        self.fetch();
       }
     });
   };
@@ -196,6 +198,7 @@ Caboose.Store.Modules.Checkout = (function() {
     var data = event.originalEvent.data
       , $form = $('#checkout #checkout-payment #payment');
     
+    console.log('Relay: ', data);
     if (!$form.length) return false;
     
     if (data.success == true) {
