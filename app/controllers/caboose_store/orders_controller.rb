@@ -54,6 +54,7 @@ module CabooseStore
         response.error = "This order has already been captured, you will need to refund instead"
       else
         if PaymentProcessor.void(order)
+          ap "--HOOK void"
           #order.financial_status = 'cancelled'
           #order.status = 'voided'
           #order.save
