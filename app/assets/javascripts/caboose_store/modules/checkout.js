@@ -86,8 +86,9 @@ Caboose.Store.Modules.Checkout = (function() {
     
     self.$checkout.on('load', 'iframe#relay', function(event) {
       console.log(event);
+      console.log($(event.target).contents());
     });
-    $(window).on('message', self.relayHandler);
+    //$(window).on('message', self.relayHandler);
   };
   
   self.loginClickHandler = function(event) {
