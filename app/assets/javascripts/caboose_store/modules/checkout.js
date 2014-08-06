@@ -293,6 +293,12 @@ Caboose.Store.Modules.Checkout = (function() {
       self.$payment.empty().html(self.templates.payment({ form: response }));
       self.expirationChangeHandler();
       self.$checkout.removeClass('loading');
+      console.log(self.$payment.find('iframe'));
+      
+      self.$payment.find('iframe').on('load', function(event) {
+        console.log(event);
+        console.log($(event.target).contents());
+      });
     });
   };
   
