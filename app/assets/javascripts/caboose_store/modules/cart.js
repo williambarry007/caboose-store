@@ -39,6 +39,7 @@ Caboose.Store.Modules.Cart = (function() {
   self.render = function() {
     $.get('/cart/items', function(response) {
       self.$cart.empty().html(self.templates.lineItems({ order: response.order }));
+      self.$cart.removeClass('loading');
     });
   };
   
