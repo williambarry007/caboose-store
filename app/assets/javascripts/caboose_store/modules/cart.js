@@ -19,7 +19,7 @@ Caboose.Store.Modules.Cart = (function() {
     self.renderItemCount();
     self.$cart = $('#cart');
     if (!self.$cart.length) return false;
-    self.$cart.on('click', '[caboose-cart=remove]', self.removeHandler);
+    self.$cart.on('click', '#remove-from-cart', self.removeHandler);
     self.$cart.on('keyup', 'input', self.updateHandler);
     self.render();
   };
@@ -56,8 +56,9 @@ Caboose.Store.Modules.Cart = (function() {
     if (!$link.length) return false;
     
     function setCount(count) {
-      if (count < 1) return false;
-      if ($link.children('i').length) {
+      if ($link.children('i') && count < 1) {
+        $link.children('i').remove();
+      } else if ($link.children('i').length) {
         $link.children('i').empty().text(count);
       } else {
         $link.append($('<i/>').text(count));

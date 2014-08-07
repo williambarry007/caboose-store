@@ -240,7 +240,8 @@ Caboose.Store.Modules.Product = (function() {
       return [self.getOptionAttribute(option.name), option.value]
     }));
     
-    return _.find(_.where(self.product.variants, attributes), function(variant) { return variant.quantity > 0 });
+    var variants = _.sortBy(_.where(self.product.variants, attributes), function(variant) { return variant.price });
+    return _.find(variants, function(variant) { return variant.quantity > 0 });
   };
   
   self.setOptionsFromVariant = function(variant) {

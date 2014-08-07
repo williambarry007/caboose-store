@@ -24,5 +24,10 @@ module CabooseStore
       
       return scripts
     end
+    
+    #def self.login_success
+    #  @order.update_attribute(:customer_id, session['app_user'].id)
+    #end
   end
 end
+

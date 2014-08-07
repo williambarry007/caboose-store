@@ -1,3 +1,24 @@
+//
+// Config
+//
+
+//
+// Delay
+//
+
+var delay = (function() {
+  var timer = 0;
+  
+  return function(callback, ms) {
+    clearTimeout(timer);
+    timer = setTimeout(callback, ms);
+  };
+})();
+
+//
+// States
+//
+
 window.States = {
   "AL": "Alabama",
   "AK": "Alaska",
@@ -59,3 +80,4 @@ window.States = {
   "WI": "Wisconsin",
   "WY": "Wyoming"
 };
+

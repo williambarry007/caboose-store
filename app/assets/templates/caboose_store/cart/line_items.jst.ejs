@@ -1,7 +1,7 @@
 <h3>Shopping Cart</h3>
 
 <% if (!order.line_items.length) { %>
-  <p>Your cart is currently empty. <a href="/products">Continue shopping</a></p>
+  <p>Your cart is currently empty. <a href="/products">Click here</a> to continue shopping.</p>
 <% } else { %>
   <ul>
     <li>
@@ -18,7 +18,7 @@
             <figure style="background-image: url(<%= lineItem.product.images[0].urls.thumb %>)"></figure>
           <% } %>
           
-          <p><%= lineItem.title %><br /><a caboose-cart="remove">Remove</a><a href="/products/<%= lineItem.variant.product_id %>">View</a></p>
+          <p><%= lineItem.title %><br /><a id="remove-from-cart"t="remove">Remove</a><a href="/products/<%= lineItem.variant.product_id %>">View</a></p>
         </section>
         
         <section>

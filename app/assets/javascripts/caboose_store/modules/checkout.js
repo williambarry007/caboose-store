@@ -82,8 +82,6 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
     self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
     self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
-    //self.$checkout.on('load', '#checkout-payment iframe#relay', self.relayLoadHandler);
-    //$(window).on('message', self.relayHandler);
   };
   
   self.loginClickHandler = function(event) {
@@ -164,6 +162,7 @@ Caboose.Store.Modules.Checkout = (function() {
   
   self.shippingChangeHandler = function(event) {
     if (event.target.value == "") return false;
+    self.$checkout.addClass('loading');
     
     $.ajax({
       url: '/checkout/shipping',
@@ -172,8 +171,7 @@ Caboose.Store.Modules.Checkout = (function() {
       success: function(response) {
         if (response.success) {
           self.order = response.order;
-          self.renderLineItems();
-          self.renderPayment();
+          self.render();
         }
       }
     });
@@ -202,30 +200,21 @@ Caboose.Store.Modules.Checkout = (function() {
     }
   };
   
-  //self.relayHandler = function(event) {
-  //  var data = event.originalEvent.data
-  //    , $form = $('form#payment');
-  //  
-  //  console.log('Relay: ', data);
-  //  console.log('Relay Form: ', $form);
-  //  console.log(self.$payment, self.$payment.find('form'));
-  //  console.log('------');
-  //  if (!$form.length) return false;
-  //  console.log('still in relay');
-  //  console.log('------------');
-  //  
-  //  if (data.success == true) {
-  //    window.location = '/checkout/thanks';
-  //  } else {
-  //    if ($form.find('.message').length) {
-  //      $form.find('.message').empty().text(data.message);
-  //    } else {
-  //      $form.append($('<span/>').addClass('message error').text(data.message));
-  //    }
-  //    
-  //    $form.removeClass('loading');
-  //  }
-  //};
+  self.relayHandler = function(event) {
+    var $iframe = $(event.target)
+      , $form = self.$payment.find('form')
+      , $response = $iframe.contents().find('#response');
+    
+    if (!$response.length || !$form.length) return false;
+    var response = JSON.parse($iframe.contents().find('#response').html());
+    
+    if (response.success == true) {
+      window.location = '/checkout/thanks';
+    } else {
+      alert(response.message);
+      self.render();
+    }
+  };
   
   //
   // Render
@@ -305,34 +294,21 @@ Caboose.Store.Modules.Checkout = (function() {
     self.$checkout.addClass('loading');
     
     $.get('/checkout/payment', function(response) {
+      var serializedForm = self.$payment.find('form').serialize();
       self.$payment.empty().html(self.templates.payment({ form: response }));
+      
+      if (serializedForm.length > 0) {
+        _.each(serializedForm.split('&'), function(serializedField) {
+          var name = serializedField.split('=')[0]
+            , value = serializedField.split('=')[1];
+          
+          self.$payment.find('form [name="' + name + '"]').val(value);
+        });
+      }
+      
       self.expirationChangeHandler();
       self.$checkout.removeClass('loading');
-      
-      self.$payment.find('iframe').on('load', function(event) {
-        var $iframe = $(event.target)
-          , $form = self.$payment.find('form')
-          , $response = $iframe.contents().find('#response');
-        
-        if (!$response.length || !$form.length) return false;
-        var response = JSON.parse($iframe.contents().find('#response').html());
-        
-        if (response.success == true) {
-          window.location = '/checkout/thanks';
-        } else {
-          //if ($form.find('.message').length) {
-          //  $form.find('.message').empty().text(response.message);
-          //} else {
-          //  $form.append($('<span/>').addClass('message error').text(response.message));
-          //}
-          
-          //self.$checkout.removeClass('loading');
-          alert(response.message);
-          self.render();
-        }
-      });
-      
-      if (callback) callback();
+      self.$payment.find('iframe').on('load', self.relayHandler);
     });
   };
   
