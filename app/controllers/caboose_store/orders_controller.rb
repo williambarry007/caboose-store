@@ -61,7 +61,7 @@ module CabooseStore
           
           order.update_attributes(
             :financial_status => 'voided',
-            :status => 'canclled'
+            :status => 'cancelled'
           )
           
           # Add the variant quantities ordered back
