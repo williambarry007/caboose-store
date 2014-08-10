@@ -65,7 +65,7 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.outOfStock = function() {
-    self.$form.after($('<p/>').addClass('error').text('Out of Stock')).remove();
+    self.$product.find('#add-to-cart').after($('<p/>').addClass('message error').text('Out of Stock')).remove();
   };
   
   //
@@ -236,8 +236,10 @@ Caboose.Store.Modules.Product = (function() {
   };
   
   self.getVariantFromOptions = function(options) {
+    if (_.find(options, function(option) { return option.value == undefined })) return false;
+    
     var attributes = _.object(_.map(options, function(option) {
-      return [self.getOptionAttribute(option.name), option.value]
+      return [self.getOptionAttribute(option.name), option.value.toString()]
     }));
     
     var variants = _.sortBy(_.where(self.product.variants, attributes), function(variant) { return variant.price });
@@ -245,9 +247,9 @@ Caboose.Store.Modules.Product = (function() {
   };
   
   self.setOptionsFromVariant = function(variant) {
-    $('#option1 li[data-value="' + variant.option1 + '"]', self.$options).click();
-    $('#option2 li[data-value="' + variant.option2 + '"]', self.$options).click();
-    $('#option3 li[data-value="' + variant.option3 + '"]', self.$options).click();
+    if (variant.option1) $('#option1 li[data-value="' + variant.option1 + '"]', self.$options).click();
+    if (variant.option1) $('#option2 li[data-value="' + variant.option2 + '"]', self.$options).click();
+    if (variant.option1) $('#option3 li[data-value="' + variant.option3 + '"]', self.$options).click();
   };
   
   self.setVariant = function(variant) {
@@ -255,6 +257,10 @@ Caboose.Store.Modules.Product = (function() {
     Caboose.Store.Modules.Cart.setVariant(variant);
     if (variant) self.setImageFromVariant(variant);
     if (variant && self.$price.length) self.$price.empty().text('$' + parseFloat((variant.price * 100) / 100).toFixed(2));
+  };
+  
+  self.getVariant = function(id) {
+    return _.find(self.product.variants, function(variant) { return variant.id == (id || self.variant.id) });
   };
   
   //
