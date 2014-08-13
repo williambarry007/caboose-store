@@ -11,6 +11,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require_tree ../../templates
+//= require underscore
 //= require caboose_store/config
 //= require caboose_store/main
 //= require_tree ./modules

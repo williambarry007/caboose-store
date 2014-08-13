@@ -171,6 +171,7 @@ Caboose.Store.Modules.Checkout = (function() {
       success: function(response) {
         if (response.success) {
           self.order = response.order;
+          self.selectedRate = response.selected_rate;
           self.render();
         }
       }
@@ -207,7 +208,7 @@ Caboose.Store.Modules.Checkout = (function() {
     
     if (!$response.length || !$form.length) return false;
     var response = JSON.parse($iframe.contents().find('#response').html());
-    
+    console.log(response);
     if (response.success == true) {
       window.location = '/checkout/thanks';
     } else {
@@ -240,11 +241,6 @@ Caboose.Store.Modules.Checkout = (function() {
         if (finished) self.$checkout.removeClass('loading');
       });
     });
-  };
-  
-  self.renderFinished = function(callback) {
-    self.$checkout.removeClass('loading');
-    if (callback) callback();
   };
   
   self.renderLineItems = function(callback) {

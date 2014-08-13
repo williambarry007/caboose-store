@@ -15,6 +15,7 @@ module CabooseStore
     default_scope order('store_products.sort_order')
     
     attr_accessible :id,
+      :alternate_id,
       :title,
       :description,
       :vendor_id,
@@ -29,7 +30,6 @@ module CabooseStore
       :default2,
       :default3,
       :status,
-      :alternate_id,
       :custom_input,
       :featured,
       :sort_order

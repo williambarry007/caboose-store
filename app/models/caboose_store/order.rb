@@ -19,6 +19,7 @@ module CabooseStore
       :subtotal,
       :tax,
       :shipping_code,
+      :shipping_method,
       :shipping,
       :handling,
       :discount,

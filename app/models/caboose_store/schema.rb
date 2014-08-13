@@ -126,6 +126,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       ],
       
       CabooseStore::Product => [
+        [ :alternate_id          , :string    ],
         [ :title                 , :string    ],
         [ :caption               , :string    ],
         [ :description           , :text      ],

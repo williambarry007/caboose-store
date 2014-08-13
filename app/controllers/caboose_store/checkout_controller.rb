@@ -89,7 +89,7 @@ module CabooseStore
     # PUT /checkout/shipping
     def update_shipping
       @order.shipping_code = params[:shipping_code]
-      render :json => { :success => @order.save, :errors => @order.errors.full_messages, :order => @order }
+      render :json => { :success => @order.save, :errors => @order.errors.full_messages, :order => @order, :selected_rate => ShippingCalculator.rate(@order) }
     end
     
     # GET /checkout/payment
@@ -125,7 +125,8 @@ module CabooseStore
         @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
         @order.transaction_id = params['transaction-id'] if params['transaction-id']
       end
-      
+      ap @success
+      ap '---------'
       if @success
         @order.financial_status = 'authorized'
         @order.status = 'pending'

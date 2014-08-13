@@ -54,11 +54,6 @@ module CabooseStore
         response.error = "This order has already been captured, you will need to refund instead"
       else
         if PaymentProcessor.void(order)
-          ap "--HOOK void"
-          #order.financial_status = 'cancelled'
-          #order.status = 'voided'
-          #order.save
-          
           order.update_attributes(
             :financial_status => 'voided',
             :status => 'cancelled'
@@ -91,9 +86,6 @@ module CabooseStore
       if order.financial_status != 'captured'
         response.error = "This order hasn't been captured yet, you will need to void instead"
       else
-        ap order.total
-        ap order.amount_discounted
-        
         if PaymentProcessor.refund(order)
           order.update_attributes(
             :financial_status => 'refunded',
