@@ -96,7 +96,7 @@ module CabooseStore
       max = 0
       
       variants.each do |variant|
-        next if variant.nil? or variant.price < 0
+        next if variant.nil? or variant.price.nil? or variant.price < 0
         min = variant.price if variant.price < min
         max = variant.price if variant.price > max
       end
