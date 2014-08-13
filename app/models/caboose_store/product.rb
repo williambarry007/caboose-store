@@ -1,6 +1,7 @@
 module CabooseStore
   class Product < ActiveRecord::Base
     self.table_name = 'store_products'
+    self.primary_key = 'id'
     
     belongs_to :vendor, :class_name => 'CabooseStore::Vendor'
     has_many :customizations, :class_name => 'CabooseStore::Product', :through => :customization_memberships
