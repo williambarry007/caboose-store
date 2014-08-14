@@ -102,6 +102,7 @@ CabooseStore::Engine.routes.draw do
   get     "/admin/categories/options"                 => "categories#admin_options"  
   get     "/admin/categories/:id/edit"                => "categories#admin_edit"  
   put     "/admin/categories/:id"                     => "categories#admin_update"  
+  get     '/admin/categories/status-options'          => 'categories#admin_status_options'
   post    "/admin/categories/:id"                     => "categories#admin_update"  
   post    "/admin/categories"                         => "categories#admin_add"
   delete  "/admin/categories/:id"                     => "categories#admin_delete"

@@ -58,8 +58,9 @@ module CabooseStore
       # Iterate over params and update relevant attributes
       params.each do |key, value|
         case key
-        when 'name'  then category.name  = value
-        when 'slug'  then category.slug  = value
+        when 'name' then category.name = value
+        when 'slug' then category.slug = value
+        when 'status' then category.status = value
         when 'image' then category.image = value
         end
       end
@@ -88,5 +89,20 @@ module CabooseStore
         render :json => { :success => category.destroy, :redirect => '/admin/categories' }
       end
     end
+    
+    
+    # GET /admin/products/status-options
+    def admin_status_options
+      arr = ['Active', 'Inactive', 'Deleted']
+      options = []
+      arr.each do |status|
+        options << {
+          :value => status,
+          :text => status
+        }
+      end
+      render :json => options
+    end
   end
 end
+

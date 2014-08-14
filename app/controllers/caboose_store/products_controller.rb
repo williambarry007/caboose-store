@@ -574,7 +574,7 @@ module CabooseStore
       })
     end
     
-    # GET /admin/products/status-options
+    # GET /products/status-options
     def admin_status_options
       arr = ['Active', 'Inactive', 'Deleted']
       options = []
@@ -642,3 +642,4 @@ module CabooseStore
     end
   end
 end
+
