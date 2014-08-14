@@ -5,10 +5,13 @@ module CabooseStore
     belongs_to :product
     has_many :product_image_variants
     has_many :variants, :through => :product_image_variants
-      
+    
+    default_scope order('position')
+    
     attr_accessible :id,
       :product_id,
       :title,
+      :position,
       :image_file_name,
       :image_content_type,
       :image_file_size,
@@ -30,6 +33,14 @@ module CabooseStore
       }
     
     validates_attachment_content_type :image, :content_type => ["image/jpg", "image/jpeg", "image/png"]
+    
+    def process
+      config = AssetSync.config
+      bucket = config.fog_directory
+      uri = "http://#{bucket}.s3.amazonaws.com/media-images/#{self.id}#{File.extname(self.title.downcase)}"
+      self.image = URI.parse(uri)
+      self.save
+    end
     
     def url(size) # 'tiny', 'thumb', 'medium', 'large', 'huge'
       self.image.url(size)

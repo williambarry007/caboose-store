@@ -111,6 +111,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
       CabooseStore::ProductImage => [
         [ :product_id            , :integer  ],
         [ :title                 , :string   ],
+        [ :position              , :integer  ],
         [ :image_file_name       , :string   ],
         [ :image_content_type    , :string   ],
         [ :image_file_size       , :integer  ],
