@@ -6,7 +6,6 @@ module CabooseStore
     has_many :product_image_variants
     has_many :variants, :through => :product_image_variants
     
-    default_scope order('position')
     
     attr_accessible :id,
       :product_id,
@@ -19,7 +18,7 @@ module CabooseStore
       :square_offset_x,
       :square_offset_y,
       :square_scale_factor
-    
+      
     has_attached_file :image,
       :path        => "products/:product_id_:id_:style.:extension",
       :default_url => '/products/:id_:style.:extension',
@@ -31,6 +30,8 @@ module CabooseStore
         large:  '800x800>',
         huge:   '1200x1200>'
       }
+    
+    default_scope order('position ASC')
     
     validates_attachment_content_type :image, :content_type => ["image/jpg", "image/jpeg", "image/png"]
     
