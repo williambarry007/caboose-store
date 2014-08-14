@@ -26,6 +26,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :name                  , :string    ],
         [ :url                   , :string    ],
         [ :slug                  , :string    ],
+        [ :status                , :string    ],
         [ :image_file_name       , :string    ],
         [ :image_content_type    , :string    ],
         [ :image_file_size       , :integer   ],
