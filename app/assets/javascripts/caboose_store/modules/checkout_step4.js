@@ -83,8 +83,10 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
 
 function relay_handler(resp)
 {
-  if (resp.error)
-    $('#message').html("<p class='note error'>" + resp.error + "</p>");
-  else if (resp.success == true)
-    window.location = '/checkout/thanks';                
+  if (resp.success == true)
+    window.location = '/checkout/thanks';
+  else if (resp.message)  
+    $('#message').html("<p class='note error'>" + resp.message + "</p>");
+  else
+    $('#message').html("<p class='note error'>There was an error processing your payment.</p>");
 }
