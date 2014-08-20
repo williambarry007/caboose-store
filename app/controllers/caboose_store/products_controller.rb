@@ -295,6 +295,8 @@ module CabooseStore
       session['variant_cols'] = self.default_variant_cols if session['variant_cols'].nil?
       @cols = session['variant_cols']
       
+      @highlight_variant_id = params[:highlight] ? params[:highlight] : nil        
+      
       if @product.options.nil? || @product.options.count == 0
         render 'caboose_store/products/admin_edit_variants_single', :layout => 'caboose/admin'  
       else

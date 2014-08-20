@@ -57,7 +57,7 @@ captured = @order.financial_status == 'captured'
       <% if li.variant.nil? || li.variant.product.nil? %>
         <%= li.variant_sku %>
       <% else %>
-        <a href='/admin/products/<%= li.variant.product.id %>/general'><%= li.variant.product.title  %></a><br />
+        <a href='/admin/products/<%= li.variant.product.id %>/variants?highlight=<%= li.variant.id %>'><%= li.variant.product.title  %></a><br />
         <%= li.variant.sku            %><br />
         <%= li.variant.title          %>
       <% end %>
