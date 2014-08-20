@@ -7,14 +7,56 @@ module CabooseStore
       redirect_to '/checkout/empty' if @order.line_items.empty?
     end
     
-    # GET /checkout || GET /checkout/step-one
+    # GET /checkout
+    def index
+      redirect_to '/checkout/step-one'
+    end
+    
+    # GET /checkout/step-one
     def step_one
+      redirect_to '/checkout/step-two' if logged_in?
     end
     
     # GET /checkout/step-two
     def step_two
-      redirect_to '/checkout/step-one' if !@order.shipping_address || !@order.billing_address
+      #redirect_to '/checkout/step-one' if !@order.shipping_address || !@order.billing_address
+      redirect_to '/checkout/step-one' if !logged_in?      
     end
+    
+    # GET /checkout/step-three
+    def step_three      
+      redirect_to '/checkout/step-one' and return if !logged_in?
+      redirect_to '/checkout/step-two' and return if @order.shipping_address.nil? || @order.billing_address.nil?
+      @rates = ShippingCalculator.rates(@order)      
+      @selected_rate = ShippingCalculator.rate(@order)
+    end
+    
+    # GET /checkout/step-four
+    def step_four            
+      redirect_to '/checkout/step-one'   and return if !logged_in?
+      redirect_to '/checkout/step-two'   and return if @order.shipping_address.nil? || @order.billing_address.nil?
+      redirect_to '/checkout/step-three' and return if @order.shipping_code.nil?
+      
+      case CabooseStore::payment_processor
+        when 'authorize.net'
+          @sim_transaction = AuthorizeNet::SIM::Transaction.new(
+            CabooseStore::authorize_net_login_id,
+            CabooseStore::authorize_net_transaction_key,
+            @order.total,
+            :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
+            :transaction_type => 'AUTH_ONLY',
+            :test => true
+          )
+        when 'payscape'
+          @form_url = CabooseStore::PaymentProcessor.form_url(@order)
+      end
+    end
+    
+    # GET /checkout/thanks
+    def thanks
+    end
+    
+    #===========================================================================
     
     # GET /checkout/address
     def address
@@ -68,7 +110,7 @@ module CabooseStore
     end
     
     # POST /checkout/attach-user
-    def attach_user
+    def attach_user            
       render :json => { :success => false, :errors => ['User is not logged in'] } and return if !logged_in?
       @order.customer_id = logged_in_user.id
       render :json => { :success => @order.save, :errors => @order.errors.full_messages, :logged_in => logged_in? }
@@ -76,54 +118,82 @@ module CabooseStore
     
     # POST /checkout/guest
     def attach_guest
-      render :json => { :success => false, :errors => ['Emails do not match'] } and return if params[:email] != params[:confirm_email]
-      @order.email = params[:email]
-      render :json => { :succes => @order.save, :errors => @order.errors.full_messages, :logged_in => logged_in? }
+      resp = Caboose::StdClass.new      
+      email = params[:email]      
+      
+      if email != params[:confirm_email]
+        resp.error = "Emails do not match."
+      elsif Caboose::User.where(:email => email, :is_guest => false).exists?
+        resp.error = "A user with that email address already exists."
+      else
+        user = Caboose::User.where(:email => email, :is_guest => true).first
+        if user.nil?        
+          user = Caboose::User.create(:email => email)
+          user.is_guest = true
+          user.save
+          user = Caboose::User.where(:email => email).first
+        end                   
+        @order.customer_id = user.id
+        login_user(user)
+        
+        if !@order.valid?        
+          resp.errors = @order.errors.full_messages
+        else
+          @order.save
+          resp.redirect = '/checkout/step-two'
+        end
+      end
+      render :json => resp            
     end
     
-    # GET /checkout/shipping
-    def shipping
-      render :json => { :rates => ShippingCalculator.rates(@order), :selected_rate => ShippingCalculator.rate(@order) }
-    end
+    ## GET /checkout/shipping
+    #def shipping
+    #  render :json => { :rates => ShippingCalculator.rates(@order), :selected_rate => ShippingCalculator.rate(@order) }
+    #end
     
     # PUT /checkout/shipping
-    def update_shipping
-      @order.shipping_code = params[:shipping_code]
-      render :json => { :success => @order.save, :errors => @order.errors.full_messages, :order => @order, :selected_rate => ShippingCalculator.rate(@order) }
+    def update_shipping      
+      @order.shipping_method = params[:shipping_method]
+      @order.shipping_code   = params[:shipping_code]                 
+      render :json => { 
+        :success => @order.save, 
+        :errors => @order.errors.full_messages 
+        #:order => @order, 
+        #:selected_rate => ShippingCalculator.rate(@order) 
+      }
     end
     
     # GET /checkout/payment
-    def payment
-      case CabooseStore::payment_processor
-      when 'authorize.net'
-        @sim_transaction = AuthorizeNet::SIM::Transaction.new(
-          CabooseStore::authorize_net_login_id,
-          CabooseStore::authorize_net_transaction_key,
-          @order.total,
-          :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
-          :transaction_type => 'AUTH_ONLY',
-          :test => true
-        )
-      when 'payscape'
-        @form_url = CabooseStore::PaymentProcessor.form_url(@order)
-      end
-      
-      render :layout => false
-    end
+    #def payment
+    #  case CabooseStore::payment_processor
+    #    when 'authorize.net'                             
+    #      @sim_transaction = AuthorizeNet::SIM::Transaction.new(
+    #        CabooseStore::authorize_net_login_id,
+    #        CabooseStore::authorize_net_transaction_key,
+    #        @order.total,
+    #        :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
+    #        :transaction_type => 'AUTH_ONLY',
+    #        :test => true
+    #      )
+    #    when 'payscape'
+    #      @form_url = CabooseStore::PaymentProcessor.form_url(@order)
+    #  end      
+    #  render :layout => false
+    #end
     
     # POST /checkout/relay/:order_id
     def relay
       @order = CabooseStore::Order.find(params[:order_id])
       
       case CabooseStore::payment_processor
-      when 'authorize.net'
-        @success = params[:x_response_code] == '1'
-        @message = params[:x_response_reason_text]
-        @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
-      when 'payscape'
-        @success = CabooseStore::PaymentProcessor.authorize(@order, params)
-        @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
-        @order.transaction_id = params['transaction-id'] if params['transaction-id']
+        when 'authorize.net'
+          @success = params[:x_response_code] == '1'
+          @message = params[:x_response_reason_text]
+          @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
+        when 'payscape'
+          @success = CabooseStore::PaymentProcessor.authorize(@order, params)
+          @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
+          @order.transaction_id = params['transaction-id'] if params['transaction-id']
       end
       ap @success
       ap '---------'
@@ -148,14 +218,6 @@ module CabooseStore
       
       @order.save
       render :layout => false
-    end
-    
-    # GET /checkout/empty
-    def empty
-    end
-    
-    # GET /checkout/thanks
-    def thanks
     end
     
     # GET /checkout/discount

@@ -3,6 +3,10 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
   
   def self.schema
     {  
+      Caboose::User => [
+         [ :is_guest , :boolean , { :default => false }]
+      ],
+      
       CabooseStore::Address => [
         [ :name          , :string  ],
         [ :first_name    , :string  ],

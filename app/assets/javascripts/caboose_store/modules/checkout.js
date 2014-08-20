@@ -3,17 +3,25 @@
 //
 
 Caboose.Store.Modules.Checkout = (function() {
+
+  // Steps
+  // Step 1: Present non-editable cart and login/register/guest buttons.
+  // Step 2: Present shipping address form.
+  // Step 3: Present shipping options.
+  // Step 4: Present credit card form.
+  // Step 5: Thank you.
+    
   self = {
     templates: {
-      address: JST['caboose_store/checkout/address'],
-      login: JST['caboose_store/checkout/login'],
-      payment: JST['caboose_store/checkout/payment'],
-      lineItems: JST['caboose_store/checkout/line_items'],
-      shipping: JST['caboose_store/checkout/shipping'],
+      address:    JST['caboose_store/checkout/address'],
+      login:      JST['caboose_store/checkout/login'],
+      payment:    JST['caboose_store/checkout/payment'],
+      lineItems:  JST['caboose_store/checkout/line_items'],
+      shipping:   JST['caboose_store/checkout/shipping'],
       forms: {
-        signin: JST['caboose_store/checkout/forms/signin'],
+        signin:   JST['caboose_store/checkout/forms/signin'],
         register: JST['caboose_store/checkout/forms/register'],
-        guest: JST['caboose_store/checkout/forms/guest']
+        guest:    JST['caboose_store/checkout/forms/guest']
       }
     }
   };
@@ -22,15 +30,11 @@ Caboose.Store.Modules.Checkout = (function() {
   // Initialize
   //
   
-  self.initialize = function() {
+  self.initialize = function() {    
     switch (window.location.pathname.replace(/\/$/, "")) {
       case '/checkout':
-      case '/checkout/step-one':
-        self.step = 1;
-        break;
-      case '/checkout/step-two':
-        self.step = 2;
-        break;
+      case '/checkout/step-one': self.step = 1; break;
+      case '/checkout/step-two': self.step = 2; break;
     }
     
     self.$checkout = $('#checkout')
@@ -50,7 +54,7 @@ Caboose.Store.Modules.Checkout = (function() {
   };
   
   //
-  // Fetch
+  // Fetch items from the cart
   //
   
   self.fetch = function(callback) {
@@ -74,29 +78,24 @@ Caboose.Store.Modules.Checkout = (function() {
   //
   
   self.bindEventHandlers = function() {
-    self.$checkout.on('click', '[data-login-action]', self.loginClickHandler);
+    self.$checkout.on('click' , '[data-login-action]', self.loginClickHandler);
     self.$checkout.on('submit', '#checkout-login form', self.loginSubmitHandler);
     self.$checkout.on('change', 'input[type=checkbox][name=use_as_billing]', self.useAsBillingHandler);
-    self.$checkout.on('click', '#checkout-continue button', self.continueHandler);
-    self.$checkout.on('click', '#checkout-complete button', self.completeHandler);
+    self.$checkout.on('click' , '#checkout-continue button', self.continueHandler);
+    self.$checkout.on('click' , '#checkout-complete button', self.completeHandler);
     self.$checkout.on('change', '#checkout-shipping select', self.shippingChangeHandler);
     self.$checkout.on('change', '#checkout-payment form#payment select', self.expirationChangeHandler);
     self.$checkout.on('submit', '#checkout-payment form#payment', self.paymentSubmitHandler);
   };
   
+  $('.login-choices button').removeClass('selected');
   self.loginClickHandler = function(event) {
     $section = self.$login.children('section');
     
     switch ($(event.target).data('login-action')) {
-      case 'signin':
-        $section.empty().html(self.templates.forms.signin());
-        break;
-      case 'register':
-        $section.empty().html(self.templates.forms.register());
-        break;
-      case 'continue':
-        $section.empty().html(self.templates.forms.guest());
-        break;
+      case 'signin'  : $section.slideUp(400, function() { $section.empty().html(self.templates.forms.signin()  ).slideDown() }); $('#signin_button'  ).addClass('selected'); break;
+      case 'register': $section.slideUp(400, function() { $section.empty().html(self.templates.forms.register()).slideDown() }); $('#register_button').addClass('selected'); break;
+      case 'continue': $section.slideUp(400, function() { $section.empty().html(self.templates.forms.guest()   ).slideDown() }); $('#continue_button').addClass('selected'); break;
     };
   };
   
@@ -124,7 +123,7 @@ Caboose.Store.Modules.Checkout = (function() {
           }
         }
         
-        self.fetch();
+        self.fetch(self.render);
       }
     });
   };
@@ -223,8 +222,8 @@ Caboose.Store.Modules.Checkout = (function() {
   
   self.render = function() {
     var renderFunctions = [];
-    
-    if (self.step == 1) {
+        
+    if (self.step == 1) {      
       renderFunctions.push(self.renderLineItems);
       renderFunctions.push(self.renderLogin);
       renderFunctions.push(self.renderAddress);
@@ -255,7 +254,7 @@ Caboose.Store.Modules.Checkout = (function() {
     if (self.loggedIn) self.$login.remove();
     if (self.loggedIn || !self.$login.length) return false;
     self.$login.html(self.templates.login());
-    if (!self.order.email) self.$login.find('button[data-login-action="signin"]').click();
+    //if (!self.order.email) self.$login.find('button[data-login-action="signin"]').click();
     if (callback) callback();
   };
   
@@ -299,7 +298,7 @@ Caboose.Store.Modules.Checkout = (function() {
             , value = serializedField.split('=')[1];
           
           self.$payment.find('form [name="' + name + '"]').val(value);
-        });
+        });                               
       }
       
       self.expirationChangeHandler();

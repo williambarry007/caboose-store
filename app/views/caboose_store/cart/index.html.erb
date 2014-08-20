@@ -2,3 +2,7 @@
   <div id="cart"></div>
 </div>
 
+<% content_for :caboose_js do %>
+<%= javascript_include_tag 'caboose_store/modules/cart' %>
+<%= javascript_include_tag 'caboose_store/modules/product' %>
+<% end %>

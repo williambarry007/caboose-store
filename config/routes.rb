@@ -11,20 +11,23 @@ CabooseStore::Engine.routes.draw do
   
   # Checkout
   
-  get  '/checkout'                 => 'checkout#step_one'
+  get  '/checkout'                 => 'checkout#index'
   get  '/checkout/step-one'        => 'checkout#step_one'
   get  '/checkout/step-two'        => 'checkout#step_two'
-  get  '/checkout/address'         => 'checkout#address'
+  get  '/checkout/step-three'      => 'checkout#step_three'
+  get  '/checkout/step-four'       => 'checkout#step_four'
+  get  '/checkout/thanks'          => 'checkout#thanks'
+  
+  #get  '/checkout/address'         => 'checkout#address'
   put  '/checkout/address'         => 'checkout#update_address'
   post '/checkout/attach-user'     => 'checkout#attach_user'
   post '/checkout/attach-guest'    => 'checkout#attach_guest'
-  get  '/checkout/shipping'        => 'checkout#shipping'
+  #get  '/checkout/shipping'        => 'checkout#shipping'
   put  '/checkout/shipping'        => 'checkout#update_shipping'
-  get  '/checkout/payment'         => 'checkout#payment'
+  #get  '/checkout/payment'         => 'checkout#payment'
   get  '/checkout/relay/:order_id' => 'checkout#relay'
-  post '/checkout/relay/:order_id' => 'checkout#relay'
-  get  '/checkout/thanks'          => 'checkout#thanks'
-  get  '/checkout/empty'           => 'checkout#empty'
+  post '/checkout/relay/:order_id' => 'checkout#relay'  
+  #get  '/checkout/empty'           => 'checkout#empty'
   
   # Products
   

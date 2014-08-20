@@ -255,6 +255,8 @@ ol.carousel-indicators li.thumbnail {
   </div>
 
 <%= content_for :caboose_js do %>
+<%= javascript_include_tag 'caboose_store/modules/cart' %>
+<%= javascript_include_tag 'caboose_store/modules/product' %>
 <script type='text/javascript'>
 
 var option1 = <%= raw p.option1 ? p.option1.to_json : false %>;

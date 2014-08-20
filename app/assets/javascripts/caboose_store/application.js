@@ -14,5 +14,3 @@
 //= require underscore
 //= require caboose_store/config
 //= require caboose_store/main
-//= require_tree ./modules
-
