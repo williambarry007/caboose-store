@@ -81,20 +81,8 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
   return self
 }).call(Caboose.Store);
 
-function relay_handler()
+function relay_handler(resp)
 {
-  alert('Relay handler');
-  var iframe = $('#relay');
-  var form   = $('#payment');
-  var resp   = iframe.contents().find('#response');
-  
-  if (!resp.length || form.length)
-  {
-    alert('No response found.');
-    return false;
-  }
-  
-  resp = JSON.parse(resp.html());    
   if (resp.error)
     $('#message').html("<p class='note error'>" + resp.error + "</p>");
   else if (resp.success == true)
