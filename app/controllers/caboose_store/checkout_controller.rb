@@ -207,8 +207,12 @@ module CabooseStore
         session[:cart_id] = nil
         
         # Send out emails
-        OrdersMailer.customer_new_order(@order).deliver
-        OrdersMailer.fulfillment_new_order(@order).deliver
+        begin
+          OrdersMailer.customer_new_order(@order).deliver
+          OrdersMailer.fulfillment_new_order(@order).deliver
+        rescue
+          
+        end
         
         # Emit order event
         Caboose.plugin_hook('order_authorized', @order)
