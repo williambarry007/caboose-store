@@ -43,7 +43,7 @@ v = @variant
 </tr>
 <% Caboose.log p.variants.where(:status => ['Active', 'Inactive']).first %>
 <% p.variants.where(:status => ['Active', 'Inactive']).each do |v| %>
-<tr id='variant_<%= v.id %>_row'>
+<tr <% if @highlight_variant_id && v.id == @highlight_variant_id %>class='highlight'<% end %>>
   <% if @cols['option1'           ] && p.option1 %><td><div id='variant_<%= v.id %>_option1'           ></div></td><% end %>
   <% if @cols['option2'           ] && p.option2 %><td><div id='variant_<%= v.id %>_option2'           ></div></td><% end %>
   <% if @cols['option3'           ] && p.option3 %><td><div id='variant_<%= v.id %>_option3'           ></div></td><% end %>
@@ -69,6 +69,12 @@ v = @variant
 <p><input type='button' value='New Variant' onclick="add_variant(<%= p.id %>);" /></p>
 
 <%= render :partial => 'caboose_store/products/admin_footer' %>
+
+<% content_for :caboose_css do %>
+<style type='text/css'>
+tr.highlight td { background: #ffff99 } 
+</style>
+<% end %>
 
 <% content_for :caboose_js do %>
 <script type='text/javascript'>
@@ -103,7 +109,7 @@ $(document).ready(function() {
   <% end %>
   
   <% if @highlight_variant_id %>
-    $("#variant_<%= @highlight_variant_id %>_row").toggle("highlight");
+    $("#variant_<%= @highlight_variant_id %>_row").highlight();
   <% end %>
 });
 
