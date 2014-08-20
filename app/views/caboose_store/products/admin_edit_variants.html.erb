@@ -17,54 +17,65 @@ v = @variant
 
 <p style='font-size: 75%;'><a href='/admin/products/<%= p.id %>/variant-cols'>Edit visible columns</a></p>
 
-<div id='message'></div>
+<div id='message'><%
+# Make sure we're not trying to highlight a deleted variant
+if @highlight_variant_id
+  v = Variant.where(:id => @highlight_variant_id).first
+  if v.nil?
+    %><p class='note error'>The variant you want to highlight is not in the database.</p><%
+  elsif v.status == 'Deleted'
+    %><p class='note error'>The variant you want to highlight has been deleted.</p><%
+  end
+end 
+%></div>
 
 <div id='variants_wrapper'>
 <table id='variants'>
-<tr>
-  <% if @cols['option1'           ] && p.option1 %><th valign='bottom'><%= p.option1    %></th><% end %>
-  <% if @cols['option2'           ] && p.option2 %><th valign='bottom'><%= p.option2    %></th><% end %>
-  <% if @cols['option3'           ] && p.option3 %><th valign='bottom'><%= p.option3    %></th><% end %>
-  <% if @cols['status'            ] == true      %><th valign='bottom'>Status             </th><% end %>
-  <% if @cols['alternate_id'      ] == true      %><th valign='bottom'>Alternate ID       </th><% end %>
-  <% if @cols['barcode'           ] == true      %><th valign='bottom'>Barcode            </th><% end %>
-  <% if @cols['price'             ] == true      %><th valign='bottom'>Price              </th><% end %>
-  <% if @cols['quantity_in_stock' ] == true      %><th valign='bottom'>Quantity           </th><% end %>
-  <% if @cols['weight'            ] == true      %><th valign='bottom'>Weight             </th><% end %>
-  <% if @cols['length'            ] == true      %><th valign='bottom'>Length             </th><% end %>
-  <% if @cols['width'             ] == true      %><th valign='bottom'>Width              </th><% end %>
-  <% if @cols['height'            ] == true      %><th valign='bottom'>Height             </th><% end %>
-  <% if @cols['cylinder'          ] == true      %><th valign='bottom'>Cylinder           </th><% end %>
-  <% if @cols['requires_shipping' ] == true      %><th valign='bottom'>Requires Shipping  </th><% end %>
-  <% if @cols['allow_backorder'   ] == true      %><th valign='bottom'>Allow Backorder    </th><% end %>
-  <% if @cols['taxable'           ] == true      %><th valign='bottom'>Taxable            </th><% end %>
-  <th>&nbsp;</th>
-  <th>&nbsp;</th>
-</tr>
+  <tr>
+    <% if @cols['option1'           ] && p.option1 %><th valign='bottom'><%= p.option1    %></th><% end %>
+    <% if @cols['option2'           ] && p.option2 %><th valign='bottom'><%= p.option2    %></th><% end %>
+    <% if @cols['option3'           ] && p.option3 %><th valign='bottom'><%= p.option3    %></th><% end %>
+    <% if @cols['status'            ] == true      %><th valign='bottom'>Status             </th><% end %>
+    <% if @cols['alternate_id'      ] == true      %><th valign='bottom'>Alternate ID       </th><% end %>
+    <% if @cols['barcode'           ] == true      %><th valign='bottom'>Barcode            </th><% end %>
+    <% if @cols['price'             ] == true      %><th valign='bottom'>Price              </th><% end %>
+    <% if @cols['quantity_in_stock' ] == true      %><th valign='bottom'>Quantity           </th><% end %>
+    <% if @cols['weight'            ] == true      %><th valign='bottom'>Weight             </th><% end %>
+    <% if @cols['length'            ] == true      %><th valign='bottom'>Length             </th><% end %>
+    <% if @cols['width'             ] == true      %><th valign='bottom'>Width              </th><% end %>
+    <% if @cols['height'            ] == true      %><th valign='bottom'>Height             </th><% end %>
+    <% if @cols['cylinder'          ] == true      %><th valign='bottom'>Cylinder           </th><% end %>
+    <% if @cols['requires_shipping' ] == true      %><th valign='bottom'>Requires Shipping  </th><% end %>
+    <% if @cols['allow_backorder'   ] == true      %><th valign='bottom'>Allow Backorder    </th><% end %>
+    <% if @cols['taxable'           ] == true      %><th valign='bottom'>Taxable            </th><% end %>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr>
 <% Caboose.log p.variants.where(:status => ['Active', 'Inactive']).first %>
 <% p.variants.where(:status => ['Active', 'Inactive']).each do |v| %>
-<tr <% if @highlight_variant_id && v.id == @highlight_variant_id %>class='highlight'<% end %>>
-  <% if @cols['option1'           ] && p.option1 %><td><div id='variant_<%= v.id %>_option1'           ></div></td><% end %>
-  <% if @cols['option2'           ] && p.option2 %><td><div id='variant_<%= v.id %>_option2'           ></div></td><% end %>
-  <% if @cols['option3'           ] && p.option3 %><td><div id='variant_<%= v.id %>_option3'           ></div></td><% end %>
-  <% if @cols['status'            ] == true      %><td><div id='variant_<%= v.id %>_status'            ></div></td><% end %>
-  <% if @cols['alternate_id'      ] == true      %><td><div id='variant_<%= v.id %>_alternate_id'      ></div></td><% end %>
-  <% if @cols['barcode'           ] == true      %><td><div id='variant_<%= v.id %>_barcode'           ></div></td><% end %> 
-  <% if @cols['price'             ] == true      %><td><div id='variant_<%= v.id %>_price'             ></div></td><% end %> 
-  <% if @cols['quantity_in_stock' ] == true      %><td><div id='variant_<%= v.id %>_quantity_in_stock' ></div></td><% end %> 
-  <% if @cols['weight'            ] == true      %><td><div id='variant_<%= v.id %>_weight'            ></div></td><% end %> 
-  <% if @cols['length'            ] == true      %><td><div id='variant_<%= v.id %>_length'            ></div></td><% end %> 
-  <% if @cols['width'             ] == true      %><td><div id='variant_<%= v.id %>_width'             ></div></td><% end %> 
-  <% if @cols['height'            ] == true      %><td><div id='variant_<%= v.id %>_height'            ></div></td><% end %> 
-  <% if @cols['cylinder'          ] == true      %><td><div id='variant_<%= v.id %>_cylinder'          ></div></td><% end %> 
-  <% if @cols['requires_shipping' ] == true      %><td><div id='variant_<%= v.id %>_requires_shipping' ></div></td><% end %>
-  <% if @cols['allow_backorder'   ] == true      %><td><div id='variant_<%= v.id %>_allow_backorder'   ></div></td><% end %>
-  <% if @cols['taxable'           ] == true      %><td><div id='variant_<%= v.id %>_taxable'           ></div></td><% end %>
-  <td class='edit'><a href='/admin/products/<%= p.id %>/variants/<%= v.id %>/edit'>Edit</a></td>
-  <td class='delete'><a href='#' onclick='delete_variant(<%= v.id %>);'>Delete</a></td>
-</tr>
+  <tr <% if @highlight_variant_id && v.id == @highlight_variant_id %>class='highlight'<% end %>>
+    <% if @cols['option1'           ] && p.option1 %><td><div id='variant_<%= v.id %>_option1'           ></div></td><% end %>
+    <% if @cols['option2'           ] && p.option2 %><td><div id='variant_<%= v.id %>_option2'           ></div></td><% end %>
+    <% if @cols['option3'           ] && p.option3 %><td><div id='variant_<%= v.id %>_option3'           ></div></td><% end %>
+    <% if @cols['status'            ] == true      %><td><div id='variant_<%= v.id %>_status'            ></div></td><% end %>
+    <% if @cols['alternate_id'      ] == true      %><td><div id='variant_<%= v.id %>_alternate_id'      ></div></td><% end %>
+    <% if @cols['barcode'           ] == true      %><td><div id='variant_<%= v.id %>_barcode'           ></div></td><% end %> 
+    <% if @cols['price'             ] == true      %><td><div id='variant_<%= v.id %>_price'             ></div></td><% end %> 
+    <% if @cols['quantity_in_stock' ] == true      %><td><div id='variant_<%= v.id %>_quantity_in_stock' ></div></td><% end %> 
+    <% if @cols['weight'            ] == true      %><td><div id='variant_<%= v.id %>_weight'            ></div></td><% end %> 
+    <% if @cols['length'            ] == true      %><td><div id='variant_<%= v.id %>_length'            ></div></td><% end %> 
+    <% if @cols['width'             ] == true      %><td><div id='variant_<%= v.id %>_width'             ></div></td><% end %> 
+    <% if @cols['height'            ] == true      %><td><div id='variant_<%= v.id %>_height'            ></div></td><% end %> 
+    <% if @cols['cylinder'          ] == true      %><td><div id='variant_<%= v.id %>_cylinder'          ></div></td><% end %> 
+    <% if @cols['requires_shipping' ] == true      %><td><div id='variant_<%= v.id %>_requires_shipping' ></div></td><% end %>
+    <% if @cols['allow_backorder'   ] == true      %><td><div id='variant_<%= v.id %>_allow_backorder'   ></div></td><% end %>
+    <% if @cols['taxable'           ] == true      %><td><div id='variant_<%= v.id %>_taxable'           ></div></td><% end %>
+    <td class='edit'><a href='/admin/products/<%= p.id %>/variants/<%= v.id %>/edit'>Edit</a></td>
+    <td class='delete'><a href='#' onclick='delete_variant(<%= v.id %>);'>Delete</a></td>
+  </tr>
 <% end %>
 </table>
+
 </div>
 <p><input type='button' value='New Variant' onclick="add_variant(<%= p.id %>);" /></p>
 
@@ -106,11 +117,7 @@ $(document).ready(function() {
       <% if @cols['allow_backorder'   ] == true      %>{ name: 'allow_backorder'    , nice_name: 'Allow backorder'                  , type: 'checkbox' , align: 'center', value: <%= raw Caboose.json(v.allow_backorder     ) %>, width: 50, fixed_placeholder: false } <% end %>     
     ]
   });
-  <% end %>
-  
-  <% if @highlight_variant_id %>
-    $("#variant_<%= @highlight_variant_id %>_row").highlight();
-  <% end %>
+  <% end %>    
 });
 
 var modal = false;
