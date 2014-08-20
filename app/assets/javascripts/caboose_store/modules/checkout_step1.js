@@ -60,6 +60,7 @@ Caboose.Store.Modules.CheckoutStep1 = (function() {
       $('#' + form + '_form_container').slideDown();      
     }
     $('#' + form + '_button').addClass('selected');
+    $('#message').empty();
     self.current_form = form;         
   };
   
@@ -125,7 +126,7 @@ Caboose.Store.Modules.CheckoutStep1 = (function() {
             type: 'post',            
             success: function(resp2) {
               if (resp2.error) $('#message').html("<p class='note error'>" + resp2.error + "</p>");
-              //else window.location = '/checkout/step-two';
+              else window.location = '/checkout/step-two';
             }
           });          
         }
@@ -142,7 +143,14 @@ Caboose.Store.Modules.CheckoutStep1 = (function() {
       data: $('#register_form').serialize(),
       success: function(resp) {
         if (resp.error) $('#message').html("<p class='note error'>" + resp.error + "</p>");
-        else window.location = '/checkout/step-two';
+        $.ajax({
+          url: '/checkout/attach-user',
+          type: 'post',            
+          success: function(resp2) {
+            if (resp2.error) $('#message').html("<p class='note error'>" + resp2.error + "</p>");
+            else window.location = '/checkout/step-two';
+          }
+        });        
       }
     });
     return false;

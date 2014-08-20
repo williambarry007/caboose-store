@@ -206,13 +206,9 @@ module CabooseStore
         # Clear cart
         session[:cart_id] = nil
         
-        # Send out emails
-        begin
-          OrdersMailer.customer_new_order(@order).deliver
-          OrdersMailer.fulfillment_new_order(@order).deliver
-        rescue
-          
-        end
+        # Send out emails        
+        OrdersMailer.customer_new_order(@order).deliver
+        OrdersMailer.fulfillment_new_order(@order).deliver        
         
         # Emit order event
         Caboose.plugin_hook('order_authorized', @order)
