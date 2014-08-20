@@ -37,6 +37,15 @@ module CabooseStore
       redirect_to '/checkout/step-two'   and return if @order.shipping_address.nil? || @order.billing_address.nil?
       redirect_to '/checkout/step-three' and return if @order.shipping_code.nil?
       
+      # Make sure all the variants still exist      
+      @order.line_items.each do |li|
+        v = Variant.where(:id => li.variant_id).first
+        if v.nil? || v.status == 'Deleted'
+          render :file => 'caboose_store/checkout/deleted_variant'
+          return
+        end
+      end
+      
       case CabooseStore::payment_processor
         when 'authorize.net'
           @sim_transaction = AuthorizeNet::SIM::Transaction.new(

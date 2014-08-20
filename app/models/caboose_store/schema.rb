@@ -197,7 +197,10 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :product_id            , :integer  ],
         [ :shipping_unit_value   , :numeric  ],
         [ :alternate_id          , :string   ],
-        [ :status                , :string   ]
+        [ :status                , :string   ],
+        [ :option1_sort_order    , :integer  , { :defult => 0 }],
+        [ :option2_sort_order    , :integer  , { :defult => 0 }],
+        [ :option3_sort_order    , :integer  , { :defult => 0 }]
       ],
       
       CabooseStore::Vendor => [

@@ -21,6 +21,9 @@ Caboose.Store.Modules.Product = (function() {
     
     $.get('/products/' + self.$product.data('id') + '/info', function(response) {
       self.product = response.product;
+      self.option1_values = response.option1_values;
+      self.option2_values = response.option2_values;
+      self.option3_values = response.option3_values;
       self.render();
       self.bindEvents();
       self.setVariant(self.getInitialVariant());
@@ -173,14 +176,20 @@ Caboose.Store.Modules.Product = (function() {
   };
   
   self.getOptionsWithAllValues = function() {
-    return _.map(self.getOptionsFromProduct(), function(optionName) {
-      return {
-        name: optionName,
-        values: _.uniq(_.map(self.product.variants, function(variant) {
-          return variant[self.getOptionAttribute(optionName)];
-        }))
-      };
-    });
+    //return _.map(self.getOptionsFromProduct(), function(optionName) {
+    //  return {
+    //    name: optionName,
+    //    values: _.uniq(_.map(self.product.variants, function(variant) {
+    //      return variant[self.getOptionAttribute(optionName)];
+    //    }))
+    //  };
+    //});
+    
+    var options = [];
+    if (self.product.option1) options.push({ name: self.product.option1, values: self.option1_values });
+    if (self.product.option2) options.push({ name: self.product.option2, values: self.option2_values });
+    if (self.product.option3) options.push({ name: self.product.option3, values: self.option3_values });
+    return options;          
   };
   
   self.getOptionAttribute = function(option) {

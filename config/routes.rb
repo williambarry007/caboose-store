@@ -66,7 +66,7 @@ CabooseStore::Engine.routes.draw do
 
   get     "/admin/products"                             => "products#admin_index"
   get     '/admin/products/sort'                        => 'products#admin_sort'
-  put     '/admin/products/update-sort-order'           => 'products#admin_update_sort_order'
+  put     '/admin/products/update-sort-order'           => 'products#admin_update_sort_order'  
   put     "/admin/products/update-vendor-status/:id"    => "products#admin_update_vendor_status"
   get     "/admin/products/new"                         => "products#admin_new"
   get     "/admin/products/status-options"              => "products#admin_status_options"  
@@ -78,7 +78,11 @@ CabooseStore::Engine.routes.draw do
   get     "/admin/products/:id/variants"                => "products#admin_edit_variants"
   get     "/admin/products/:id/variants/json"           => "products#admin_variants_json"
   get     "/admin/products/:id/variant-cols"            => "products#admin_edit_variant_columns"
-  put     "/admin/products/:id/variant-cols"            => "products#admin_update_variant_columns"    
+  put     "/admin/products/:id/variant-cols"            => "products#admin_update_variant_columns"
+  get     "/admin/products/:id/variants/sort-order"     => "products#admin_edit_variant_sort_order"
+  put     '/admin/products/:id/variants/option1-sort-order' => 'products#admin_update_variant_option1_sort_order'
+  put     '/admin/products/:id/variants/option2-sort-order' => 'products#admin_update_variant_option2_sort_order'
+  put     '/admin/products/:id/variants/option3-sort-order' => 'products#admin_update_variant_option3_sort_order'
   get     "/admin/products/:id/images"                  => "products#admin_edit_images"
   post    "/admin/products/:id/images"                  => "products#admin_add_image"
   get     "/admin/products/:id/collections"             => "products#admin_edit_collections"

@@ -97,7 +97,13 @@ module CabooseStore
     
     # GET /product/info
     def info
-      render :json => { :product => Product.find(params[:id]) }
+      p = Product.find(params[:id])
+      render :json => { 
+        :product => p,
+        :option1_values => p.option1_values,
+        :option2_values => p.option2_values,
+        :option3_values => p.option3_values
+      }
     end
     
     # GET /api/products
@@ -458,6 +464,13 @@ module CabooseStore
       render :layout => 'caboose/admin'
     end
     
+    # GET /admin/products/:id/variants/sort-order  
+    def admin_edit_variant_sort_order
+      return if !user_is_allowed('products', 'edit')    
+      @product = Product.find(params[:id])      
+      render :layout => 'caboose/admin'
+    end
+    
     # GET /admin/products/:id/delete
     def admin_delete_form
       return if !user_is_allowed('products', 'edit')    
@@ -638,8 +651,40 @@ module CabooseStore
     def admin_update_sort_order
       params[:product_ids].each_with_index do |product_id, index|
         Product.find(product_id.to_i).update_attribute(:sort_order, index)
-      end
-      
+      end      
+      render :json => { :success => true }
+    end
+    
+    # PUT /admin/products/:id/variants/option1-sort-order
+    def admin_update_variant_option1_sort_order
+      product_id = params[:id]
+      params[:values].each_with_index do |value, i|
+        Variant.where(:product_id => product_id, :option1 => value).all.each do |v|
+          v.update_attribute(:option1_sort_order, i)
+        end
+      end            
+      render :json => { :success => true }
+    end
+    
+    # PUT /admin/products/:id/variants/option1-sort-order
+    def admin_update_variant_option2_sort_order            
+      product_id = params[:id]
+      params[:values].each_with_index do |value, i|
+        Variant.where(:product_id => product_id, :option2 => value).all.each do |v|
+          v.update_attribute(:option2_sort_order, i)
+        end
+      end            
+      render :json => { :success => true }
+    end
+    
+    # PUT /admin/products/:id/variants/option1-sort-order
+    def admin_update_variant_option3_sort_order      
+      product_id = params[:id]
+      params[:values].each_with_index do |value, i|
+        Variant.where(:product_id => product_id, :option3 => value).all.each do |v|
+          v.update_attribute(:option3_sort_order, i)
+        end
+      end            
       render :json => { :success => true }
     end
   end

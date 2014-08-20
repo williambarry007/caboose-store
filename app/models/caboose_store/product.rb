@@ -8,7 +8,7 @@ module CabooseStore
     has_many :customization_memberships, :class_name => 'CabooseStore::CustomizationMembership'
     has_many :categories, :class_name => 'CabooseStore::Category', :through => :category_memberships
     has_many :category_memberships, :class_name => 'CabooseStore::CategoryMembership'
-    has_many :variants, :class_name => 'CabooseStore::Variant'
+    has_many :variants, :class_name => 'CabooseStore::Variant', :order => 'sort_order'
     has_many :product_images, :class_name => 'CabooseStore::ProductImage'
     has_many :proudct_inputs, :class_name => 'CabooseStore::ProductInput'
     has_many :reviews, :class_name => 'CabooseStore::Review'
@@ -129,6 +129,18 @@ module CabooseStore
       
       # Return variants that haven't been "deleted"
       self.variants.where(:status => ['Active', 'Inactive'])
+    end
+    
+    def option1_values
+      arr = self.variants.reorder(:option1_sort_order).pluck(:option1).uniq.reject { |x| x.nil? || x.empty? }
+    end
+    
+    def option2_values
+      self.variants.reorder(:option2_sort_order).pluck(:option2).uniq.reject { |x| x.nil? || x.empty? }
+    end
+    
+    def option3_values
+      self.variants.reorder(:option3_sort_order).pluck(:option3).uniq.reject { |x| x.nil? || x.empty? }
     end
   end
 end
