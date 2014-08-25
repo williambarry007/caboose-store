@@ -346,7 +346,7 @@ module CabooseStore
             'sku'               ,                        
             'barcode'           , 
             'price'             ,
-            'quantity' ,
+            'quantity_in_stock' ,
             'weight'            , 
             'length'            , 
             'width'             , 
