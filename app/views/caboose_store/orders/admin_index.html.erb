@@ -56,7 +56,17 @@
   <% @orders.each do |order| %>
     <tr onclick="window.location='/admin/orders/<%= order.id %>';">
       <td><%= raw order.id %></td>
-      <td><%= order.customer.nil? ? "Unknown" : "#{order.customer.first_name} #{order.customer.last_name}" %></td>
+      <td>
+        <% if order.customer.nil? %>
+          Unknown
+        <% else %>
+          <% if order.customer.first_name.strip.length > 0 %>
+            <%= order.customer.first_name %> <%= order.customer.last_name %>
+          <% else %>
+            Guest Customer
+          <% end %>
+        <% end %>
+      </td>
       <td><%= raw order.date_created %></td>
       <td align='right'><%= number_to_currency(order.total) %></td>
       <td><%= raw order.status %></td>
