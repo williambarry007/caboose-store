@@ -63,7 +63,7 @@
           <% if order.customer.first_name.strip.length > 0 %>
             <%= order.customer.first_name %> <%= order.customer.last_name %>
           <% else %>
-            Guest Customer
+            <%= order.customer.email %>            
           <% end %>
         <% end %>
       </td>
