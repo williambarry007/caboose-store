@@ -72,6 +72,10 @@ module CabooseStore
         :product => { :images => self.variant.product.product_images }
       })
     end
+    
+    def subtotal
+      return self.quantity * self.price
+    end
   end
 end
 

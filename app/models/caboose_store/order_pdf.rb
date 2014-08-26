@@ -53,8 +53,7 @@ module CabooseStore
         { :content => "Item"            , :align => :center, :valign => :bottom },
         { :content => "Tracking Number" , :align => :center, :valign => :bottom },
         { :content => "Unit Price"      , :align => :center, :valign => :bottom },
-        { :content => "Qty Ordered"     , :align => :center, :valign => :bottom },
-        { :content => "Qty Shipped"     , :align => :center, :valign => :bottom },        
+        { :content => "Quantity"        , :align => :center, :valign => :bottom },                
         { :content => "Subtotal"        , :align => :center, :valign => :bottom, :width => 60 }
       ]
       
@@ -63,16 +62,15 @@ module CabooseStore
           "#{li.variant.product.title}\n#{li.variant.sku}\n#{li.variant.title}",
           { :content => li.tracking_number },
           { :content => sprintf("%.2f", li.variant.price) , :align => :right },
-          { :content => "#{li.quantity}"                  , :align => :right },
-          { :content => "#{li.quantity_shipped}"          , :align => :right },
+          { :content => "#{li.quantity}"                  , :align => :right },          
           { :content => sprintf("%.2f", li.subtotal)      , :align => :right }
         ]
       end            
-      tbl << [{ :content => "Subtotal"                                      , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.subtotal )                 , :align => :right }]
-      tbl << [{ :content => "Tax"                                           , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.tax      )                 , :align => :right }]
-      tbl << [{ :content => "#{order.shipping_method} Shipping & Handling"  , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.shipping + order.handling) , :align => :right }]    
-      tbl << [{ :content => "Discount"                                      , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.discount )                 , :align => :right }]
-      tbl << [{ :content => "Total"                                         , :colspan => 5, :align => :right }, { :content => sprintf("%.2f", order.total    )                 , :align => :right }]
+      tbl << [{ :content => "Subtotal"                                      , :colspan => 4, :align => :right }, { :content => sprintf("%.2f", order.subtotal                        ) , :align => :right }]
+      tbl << [{ :content => "Tax"                                           , :colspan => 4, :align => :right }, { :content => sprintf("%.2f", order.tax ? order.tax : 0.0           ) , :align => :right }]
+      tbl << [{ :content => "#{order.shipping_method} Shipping & Handling"  , :colspan => 4, :align => :right }, { :content => sprintf("%.2f", order.shipping_and_handling           ) , :align => :right }]    
+      tbl << [{ :content => "Discount"                                      , :colspan => 4, :align => :right }, { :content => sprintf("%.2f", order.discount ? order.discount : 0.0 ) , :align => :right }]
+      tbl << [{ :content => "Total"                                         , :colspan => 4, :align => :right }, { :content => sprintf("%.2f", order.total                           ) , :align => :right }]
       
       table tbl
     end

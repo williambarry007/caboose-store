@@ -182,6 +182,10 @@ module CabooseStore
     def calculate_total
       [self.subtotal, self.tax, self.shipping, self.handling].compact.inject { |sum, price| sum + price }
     end
+    
+    def shipping_and_handling
+      (self.shipping ? self.shipping : 0.0) + (self.handling ? self.handling : 0.0)      
+    end
   end
 end
 
