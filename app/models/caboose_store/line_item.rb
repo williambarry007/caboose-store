@@ -39,7 +39,7 @@ module CabooseStore
     
     validate :quantity_in_stock
     def quantity_in_stock
-      errors.add(:base, "There #{self.variant.quantity > 1 ? 'are' : 'is'} only #{self.variant.quantity} left in stock.") if self.variant.quantity - self.quantity < 0
+      errors.add(:base, "There #{self.variant.quantity_in_stock > 1 ? 'are' : 'is'} only #{self.variant.quantity_in_stock} left in stock.") if self.variant.quantity_in_stock - self.quantity < 0
     end
     
     #

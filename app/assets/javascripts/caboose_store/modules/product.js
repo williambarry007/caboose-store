@@ -233,7 +233,7 @@ Caboose.Store.Modules.Product = (function() {
   
   self.getInitialVariant = function () {
     var variant = _.find(self.product.variants, function(variant) {
-      return variant.quantity > 0;
+      return variant.quantity_in_stock > 0;
     });
     
     if (!variant) {
@@ -252,7 +252,7 @@ Caboose.Store.Modules.Product = (function() {
     }));
     
     var variants = _.sortBy(_.where(self.product.variants, attributes), function(variant) { return variant.price });
-    return _.find(variants, function(variant) { return variant.quantity > 0 });
+    return _.find(variants, function(variant) { return variant.quantity_in_stock > 0 });
   };
   
   self.setOptionsFromVariant = function(variant) {

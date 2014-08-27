@@ -96,8 +96,8 @@ module CabooseStore
             v.barcode = value
           when 'price'
             v.price = value
-          when 'quantity'
-            v.quantity = value
+          when 'quantity_in_stock'
+            v.quantity_in_stock = value
           when 'ignore_quantity'
             v.ignore_quantity = value
           when 'allow_backorder'

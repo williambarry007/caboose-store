@@ -103,7 +103,7 @@ module CabooseStore
       return false if self.decremented
       
       self.line_items.each do |line_item|
-        line_item.variant.update_attribute(:quantit, line_item.variant.quantity - line_item.quantity)
+        line_item.variant.update_attribute(:quantity, line_item.variant.quantity_in_stock - line_item.quantity)
       end
       
       self.update_attribute(:decremented, true)
@@ -113,7 +113,7 @@ module CabooseStore
       return false if !self.decremented
       
       self.line_items.each do |line_item|
-        line_item.variant.update_attribute(:quantity, line_item.variant.quantity - line_item.quantity)
+        line_item.variant.update_attribute(:quantity, line_item.variant.quantity_in_stock - line_item.quantity)
       end
       
       self.update_attribute(:decremented, false)
