@@ -15,7 +15,8 @@ module CabooseStore
     
     has_attached_file :image,
       :path => 'categories/:id_:style.jpg',
-      :default_url => '/categories/:id_:style.jpg',
+      :default_url => '/categories/default.jpg',
+      :s3_protocol => :https,
       :styles => {
         tiny:   '100x100>',
         thumb:  '250x250>',
