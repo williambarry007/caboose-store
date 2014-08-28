@@ -114,7 +114,7 @@ module CabooseStore
     end
     
     def in_stock
-      Variant.where(:product_id => self.id).where('quantity > 0').count > 0
+      Variant.where(:product_id => self.id).where('quantity_in_stock > 0').count > 0
     end
     
     def input_required?
