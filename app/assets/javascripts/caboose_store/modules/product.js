@@ -276,10 +276,12 @@ Caboose.Store.Modules.Product = (function() {
   // Image Methods
   //
   
-  self.setImageFromVariant = function(variant) {
-    var $figure = self.$images.children('figure');
+  self.setImageFromVariant = function(variant) {    
+    if (!variant || !variant.images || variant.images.length == 0 || !variant.images[0])
+      return;
     
-    if (variant.images && variant.images.length > 0) {
+    var $figure = self.$images.children('figure');   
+    if (variant.images && variant.images.length > 0 && variant.images[0]) {
       $figure.css('background-image', 'url(' + variant.images[0].urls.large + ')');
     } else if ($figure.css('background-image').toLowerCase() == 'none') {
       $figure.css('background-image', 'url(' + _.first(self.product.images).urls.large + ')');
