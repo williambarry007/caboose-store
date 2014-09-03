@@ -8,12 +8,12 @@ module CabooseStore
     has_many :customization_memberships, :class_name => 'CabooseStore::CustomizationMembership'
     has_many :categories, :class_name => 'CabooseStore::Category', :through => :category_memberships
     has_many :category_memberships, :class_name => 'CabooseStore::CategoryMembership'
-    has_many :variants, :class_name => 'CabooseStore::Variant', :order => 'sort_order'
+    has_many :variants, :class_name => 'CabooseStore::Variant', :order => 'option1_sort_order, option2_sort_order, option3_sort_order'
     has_many :product_images, :class_name => 'CabooseStore::ProductImage'
     has_many :proudct_inputs, :class_name => 'CabooseStore::ProductInput'
     has_many :reviews, :class_name => 'CabooseStore::Review'
     
-    default_scope order('store_products.sort_order')
+    #default_scope order('store_products.sort_order')
     
     attr_accessible :id,
       :alternate_id,
@@ -32,8 +32,7 @@ module CabooseStore
       :default3,
       :status,
       :custom_input,
-      :featured,
-      :sort_order
+      :featured
     
     
     #

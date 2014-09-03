@@ -152,7 +152,7 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :date_available        , :datetime  ],
         [ :custom_input          , :text      ],
         [ :sort_order            , :integer   ],
-        [ :featured              , :boolean    , :default => false ]
+        [ :featured              , :boolean   , :default => false ]
       ],
       
       CabooseStore::Review => [
@@ -200,7 +200,8 @@ class CabooseStore::Schema < Caboose::Utilities::Schema
         [ :status                , :string   ],
         [ :option1_sort_order    , :integer  , { :defult => 0 }],
         [ :option2_sort_order    , :integer  , { :defult => 0 }],
-        [ :option3_sort_order    , :integer  , { :defult => 0 }]
+        [ :option3_sort_order    , :integer  , { :defult => 0 }],
+        [ :sort_order            , :integer  , { :defult => 0 }]
       ],
       
       CabooseStore::Vendor => [
