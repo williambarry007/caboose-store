@@ -166,7 +166,7 @@ module CabooseStore
     
     def calculate_tax
       return 0 if !self.shipping_address
-      TaxCalculator.tax_rate(self.shipping_address)
+      self.subtotal * TaxCalculator.tax_rate(self.shipping_address)
     end
     
     def calculate_shipping

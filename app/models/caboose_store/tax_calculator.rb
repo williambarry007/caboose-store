@@ -1,6 +1,7 @@
 module CabooseStore
   class TaxCalculator
     def self.tax_rate(address)
+      ap '--HOOK calculate tax'
       return 0 if address.state.downcase != 'al'
       city = address.city.downcase
       rate = 0.00
