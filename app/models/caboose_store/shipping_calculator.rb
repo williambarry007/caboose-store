@@ -58,7 +58,7 @@ module CabooseStore
       ups_response = ups.find_rates(origin, destination, packages)
       
       rates = ups_response.rates.collect do |rate|
-        next if CabooseStore::allowed_shipping_codes && !CabooseStore::allowed_shipping_codes.index(rate.service_code)
+        next if CabooseStore::allowed_shipping_method_codes && !CabooseStore::allowed_shipping_method_codes.index(rate.service_code)
         
         {
           :service_code    => rate.service_code,
@@ -72,8 +72,8 @@ module CabooseStore
     end
     
     def self.rate(order)
-      return nil if !order.shipping_code
-      self.rates(order).each { |rate| return rate if rate[:service_code] == order.shipping_code }
+      return nil if !order.shipping_method_code
+      self.rates(order).each { |rate| return rate if rate[:service_code] == order.shipping_method_code }
       return nil
     end
   end

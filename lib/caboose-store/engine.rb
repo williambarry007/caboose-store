@@ -80,7 +80,7 @@ module CabooseStore::BootStrapper
         :landing_page_ref => params[:ref] || nil
       )
       
-      order.update_attribute(:shipping_code, CabooseStore::default_shipping_code) if CabooseStore::default_shipping_code
+      order.update_attribute(:shipping_method_code, CabooseStore::default_shipping_method_code) if CabooseStore::default_shipping_method_code
       
       # Define the cart ID
       session[:cart_id] = order.id

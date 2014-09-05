@@ -17,9 +17,9 @@ module CabooseStore
     attr_accessible :id,
       :order_number,
       :subtotal,
-      :tax,
-      :shipping_code,
+      :tax,      
       :shipping_method,
+      :shipping_method_code,
       :shipping,
       :handling,
       :discount,
@@ -170,7 +170,7 @@ module CabooseStore
     end
     
     def calculate_shipping
-      return 0 if !self.shipping_address || !self.shipping_code
+      return 0 if !self.shipping_address || !self.shipping_method_code
       ShippingCalculator.rate(self)[:total_price]
     end
     

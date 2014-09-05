@@ -166,7 +166,7 @@ Caboose.Store.Modules.Checkout = (function() {
     $.ajax({
       url: '/checkout/shipping',
       type: 'put',
-      data: { shipping_code: event.target.value },
+      data: { shipping_method_code: event.target.value },
       success: function(response) {
         if (response.success) {
           self.order = response.order;
@@ -192,7 +192,7 @@ Caboose.Store.Modules.Checkout = (function() {
   self.paymentSubmitHandler = function(event) {
     event.preventDefault();
     
-    if (!self.order.shipping_code) {
+    if (!self.order.shipping_method_code) {
       alert('Please choose a shipping method');
     } else {
       self.$checkout.off('submit', '#checkout-payment form#payment').addClass('loading');

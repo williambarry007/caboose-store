@@ -17,8 +17,8 @@ Caboose.Store.Modules.CheckoutStep3 = (function() {
       url: '/checkout/shipping',
       type: 'put',      
       data: { 
-        shipping_method: $(event.target).data('shipping-method'),
-        shipping_code:   $(event.target).data('shipping-code') 
+        shipping_method:      $(event.target).data('shipping-method'),
+        shipping_method_code: $(event.target).data('shipping-code') 
       },
       success: function(resp) {
         if (resp.errors && resp.errors.length > 0)

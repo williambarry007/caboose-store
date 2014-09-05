@@ -163,7 +163,7 @@ module CabooseStore
     # PUT /checkout/shipping
     def update_shipping      
       @order.shipping_method      = params[:shipping_method]
-      @order.shipping_method_code = params[:shipping_code]                 
+      @order.shipping_method_code = params[:shipping_method_code]                 
       render :json => { 
         :success => @order.save, 
         :errors => @order.errors.full_messages 
