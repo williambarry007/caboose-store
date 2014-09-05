@@ -35,7 +35,7 @@ module CabooseStore
     def step_four            
       redirect_to '/checkout/step-one'   and return if !logged_in?
       redirect_to '/checkout/step-two'   and return if @order.shipping_address.nil? || @order.billing_address.nil?
-      redirect_to '/checkout/step-three' and return if @order.shipping_code.nil?
+      redirect_to '/checkout/step-three' and return if @order.shipping_method_code.nil?
       
       # Make sure all the variants still exist      
       @order.line_items.each do |li|
