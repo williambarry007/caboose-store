@@ -10,9 +10,13 @@
           <%= sim_fields(@sim_transaction) %>
           <label>Card Number</label>
           <input name="x_card_num" type="text" />
-          <label>Expiration</label>
-          <input id="expiration" name="x_exp_date" type="hidden" />          
+          <br />
+          <label>Security Code</label><br />
+          <input id="x_card_code" name="x_card_code" type="text" />
           <br />          
+          
+          <label>Expiration</label>
+          <input id="expiration" name="x_exp_date" type="hidden" />
           <select id="month" name="month">                                      
             <option value="01">01 - Jan</option>
             <option value="02">02 - Feb</option>
@@ -32,10 +36,8 @@
             <% (DateTime.now.year...DateTime.now.year + 20).each do |i| %>
               <option value="<%= i-2000 %>"><%= i %></option>
             <% end %>
-          </select>          
-          <br />          
-          <label>Security Code</label>
-          <input id="x_card_code" name="x_card_code" type="text" />
+          </select><br />
+          <br />
           <input type="submit" value="Submit" />
         </form>
       <% end %>

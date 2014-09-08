@@ -1,4 +1,4 @@
-class States
+class CabooseStore::States
   def self.all
     {
       "AL" => "Alabama",

@@ -184,7 +184,6 @@ Caboose.Store.Modules.Product = (function() {
     //    }))
     //  };
     //});
-    
     var options = [];
     if (self.product.option1) options.push({ name: self.product.option1, values: self.option1_values });
     if (self.product.option2) options.push({ name: self.product.option2, values: self.option2_values });

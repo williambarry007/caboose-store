@@ -31,6 +31,7 @@ Caboose.Store.Modules.Cart = (function() {
   self.setVariant = function(variant) {
     if (self.$addToCart) {
       self.$addToCart.find('input[name=variant_id]').val(variant ? variant.id : "");
+      console.log(self.$addToCart.find('input[name=variant_id]'));
       self.$addToCart.trigger('change');
     }
   };
