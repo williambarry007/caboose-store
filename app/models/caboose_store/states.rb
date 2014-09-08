@@ -1,6 +1,6 @@
 class States
   def self.all
-    {    
+    {
       "AL" => "Alabama",
       "AK" => "Alaska",
       "AS" => "American Samoa",
