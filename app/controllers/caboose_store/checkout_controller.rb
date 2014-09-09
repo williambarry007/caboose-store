@@ -2,7 +2,7 @@ module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     helper :authorize_net
     before_filter :ensure_line_items, :only => [:step_one, :step_two]
-    protect_from_forgery_except :except => :relay
+    protect_from_forgery :except => :relay
     
     def ensure_line_items
       redirect_to '/checkout/empty' if @order.line_items.empty?
