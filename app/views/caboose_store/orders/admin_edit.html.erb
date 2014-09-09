@@ -71,7 +71,7 @@ captured = @order.financial_status == 'captured'
 <% end %>
 <tr><td colspan='5' align='right'>Subtotal                </td><td align='right' id='subtotal'   ><%= number_to_currency(@order.subtotal ) %></td></tr>
 <tr><td colspan='5' align='right'>Tax                     </td><td align='right' id='tax'        ><%= number_to_currency(@order.tax      ) %></td></tr>
-<% if @order.shipping_method %>
+<% if !@order.shipping.nil? %>
 <tr><td colspan='5' align='right'><%= @order.shipping_method %> Shipping &amp; Handling </td><td align='right' id='shipping'   ><%= number_to_currency(@order.shipping + @order.handling) %></td></tr>
 <% end %>
 
