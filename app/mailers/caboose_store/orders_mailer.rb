@@ -8,7 +8,8 @@ module CabooseStore
       ap order
       ap order.customer
       ap order.customer.email if !order.customer.nil?
-      mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
+      #mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
+      mail(:to => 'liam@nine.is', :subject => 'Thank you for your order!')
     end
     
     # Sends a notification email to the fulfillment dept about a new order 
