@@ -192,6 +192,7 @@ module CabooseStore
     
     # POST /checkout/relay/:order_id
     def relay
+      ap '--HOOK RELAY'
       @order = CabooseStore::Order.find(params[:order_id])
       
       case CabooseStore::payment_processor
@@ -204,8 +205,7 @@ module CabooseStore
           @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
           @order.transaction_id = params['transaction-id'] if params['transaction-id']
       end
-      ap @success
-      ap '---------'
+      
       if @success
         @order.financial_status = 'authorized'
         @order.status = 'pending'

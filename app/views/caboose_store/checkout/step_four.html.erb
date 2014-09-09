@@ -9,10 +9,10 @@
         <form id="payment" target="relay" action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
           <%= sim_fields(@sim_transaction) %>
           <label>Card Number</label>
-          <input name="x_card_num" type="text" />
-          <br />
+          <input name="x_card_num" type="text" maxlength="16" />
+          <!--<br />
           <label>Security Code</label><br />
-          <input id="x_card_code" name="x_card_code" type="text" />
+          <input id="x_card_code" name="x_card_code" type="text" />-->
           <br />          
           
           <label>Expiration</label>

@@ -9,6 +9,7 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
     $('#checkout-confirm').hide();
     $('#relay').hide();
     self.bind_event_handlers();    
+    self.expiration_change_handler();
   };
     
   self.bind_event_handlers = function() {
@@ -83,6 +84,7 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
 
 function relay_handler(resp)
 {
+  console.log('RELAY');
   if (resp.success == true)
     window.location = '/checkout/thanks';
   else if (resp.message)  

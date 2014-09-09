@@ -2,9 +2,12 @@ class CabooseStore::PaymentProcessors::Authorizenet < CabooseStore::PaymentProce
   def self.api(root, body, test=false)
   end
   
-  def self.form_url(order)
-    #'https://secure.authorize.net/gateway/transact.dll'
+  def self.form_url(order=nil)
+    #if Rails.env == 'development'
     'https://test.authorize.net/gateway/transact.dll'
+    #else
+    #  'https://secure.authorize.net/gateway/transact.dll'
+    #end
   end
   
   def self.authorize(order, params)

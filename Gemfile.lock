@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    caboose-store (0.0.33)
+    caboose-store (0.0.36)
       caboose-cms
 
 GEM
