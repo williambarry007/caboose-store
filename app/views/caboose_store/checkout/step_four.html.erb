@@ -7,6 +7,7 @@
       <% if CabooseStore::payment_processor == 'authorize.net' %>
         <form id="payment" target="relay" action="<%= CabooseStore::PaymentProcessor.form_url(@order) %>" method="post">
           <%= sim_fields(@sim_transaction) %>
+          <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
           
           <label>Card Number</label>
           <input name="x_card_num" type="text" maxlength="16" />
