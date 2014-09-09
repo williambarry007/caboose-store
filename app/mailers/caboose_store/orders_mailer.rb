@@ -5,6 +5,9 @@ module CabooseStore
     # Sends a confirmation email to the customer about a new order 
     def customer_new_order(order)
       @order = order
+      ap order
+      ap order.customer
+      ap order.customer.email if !order.customer.nil?
       mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
     end
     
