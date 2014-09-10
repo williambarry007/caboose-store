@@ -195,15 +195,15 @@ module CabooseStore
       
       # Remove passed variants
       # redirect_to "/admin/products/#{params[:id]}/variants/group"
-      
-      render json: true
+            
+      render :json => true
     end
     
     # GET /admin/products/update-vendor-status/:id
     def admin_update_vendor_status
       vendor = Vendor.find(params[:id])
       vendor.status = params[:status]
-      render json: vendor.save
+      render :json => vendor.save
     end
     
     # GET /admin/products
@@ -261,8 +261,8 @@ module CabooseStore
       end
       
       @products = Product.all(
-        include: [:variants, :vendor],
-        conditions: conditions
+        :include => [:variants, :vendor],
+        :conditions => conditions
       )
       
       render :layout => 'caboose/admin'

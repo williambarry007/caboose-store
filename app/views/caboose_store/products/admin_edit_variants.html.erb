@@ -53,7 +53,7 @@ end
       <th>&nbsp;</th>
     </tr>
     <tbody id='variants_tbody'>
-      <% p.variants.where(:status => ['Active', 'Inactive']).each do |v| %>
+      <% p.variants.where(:status => ['Active', 'Inactive']).each do |v| %>      
         <tr id='variant_<%= v.id %>' <% if @highlight_variant_id && v.id == @highlight_variant_id %>class='highlight'<% end %>>
           <td class='sort_handle'>&nbsp;</td>
           <% if @cols['option1'           ] && p.option1 %><td><div id='variant_<%= v.id %>_option1'           ></div></td><% end %>

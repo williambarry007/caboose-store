@@ -130,16 +130,16 @@ module CabooseStore
       self.variants.where(:status => ['Active', 'Inactive'])
     end
     
-    def option1_values
-      arr = self.variants.reorder(:option1_sort_order).pluck(:option1).uniq.reject { |x| x.nil? || x.empty? }
+    def option1_values      
+      self.variants.where(:status => 'Active').reorder(:option1_sort_order).pluck(:option1).uniq.reject { |x| x.nil? || x.empty? }
     end
     
     def option2_values
-      self.variants.reorder(:option2_sort_order).pluck(:option2).uniq.reject { |x| x.nil? || x.empty? }
+      self.variants.where(:status => 'Active').reorder(:option2_sort_order).pluck(:option2).uniq.reject { |x| x.nil? || x.empty? }
     end
     
     def option3_values
-      self.variants.reorder(:option3_sort_order).pluck(:option3).uniq.reject { |x| x.nil? || x.empty? }
+      self.variants.where(:status => 'Active').reorder(:option3_sort_order).pluck(:option3).uniq.reject { |x| x.nil? || x.empty? }
     end
   end
 end
