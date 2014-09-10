@@ -1,6 +1,6 @@
 module CabooseStore
   class OrdersMailer < ActionMailer::Base
-    default :from => 'caboose-store.actionmailer@gmail.com'
+    default :from => CabooseStore::from_address.nil? ? 'caboose-store.actionmailer@gmail.com' : CabooseStore::from_address
     
     # Sends a confirmation email to the customer about a new order 
     def customer_new_order(order)
