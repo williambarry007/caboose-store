@@ -26,7 +26,7 @@
         </section>
         
         <section>
-          <p class="price">$<%= lineItem.price %></p>
+          <p class="price">$<%= parseFloat(Math.round(lineItem.price * 100) / 100).toFixed(2)  %></p>
         </section>
       </li>
     <% }); %>

@@ -30,7 +30,7 @@ module CabooseStore
     
     def checkout_nav(i)
       str = ""
-      str << "<div id='nav'>"
+      str << "<div id='checkout-nav'>"
       str << "  <ul>"
       str << "    <li class='odd'  id='checkout_nav1'><a href='#{i <= 1 ? '#' : '/checkout/step-one'   }' class='#{i == 1 ? 'current' : (i < 1 ? 'not_done' : 'done')}'><span>User Account </span></a></li>"
       str << "    <li class='even' id='checkout_nav2'><a href='#{i <= 2 ? '#' : '/checkout/step-two'   }' class='#{i == 2 ? 'current' : (i < 2 ? 'not_done' : 'done')}'><span>Addresses    </span></a></li>"
@@ -41,6 +41,6 @@ module CabooseStore
       str << "</div>"
       return str
     end
-    
   end
 end
+
