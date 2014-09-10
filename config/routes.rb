@@ -27,7 +27,7 @@ CabooseStore::Engine.routes.draw do
   #get  '/checkout/payment'         => 'checkout#payment'
   get  '/checkout/relay/:order_id' => 'checkout#relay'
   post '/checkout/relay/:order_id' => 'checkout#relay'  
-  #get  '/checkout/empty'           => 'checkout#empty'
+  get  '/checkout/empty'           => 'checkout#empty'
   
   # Products
   

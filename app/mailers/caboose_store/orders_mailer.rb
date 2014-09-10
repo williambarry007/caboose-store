@@ -1,15 +1,11 @@
 module CabooseStore
   class OrdersMailer < ActionMailer::Base
-    default :from => 'woodsnwater.actionmailer@gmail.com'
+    default :from => 'caboose-store.actionmailer@gmail.com'
     
     # Sends a confirmation email to the customer about a new order 
     def customer_new_order(order)
       @order = order
-      ap order
-      ap order.customer
-      ap order.customer.email if !order.customer.nil?
-      #mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
-      mail(:to => 'liam@nine.is', :subject => 'Thank you for your order!')
+      mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
     end
     
     # Sends a notification email to the fulfillment dept about a new order 

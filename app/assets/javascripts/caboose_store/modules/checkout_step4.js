@@ -16,9 +16,9 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
     $('#checkout-payment form#payment select').change(self.expiration_change_handler);
     $('#checkout-continue button').click(self.continue_handler);
     $('#checkout-confirm #edit_payment').click(self.edit_payment_handler);                
-    //$('#relay').on('load', self.relay_handler);
+    
     $(window).on('message', function(event) {
-      console.log(event);
+      relay_handler(event.originalEvent.data);
     });
   };
     
