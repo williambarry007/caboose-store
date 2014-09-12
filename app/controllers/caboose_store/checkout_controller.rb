@@ -25,15 +25,15 @@ module CabooseStore
     end
     
     # GET /checkout/step-three
-    def step_three      
+    def step_three
       redirect_to '/checkout/step-one' and return if !logged_in?
       redirect_to '/checkout/step-two' and return if @order.shipping_address.nil? || @order.billing_address.nil?
-      @rates = ShippingCalculator.rates(@order)      
+      @rates = ShippingCalculator.rates(@order)
       @selected_rate = ShippingCalculator.rate(@order)
     end
     
     # GET /checkout/step-four
-    def step_four            
+    def step_four
       redirect_to '/checkout/step-one'   and return if !logged_in?
       redirect_to '/checkout/step-two'   and return if @order.shipping_address.nil? || @order.billing_address.nil?
       redirect_to '/checkout/step-three' and return if @order.shipping_method_code.nil?

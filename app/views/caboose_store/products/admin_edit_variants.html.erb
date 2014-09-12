@@ -1,11 +1,11 @@
 <% content_for :caboose_css do %>
-	<style>
-		ul {
-			list-style-type: square;
-			padding: 0 0 0 24px;
-			margin: 12px 0 24px;
-		}
-	</style>
+  <style>
+    ul {
+      list-style-type: square;
+      padding: 0 0 0 24px;
+      margin: 12px 0 24px;
+    }
+  </style>
 <% end %>
 
 <%
@@ -82,6 +82,13 @@ end
 
 <p><input type='button' value='New Variant' onclick="add_variant(<%= p.id %>);" /></p>
 
+<form id="add-multiple" action="/admin/products/<%= @product.id %>/variants/add-multiple" method="post">
+  <p style="margin: 0 0 12px"><small>CSV format: Alternate ID, Quantity, Price<%= ', ' if @product.option1 || @product.option2 || @product.option3 %><%= [@product.option1, @product.option2, @product.option3].compact.join(', ') %></small></p>
+  <textarea id="variants_csv" name="variants_csv" rows="8" cols="12" style="min-width: 500px; min-height: 250px; margin: 0 0 16px; padding: 12px"></textarea><br />
+  <input type="submit" value="Submit" />
+  <p class="message" style="margin: 12px 0 0; color: red"></p>
+</form>
+
 <%= render :partial => 'caboose_store/products/admin_footer' %>
 
 <% content_for :caboose_css do %>
@@ -95,6 +102,25 @@ td.sort_handle { background: #ccc; width: 20px; }
 <script type='text/javascript'>
 
 $(document).ready(function() {
+  $('form#add-multiple').on('submit', function(event) {
+    event.preventDefault();
+    var $form = $(event.target);
+    
+    $.ajax({
+      type: $form.attr('method'),
+      url: $form.attr('action'),
+      data: $form.serialize(),
+      success: function(response) {
+        console.log(response);
+        if (response.success) {
+          location.reload();
+        } else {
+          $form.find('.message').empty().text(response.error);
+        }
+      }
+    });
+  });
+  
   <% p.variants.each do |v| %>
   new ModelBinder({
     name: 'Variant',

@@ -19,6 +19,7 @@ module CabooseStore
       :price,              # Variant’s price.
       :ignore_quantity,
       :quantity,
+      :quantity_in_stock,
       :allow_backorder,    # Whether to allow items with no inventory to be added to the cart    
       :status,             # Current status: active, inactive, deleted
       :weight,             # The weight of the variant. This will always be in metric grams.
