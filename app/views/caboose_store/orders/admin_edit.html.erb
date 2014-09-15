@@ -11,17 +11,19 @@ captured = @order.financial_status == 'captured'
          
 <table class='data'>
 <tr>
-  <th>Customer</th>
+  <th><%= !@order.customer.nil? ? 'Customer' : 'Guest %></th>
   <th>Shipping Address</th>
   <th>Order Status</th>
   <th>Payment Status</th>
-	<th>Transaction ID</th>
+  <th>Transaction ID</th>
 </tr>
 <tr>
   <td valign='top'>
     <%= "#{@order.shipping_address.first_name} #{@order.shipping_address.last_name}" %><br />
     <% if @order.customer %>
-      <a href='mailto:<%= "#{@order.customer.email}" %>'><%= "#{@order.customer.email}" %></a><br />
+      <a href="mailto:<%= "#{@order.customer.email}" %>"><%= "#{@order.customer.email}" %></a><br />
+    <% elsif @order.email %>
+      <a href="mailto:<%= @order.email %>"><%= @order.email %></a>
     <% end %>
     <%= @order.customer ? @order.customer.phone : @order.shipping_address.phone %>
   </td>
@@ -38,7 +40,7 @@ captured = @order.financial_status == 'captured'
     for <%= number_to_currency(@order.auth_amount) %>
     <% end %>
   </td>
-	<td valign="top"><%= @order.transaction_id %></td>
+  <td valign="top"><%= @order.transaction_id %></td>
 </tr>
 </table><br />
 
@@ -96,11 +98,11 @@ captured = @order.financial_status == 'captured'
 
 <% if @order.financial_status == 'authorized' %>
   <input type='button' value='Capture Funds' onclick="capture_funds(<%= @order.id %>);" />
-	<input type='button' value='Void' onclick="void_order(<%= @order.id %>);" />
+  <input type='button' value='Void' onclick="void_order(<%= @order.id %>);" />
 <% end %>
 
 <% if @order.financial_status == 'captured' %>
-	<input type='button' value='Refund' onclick="refund_order(<%= @order.id %>);" />
+  <input type='button' value='Refund' onclick="refund_order(<%= @order.id %>);" />
 <% end %>
 
 <input type='button' value='Resend Confirmation' onclick="resend_confirmation(<%= @order.id %>)" />
@@ -113,15 +115,15 @@ captured = @order.financial_status == 'captured'
 
 function resend_confirmation(order_id)
 {
-	modal.autosize("<p class='loading'>Resending confirmation..</p>");
-	$.ajax({
-		type: 'post',
-		url: '/admin/orders/' + order_id + '/resend-confirmation',
-		success: function(resp) {
-			if (resp.error) modal.autosize("<p class='note error'>" + resp.error + "</p>");
-			if (resp.success) modal.autosize("<p class='note success'>" + resp.success + "</p>");
-		}
-	});
+  modal.autosize("<p class='loading'>Resending confirmation..</p>");
+  $.ajax({
+    type: 'post',
+    url: '/admin/orders/' + order_id + '/resend-confirmation',
+    success: function(resp) {
+      if (resp.error) modal.autosize("<p class='note error'>" + resp.error + "</p>");
+      if (resp.success) modal.autosize("<p class='note success'>" + resp.success + "</p>");
+    }
+  });
 }
 
 function capture_funds(order_id, confirm)
