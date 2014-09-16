@@ -11,7 +11,7 @@ captured = @order.financial_status == 'captured'
          
 <table class='data'>
 <tr>
-  <th><%= !@order.customer.nil? ? 'Customer' : 'Guest %></th>
+  <th><%= if @order.customer.nil? then 'Guest' else 'Customer' end %></th>
   <th>Shipping Address</th>
   <th>Order Status</th>
   <th>Payment Status</th>
