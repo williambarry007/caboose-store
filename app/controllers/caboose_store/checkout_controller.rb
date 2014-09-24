@@ -14,7 +14,14 @@ module CabooseStore
     
     # GET /checkout/step-one
     def step_one
-      redirect_to '/checkout/step-two' if logged_in?
+      if logged_in?
+        if @order.customer_id.nil?
+          @order.customer_id = logged_in_user.id
+          @order.save
+        end
+        redirect_to '/checkout/step-two'
+        return        
+      end
     end
     
     # GET /checkout/step-two
