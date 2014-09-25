@@ -54,8 +54,7 @@ module CabooseStore
             CabooseStore::authorize_net_transaction_key,
             @order.total,
             :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
-            :transaction_type => 'AUTH_ONLY',
-            :test => true
+            :transaction_type => 'AUTH_ONLY'
           )
         when 'payscape'
           @form_url = CabooseStore::PaymentProcessor.form_url(@order)
@@ -195,17 +194,19 @@ module CabooseStore
     def relay
       ap '--HOOK RELAY'
       @order = CabooseStore::Order.find(params[:order_id])
+      @success = CabooseStore::PaymentProcessor.authorize(@order, params)
+      @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
       
-      case CabooseStore::payment_processor
-        when 'authorize.net'
-          @success = params[:x_response_code] == '1'
-          @message = params[:x_response_reason_text]
-          @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
-        when 'payscape'
-          @success = CabooseStore::PaymentProcessor.authorize(@order, params)
-          @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
-          @order.transaction_id = params['transaction-id'] if params['transaction-id']
-      end
+      #case CabooseStore::payment_processor
+      #  when 'authorize.net'
+      #    @success = params[:x_response_code] == '1'
+      #    @message = jarams[:x_response_reason_text]
+      #    @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
+      #  when 'payscape'
+      #    @success = CabooseStore::PaymentProcessor.authorize(@order, params)
+      #    @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
+      #    @order.transaction_id = params['transaction-id'] if params['transaction-id']
+      #end
       
       if @success
         @order.financial_status = 'authorized'

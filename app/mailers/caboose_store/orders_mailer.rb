@@ -5,7 +5,7 @@ module CabooseStore
     # Sends a confirmation email to the customer about a new order 
     def customer_new_order(order)
       @order = order
-      mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Thank you for your order!')
+      mail(:to => order.customer.email, :subject => 'Thank you for your order!')
     end
     
     # Sends a notification email to the fulfillment dept about a new order 
@@ -23,7 +23,8 @@ module CabooseStore
     # Sends a notification email to the customer that the status of the order has been changed
     def customer_status_updated(order)
       @order = order
-      mail(:to => order.customer ? order.customer.email : order.email, :subject => 'Order status update')
+      mail(:to => order.customer.email, :subject => 'Order status update')
     end
   end
 end
+
