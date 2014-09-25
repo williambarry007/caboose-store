@@ -29,8 +29,7 @@ Caboose.Store.Modules.CheckoutStep2 = (function() {
         if (resp.errors && resp.errors.length > 0)
           $('#message').html("<p class='note error'>" + resp.errors[0] + "</p>");
         else if (resp.success)
-          return false;
-          //window.location = '/checkout/step-three';        
+          window.location = '/checkout/step-three';
       }
     });
     return false;
