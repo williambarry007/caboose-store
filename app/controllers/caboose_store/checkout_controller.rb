@@ -54,7 +54,8 @@ module CabooseStore
             CabooseStore::authorize_net_transaction_key,
             @order.total,
             :relay_url => "#{CabooseStore::root_url}/checkout/relay/#{@order.id}",
-            :transaction_type => 'AUTH_ONLY'
+            :transaction_type => 'AUTH_ONLY',
+            :test => true
           )
         when 'payscape'
           @form_url = CabooseStore::PaymentProcessor.form_url(@order)
