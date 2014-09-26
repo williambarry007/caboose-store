@@ -268,8 +268,8 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.setImageFromVariant = function(variant) {    
-    if (!variant || !variant.images || variant.images.length == 0 || !variant.images[0])
-      return;
+    if (!variant || !variant.images || variant.images.length == 0 || !variant.images[0]) return;
+    self.$product.trigger('variant:updated');
     
     var $figure = self.$images.children('figure');   
     if (variant.images && variant.images.length > 0 && variant.images[0]) {
