@@ -185,6 +185,51 @@ module CabooseStore
       redirect_to "/admin/products/#{params[:id]}/variants"
     end
     
+    # POST /admin/products/:id/varaints/add-multiple
+    def admin_add_multiple_variants
+      product = Product.find(params[:id])
+      
+      params[:variants_csv].split("\r\n").each do |variant|
+        row = variant.split(',')
+        
+        render :json => { :success => false, :error => "Quantity is not defined for variant: #{row[0].strip}" } and return if row[1].nil?
+        render :json => { :success => false, :error => "Price is not defined for variant: #{row[0].strip}" } and return if row[2].nil?
+        
+        attributes = {
+          :alternate_id => row[0].strip,
+          :quantity_in_stock => row[1].strip.to_i,
+          :price => '%.2f' % row[2].strip.to_f,
+          :status => 'Active'
+        }
+        
+        if product.option1 && row[3].nil?
+          render :json => { :success => false, :error => "#{product.option1} not defined for variant: #{attributes[:alternate_id]}" } and return
+        elsif product.option1
+          attributes[:option1] = row[3].strip
+        end
+        
+        if product.option2 && row[4].nil?
+          render :json => { :success => false, :error => "#{product.option2} not defined for variant: #{attributes[:alternate_id]}" } and return
+        elsif product.option2
+          attributes[:option2] = row[4].strip
+        end
+        
+        if product.option3 && row[5].nil?
+          render :json => { :success => false, :error => "#{product.option3} not defined for variant: #{attributes[:alternate_id]}" } and return
+        elsif product.option3
+          attributes[:option3] = row[5].strip
+        end
+        
+        if product.variants.find_by_alternate_id(attributes[:alternate_id])
+          product.variants.find_by_alternate_id(attributes[:alternate_id]).update_attributes(attributes)
+        else
+          Variant.create(attributes.merge(:product_id => product.id))
+        end
+      end
+      
+      render :json => { :success => true }
+    end
+    
     # POST /admin//products/:id/variants/remove
     def admin_remove_variants
       params[:variant_ids].each do |variant_id|

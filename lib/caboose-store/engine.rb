@@ -91,3 +91,4 @@ module CabooseStore::BootStrapper
     session[:new_cart_items] ||= Array.new
   end
 end
+

@@ -15,6 +15,7 @@ module CabooseStore
     :authorize_net_transaction_key,
     :handling_percentage,
     :allowed_shipping_method_codes,
-    :default_shipping_method_code
+    :default_shipping_method_code,
+    :from_address
 end
 

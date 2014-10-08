@@ -10,6 +10,7 @@
         <li><p>No thanks                              </p><button data-login-action="guest"    id='guest_button'    >Continue As Guest</button></li>
       </ul>
     </div>
+    
     <section id='checkout-login-form'>    
       <div class="wrapper" id='signin_form_container'>  
         <form action="/login" method="post" id='signin_form'>
@@ -18,6 +19,7 @@
           <input type="submit" value="Submit" />
         </form>
       </div>
+      
       <div class="wrapper" id='register_form_container'>  
         <form action="/register" method="post" id='register_form'>
           <input name="first_name" type="text" placeholder="First Name" />
@@ -29,6 +31,7 @@
           <input type="submit" value="Submit" />
         </form>
       </div>
+      
       <div class="wrapper" id='guest_form_container'>  
         <form action="/checkout/attach-guest" method="post" id='guest_form'>
           <input name="email" type="text" placeholder="Email" />
@@ -36,7 +39,10 @@
           <input type="submit" value="Submit" />
         </form>
       </div>
-      <div id='message'></div>
+      
+      <div class="wrapper">
+        <div id='message'></div>
+      </div>
     </section>
   </section>
   

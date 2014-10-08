@@ -2,6 +2,7 @@ module CabooseStore
   class CheckoutController < CabooseStore::ApplicationController
     helper :authorize_net
     before_filter :ensure_line_items, :only => [:step_one, :step_two]
+    protect_from_forgery :except => :relay
     
     def ensure_line_items
       redirect_to '/checkout/empty' if @order.line_items.empty?
@@ -31,15 +32,15 @@ module CabooseStore
     end
     
     # GET /checkout/step-three
-    def step_three      
+    def step_three
       redirect_to '/checkout/step-one' and return if !logged_in?
       redirect_to '/checkout/step-two' and return if @order.shipping_address.nil? || @order.billing_address.nil?
-      @rates = ShippingCalculator.rates(@order)      
+      @rates = ShippingCalculator.rates(@order)
       @selected_rate = ShippingCalculator.rate(@order)
     end
     
     # GET /checkout/step-four
-    def step_four            
+    def step_four
       redirect_to '/checkout/step-one'   and return if !logged_in?
       redirect_to '/checkout/step-two'   and return if @order.shipping_address.nil? || @order.billing_address.nil?
       redirect_to '/checkout/step-three' and return if @order.shipping_method_code.nil?
@@ -199,20 +200,22 @@ module CabooseStore
     
     # POST /checkout/relay/:order_id
     def relay
+      ap '--HOOK RELAY'
       @order = CabooseStore::Order.find(params[:order_id])
+      @success = CabooseStore::PaymentProcessor.authorize(@order, params)
+      @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
       
-      case CabooseStore::payment_processor
-        when 'authorize.net'
-          @success = params[:x_response_code] == '1'
-          @message = params[:x_response_reason_text]
-          @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
-        when 'payscape'
-          @success = CabooseStore::PaymentProcessor.authorize(@order, params)
-          @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
-          @order.transaction_id = params['transaction-id'] if params['transaction-id']
-      end
-      ap @success
-      ap '---------'
+      #case CabooseStore::payment_processor
+      #  when 'authorize.net'
+      #    @success = params[:x_response_code] == '1'
+      #    @message = jarams[:x_response_reason_text]
+      #    @order.transaction_id = params[:x_trans_id] if params[:x_trans_id]
+      #  when 'payscape'
+      #    @success = CabooseStore::PaymentProcessor.authorize(@order, params)
+      #    @message = @success ? 'Payment processed successfully' : 'There was a problem processing your payment'
+      #    @order.transaction_id = params['transaction-id'] if params['transaction-id']
+      #end
+      
       if @success
         @order.financial_status = 'authorized'
         @order.status = 'pending'
