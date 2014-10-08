@@ -176,15 +176,6 @@ Caboose.Store.Modules.Product = (function() {
   };
   
   self.getOptionsWithAllValues = function() {
-    //return _.map(self.getOptionsFromProduct(), function(optionName) {
-    //  return {
-    //    name: optionName,
-    //    values: _.uniq(_.map(self.product.variants, function(variant) {
-    //      return variant[self.getOptionAttribute(optionName)];
-    //    }))
-    //  };
-    //});
-    
     var options = [];
     if (self.product.option1) options.push({ name: self.product.option1, values: self.option1_values });
     if (self.product.option2) options.push({ name: self.product.option2, values: self.option2_values });
@@ -277,8 +268,8 @@ Caboose.Store.Modules.Product = (function() {
   //
   
   self.setImageFromVariant = function(variant) {    
-    if (!variant || !variant.images || variant.images.length == 0 || !variant.images[0])
-      return;
+    if (!variant || !variant.images || variant.images.length == 0 || !variant.images[0]) return;
+    self.$product.trigger('variant:updated');
     
     var $figure = self.$images.children('figure');   
     if (variant.images && variant.images.length > 0 && variant.images[0]) {

@@ -61,6 +61,11 @@ Caboose.Store.Modules.CheckoutStep1 = (function() {
     }
     $('#' + form + '_button').addClass('selected');
     $('#message').empty();
+    
+    $('html, body').animate({
+      scrollTop: $('#checkout-login').offset().top
+    }, 600);
+    
     self.current_form = form;         
   };
   

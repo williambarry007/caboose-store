@@ -27,7 +27,7 @@ CabooseStore::Engine.routes.draw do
   #get  '/checkout/payment'         => 'checkout#payment'
   get  '/checkout/relay/:order_id' => 'checkout#relay'
   post '/checkout/relay/:order_id' => 'checkout#relay'  
-  #get  '/checkout/empty'           => 'checkout#empty'
+  get  '/checkout/empty'           => 'checkout#empty'
   
   # Products
   
@@ -44,6 +44,7 @@ CabooseStore::Engine.routes.draw do
   get  '/admin/products/:id/variants/group'  => 'products#admin_group_variants'
   post '/admin/products/:id/variants/add'    => 'products#admin_add_variants'
   post '/admin/products/:id/variants/remove' => 'products#admin_remove_variants'
+  post '/admin/products/:id/variants/add-multiple' => 'products#admin_add_multiple_variants'
   
   get '/admin/products/add-upcs' => 'products#admin_add_upcs'
   

@@ -9,13 +9,17 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
     $('#checkout-confirm').hide();
     $('#relay').hide();
     self.bind_event_handlers();    
+    self.expiration_change_handler();
   };
     
   self.bind_event_handlers = function() {
     $('#checkout-payment form#payment select').change(self.expiration_change_handler);
     $('#checkout-continue button').click(self.continue_handler);
     $('#checkout-confirm #edit_payment').click(self.edit_payment_handler);                
-    //$('#relay').on('load', self.relay_handler);
+    
+    $(window).on('message', function(event) {
+      relay_handler(event.originalEvent.data);
+    });
   };
     
   self.expiration_change_handler = function(event) {
@@ -83,6 +87,7 @@ Caboose.Store.Modules.CheckoutStep4 = (function() {
 
 function relay_handler(resp)
 {
+  console.log('RELAY');
   if (resp.success == true)
     window.location = '/checkout/thanks';
   else if (resp.message)  
