@@ -87,7 +87,7 @@ module CabooseStore::BootStrapper
     end
     
     # Log the order and set an instance variable up
-    ap @order = CabooseStore::Order.find(session[:cart_id])
+    @order = CabooseStore::Order.find(session[:cart_id])
     session[:new_cart_items] ||= Array.new
   end
 end
