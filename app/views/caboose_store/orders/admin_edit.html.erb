@@ -57,7 +57,11 @@ captured = @order.financial_status == 'captured'
   <tr>
     <td>
       <% if li.variant.nil? || li.variant.product.nil? %>
-        <%= li.variant_sku %>
+        <% if li.variant.nil? %>
+          Unknown variant
+        <% else %>
+          <%= li.variant.sku %>
+        <% end %>
       <% else %>
         <a href='/admin/products/<%= li.variant.product.id %>/variants?highlight=<%= li.variant.id %>'><%= li.variant.product.title  %></a><br />
         <%= li.variant.sku            %><br />
@@ -90,20 +94,21 @@ captured = @order.financial_status == 'captured'
 <tr><td colspan='5' align='right'>Total                   </td><td align='right' id='total'      ><%= number_to_currency(@order.total    ) %></td></tr>
 </table>
 <div id='message'></div>
+
 <p>
 <input type='button' value='< Back' onclick="window.location='/admin/orders';" />
-
 <% if @order.financial_status == 'authorized' %>
   <input type='button' value='Capture Funds' onclick="capture_funds(<%= @order.id %>);" />
   <input type='button' value='Void' onclick="void_order(<%= @order.id %>);" />
 <% end %>
-
 <% if @order.financial_status == 'captured' %>
   <input type='button' value='Refund' onclick="refund_order(<%= @order.id %>);" />
 <% end %>
-
 <input type='button' value='Resend Confirmation' onclick="resend_confirmation(<%= @order.id %>)" />
 <input type='button' value='Print Order' onclick="print_order(<%= @order.id %>);" />
+
+<% str = Caboose.plugin('admin_edit_order_buttons', "", @order) %>
+<% if str %><%= raw str %><% end %>
 </p>
 
 <% content_for :caboose_js do %>
