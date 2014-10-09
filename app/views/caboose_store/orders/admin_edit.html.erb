@@ -107,7 +107,7 @@ captured = @order.financial_status == 'captured'
 <input type='button' value='Resend Confirmation' onclick="resend_confirmation(<%= @order.id %>)" />
 <input type='button' value='Print Order' onclick="print_order(<%= @order.id %>);" />
 
-<% str = Caboose.plugin('admin_edit_order_buttons', "", @order) %>
+<% str = Caboose.plugin_hook('admin_edit_order_buttons', "", @order) %>
 <% if str %><%= raw str %><% end %>
 </p>
 
