@@ -25,9 +25,11 @@ Caboose.Store.Modules.Product = (function() {
       self.option2_values = response.option2_values;
       self.option3_values = response.option3_values;
       self.render();
-      self.bindEvents();
+      self.bindEvents();      
       self.setVariant(self.getInitialVariant());
+      console.log('Test1');      
       self.setOptionsFromVariant(self.variant);
+      console.log('Test2');
     });
   };
   
@@ -96,9 +98,9 @@ Caboose.Store.Modules.Product = (function() {
     if ($targetValue.hasClass('selected')) {
       $targetValue.removeClass('selected');
       $targetValue = $();
-    } else {
+    } else {      
       $targetValue.addClass('selected').siblings().removeClass('selected');
-      
+            
       self.$options.find('ul').not($targetOption).each(function(index, element) {
         var $currentOption = $(element)
           , $currentValue = $currentOption.children('.selected')
@@ -109,8 +111,8 @@ Caboose.Store.Modules.Product = (function() {
         if (!$currentValue.length) return true;
         
         options.push({ name: $currentOption.data('name'), value: $currentValue.data('value') });
-        options.push({ name: $targetOption.data('name'), value: $targetValue.data('value') });
-        
+        options.push({ name: $targetOption.data('name'), value: $targetValue.data('value') });        
+                      
         if (!!!self.getVariantFromOptions(options)) {
           $currentValue.removeClass('selected');
         } else if ($otherOption.length && $otherValue.length) {
@@ -165,9 +167,8 @@ Caboose.Store.Modules.Product = (function() {
       self.product.option3 ? self.product.option3 : undefined
     ]);
   };
-  
-    
-  self.getOptionsFromVariant = function(variant) {
+        
+  self.getOptionsFromVariant = function(variant) {    
     return _.compact([
       self.product.option1 ? { name: self.product.option1, value: variant.option1 } : undefined,
       self.product.option2 ? { name: self.product.option2, value: variant.option2 } : undefined,
@@ -224,7 +225,7 @@ Caboose.Store.Modules.Product = (function() {
   
   self.getInitialVariant = function () {
     var variant = _.find(self.product.variants, function(variant) {
-      return variant.quantity_in_stock > 0;
+      return variant.quantity_in_stock > 0 || variant.ignore_quantity != false;
     });
     
     if (!variant) {
@@ -243,14 +244,16 @@ Caboose.Store.Modules.Product = (function() {
     }));
     
     var variants = _.sortBy(_.where(self.product.variants, attributes), function(variant) { return variant.price });
-    return _.find(variants, function(variant) { return variant.quantity_in_stock > 0 });
+    return _.find(variants, function(variant) { 
+      return variant.quantity_in_stock > 0 || variant.ignore_quantity != false; 
+    });
   };
   
-  self.setOptionsFromVariant = function(variant) {
+  self.setOptionsFromVariant = function(variant) {        
     if (variant.option1) $('#option1 li[data-value="' + variant.option1 + '"]', self.$options).click();
-    if (variant.option1) $('#option2 li[data-value="' + variant.option2 + '"]', self.$options).click();
-    if (variant.option1) $('#option3 li[data-value="' + variant.option3 + '"]', self.$options).click();
-  };
+    if (variant.option2) $('#option2 li[data-value="' + variant.option2 + '"]', self.$options).click();
+    if (variant.option3) $('#option3 li[data-value="' + variant.option3 + '"]', self.$options).click();
+  };  
   
   self.setVariant = function(variant) {
     self.variant = variant;
